@@ -51,4 +51,8 @@ yargs.options({
 const argv   = yargs.argv;
 const config = project.parseConfig( argv );
 
-scaffold.init();
+if ( argv.vvv ) {
+	scaffold.vvvInitScript();
+} else {
+	scaffold.init();
+}

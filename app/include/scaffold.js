@@ -1,21 +1,5 @@
 'use strict';
 
-/**
- *   X Create vvv-hosts file
- *   X Create nginx config file
- *   X Initialize the Git repo
- *   X Install wp-dev-lib as a git submodule
- *   X Create wp-dev-lib config files
- *   X Install and configure Bedrock
- *   X Create database
- *   X Install and configure WordPress
- *   X Install project dependencies
- *   X Create theme and activate it
- *   - Delete the ruleset.xml and .editorconfig files provided by Sage
- *   - Install theme dependencies
- *   - Compile theme assets
- */
-
 import _        from 'lodash';
 import fs       from 'fs';
 import cp       from 'child_process';
@@ -88,11 +72,12 @@ class Scaffold {
 					'bower.json',
 					'package.json',
 					'gulpfile.babel.js',
+					'style.css',
 				]),
 			},
 		};
 
-		mkdirp( __path.project );
+		mkdirp.sync( __path.project );
 	}
 
 	init() {
@@ -100,6 +85,9 @@ class Scaffold {
 		this.initRepo();
 		this.initDevLib();
 		this.initProject();
+	}
+
+	vvvInitScript() {
 		this.initWordPress();
 		this.initPlugin();
 		this.initTheme();
@@ -111,9 +99,7 @@ class Scaffold {
 
 	initRepo() {
 
-		const gitConfig = project.config.repo;
-
-		if ( gitConfig.create ) {
+		if ( __config.repo.create ) {
 
 			console.log( 'Checking for Git repo...' );
 
@@ -125,8 +111,8 @@ class Scaffold {
 			this.execSync( 'git init' );
 
 			// If the repo URL is set, add it as a remote.
-			if ( gitConfig.url ) {
-				this.execSync( `git remote add origin ${ gitConfig.url }` );
+			if ( __config.repo.url ) {
+				this.execSync( `git remote add origin ${ __config.repo.url }` );
 			}
 
 			return helpers.logSuccess( 'Repo initialized' );
@@ -173,6 +159,7 @@ class Scaffold {
 	}
 
 	initWordPress() {
+
 		console.log( 'Checking for database...' );
 
 		if ( this.execSync( 'wp db tables' ) ) {
@@ -341,9 +328,14 @@ class Scaffold {
 		}
 	}
 
-	linkFiles( files, type = 'project' ) {
+	linkFiles( type = 'project' ) {
 
-		const base = this.getBasePath( type );
+		const base  = this.getBasePath( type );
+		const files = this._files[ type ].remove;
+
+		if ( ! files ) {
+			return;
+		}
 
 		for ( let [ source, dest ] of files ) {
 
@@ -358,12 +350,12 @@ class Scaffold {
 
 	removeFiles( type = 'project' ) {
 
+		const base  = this.getBasePath( type );
 		const files = this._files[ type ].remove;
+
 		if ( ! files ) {
 			return;
 		}
-
-		const base = this.getBasePath( type );
 
 		for ( let file of files ) {
 			let filePath = path.join( base, file );

@@ -1,8 +1,15 @@
 'use strict';
 
 import _        from 'lodash';
+import fs       from 'fs';
+import cp       from 'child_process';
+import path     from 'path';
+import rimraf   from 'rimraf';
+import mustache from 'mustache';
 
 import helpers  from './helpers';
+
+_.upperSnakeCase = ( string ) => _.startCase( string ).replace( / /g, '_' );
 
 class Project {
 
@@ -197,6 +204,15 @@ class Project {
 				config.secret[ `${type}Salt` ] = helpers.randomString( 64, 'base64' );
 			}
 		});
+
+		// Set internal config values.
+		config.plugin.id      = _.snakeCase( config.plugin.name );
+		config.plugin.class   = _.upperSnakeCase( config.plugin.name );
+		config.plugin.package = _.upperSnakeCase( config.plugin.name );
+
+		config.theme.id       = _.snakeCase( config.theme.name );
+		config.theme.class    = _.upperSnakeCase( config.theme.name );
+		config.theme.package  = _.upperSnakeCase( config.theme.name );
 
 		// Update the global config settings.
 		global.__config = config;

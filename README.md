@@ -24,6 +24,10 @@ If you create a new `project.yml` file in your project directory, that file will
 cd /path/to/my-new-project-folder
 
 node wp-scaffold-project --project.title="My New Project" --project.url="my.new-project.dev"
+
+cd /path/to/vvv
+
+vagrant up --provision
 ```
 ## License
 
