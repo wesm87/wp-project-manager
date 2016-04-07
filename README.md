@@ -1,4 +1,5 @@
-# wp-scaffold-project [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url] [![Coverage percentage][coveralls-image]][coveralls-url]
+# wp-scaffold-project [![Coverage percentage][coveralls-image]][coveralls-url]
+
 > Creates a new VVV site, installs WordPress and related dev tools, scaffolds a new plugin, and creates a new theme using a custom starter theme.
 
 ## Installation
