@@ -26,14 +26,8 @@ node wp-scaffold-project --project.title="My New Project" --project.url="my.new-
 ```
 ## License
 
-ISC © [Wes Moberly](https://github.com/wesm87)
+© [Decisionary Tech](http://decisionarytech.com/)
 
 
-[npm-image]: https://badge.fury.io/js/wp-scaffold-project.svg
-[npm-url]: https://npmjs.org/package/wp-scaffold-project
-[travis-image]: https://travis-ci.org/wesm87/wp-scaffold-project.svg?branch=master
-[travis-url]: https://travis-ci.org/wesm87/wp-scaffold-project
-[daviddm-image]: https://david-dm.org/wesm87/wp-scaffold-project.svg?theme=shields.io
-[daviddm-url]: https://david-dm.org/wesm87/wp-scaffold-project
 [coveralls-image]: https://coveralls.io/repos/wesm87/wp-scaffold-project/badge.svg
 [coveralls-url]: https://coveralls.io/r/wesm87/wp-scaffold-project
