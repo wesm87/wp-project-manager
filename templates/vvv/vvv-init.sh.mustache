@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# Update node & npm
+if [[ ! "$(node -v)" == 'v5.'* ]]; then
+	curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
+	sudo apt-get install -y nodejs
+fi
+
+# Install Gulp
+if [ ! "$( type -t gulp )" ]; then
+	sudo npm install -g gulp
+fi
+
+# Install Bower
+if [ ! "$( type -t bower )" ]; then
+	sudo npm install -g bower
+fi
+
+# Create a new project
+node wp-scaffold-project

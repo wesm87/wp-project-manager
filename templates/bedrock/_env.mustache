@@ -1,0 +1,18 @@
+DB_NAME={{ db.name }}
+DB_USER={{ db.user }}
+DB_PASSWORD={{ db.password }}
+DB_HOST={{ db.host }}
+DB_PREFIX={{ db.prefix }}
+
+WP_ENV={{ env }}
+WP_HOME=http://{{ project.url }}
+WP_SITEURL=${WP_HOME}/wp
+
+AUTH_KEY={{ secret.authKey }}
+SECURE_AUTH_KEY={{ secret.secureAuthKey }}
+LOGGED_IN_KEY={{ secret.loggedInKey }}
+NONCE_KEY={{ secret.nonceKey }}
+AUTH_SALT={{ secret.authSalt }}
+SECURE_AUTH_SALT={{ secret.secureAuthSalt }}
+LOGGED_IN_SALT={{ secret.loggedInSalt }}
+NONCE_SALT={{ secret.nonceSalt }}

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!--
+You must have the WordPress-Coding-Standards sniffs installed:
+https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards
+-->
+<ruleset name="WordPress">
+	<description>WordPress Coding Standards</description>
+
+	<!-- Show colors in console -->
+	<arg value="-colors"/>
+
+	<!-- Show sniff codes in all reports -->
+	<arg value="s"/>
+
+	<rule ref="WordPress-Core" />
+	<rule ref="WordPress-Docs" />
+	<rule ref="WordPress-Extra" />
+
+	<rule ref="Squiz.PHP.CommentedOutCode" />
+
+	<exclude-pattern>*/tests/*</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/web/wp/*</exclude-pattern>
+	<exclude-pattern>*/dev-lib/*</exclude-pattern>
+</ruleset>

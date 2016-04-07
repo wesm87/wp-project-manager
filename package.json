@@ -1,0 +1,105 @@
+{
+  "name": "wp-scaffolding",
+  "version": "0.0.0",
+  "description": "A Node CLI tool that sets up a custom dev environment and VVV site for a new WordPress project.",
+  "homepage": "https://github.com:Decisionary/wp-scaffold-project/",
+  "author": {
+    "name": "Wes Moberly",
+    "email": "wes.moberly@decisionarytech.com",
+    "url": "https://github.com/wesm87"
+  },
+  "main": "index.js",
+  "keywords": [
+    "WordPress",
+    "Vagrant",
+    "VVV",
+    "development",
+    "theme",
+    "plugin",
+    "starter"
+  ],
+  "engines": {
+    "node": "^5.10.0",
+    "composer": "1.0.0-beta2"
+  },
+  "repository": "Decisionary/wp-scaffold-project",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "dependencies": {
+    "babel-core": "^6.3.26",
+    "babel-preset-es2015": "^6.3.13",
+    "gulp": "git://github.com/gulpjs/gulp.git#4.0",
+    "js-yaml": "^3.5.5",
+    "lodash": "^4.7.0",
+    "mkdirp": "^0.5.1",
+    "mustache": "^2.2.1",
+    "node-composer-runner": "^0.1.0",
+    "nodegit": "^0.12.1",
+    "rimraf": "^2.5.2",
+    "utils-upsearch": "^1.0.0",
+    "yargs": "^4.3.2"
+  },
+  "devDependencies": {
+    "gulp-coveralls": "^0.1.4",
+    "gulp-istanbul": "^0.10.4",
+    "gulp-mocha": "^2.2.0",
+    "gulp-nsp": "^2.4.0",
+    "isparta": "^3.5.3",
+    "jshint": "^2.9.1"
+  },
+  "jshintConfig": {
+    "esversion": 6,
+    "node": true,
+    "mocha": true,
+    "globals": {
+      "__path": false,
+      "__config": true
+    }
+  },
+  "wpScaffoldConfig": {
+    "env": "development",
+    "project": {
+      "title": "New WP Project",
+      "slug": "",
+      "url": "",
+      "repo": ""
+    },
+    "repo": {
+      "create": false,
+      "url": ""
+    },
+    "plugin": {
+      "scaffold": true,
+      "name": "",
+      "slug": ""
+    },
+    "theme": {
+      "scaffold": true,
+      "name": "",
+      "slug": ""
+    },
+    "admin": {
+      "username": "admin",
+      "password": "admin_password",
+      "email": "admin@localhost.dev"
+    },
+    "db": {
+      "name": "",
+      "user": "wp",
+      "password": "wp",
+      "host": "localhost",
+      "prefix": ""
+    },
+    "secret": {
+      "authKey":        "",
+      "secureAuthKey":  "",
+      "loggedInKey":    "",
+      "nonceKey":       "",
+      "authSalt":       "",
+      "secureAuthSalt": "",
+      "loggedInSalt":   "",
+      "nonceSalt":      ""
+    }
+  }
+}
