@@ -84,11 +84,11 @@ class Scaffold {
 				]),
 			},
 		};
-
-		mkdirp.sync( __path.project );
 	}
 
 	init() {
+		mkdirp.sync( __path.project );
+
 		if ( __config.vvv ) {
 			this.createInitScript();
 		} else {

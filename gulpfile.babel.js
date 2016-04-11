@@ -3,24 +3,39 @@
 import path      from 'path';
 import gulp      from 'gulp';
 import nsp       from 'gulp-nsp';
-import isparta   from 'isparta';
+import babel     from 'gulp-babel';
 import istanbul  from 'gulp-istanbul';
 import mochaTask from 'gulp-mocha';
 import coveralls from 'gulp-coveralls';
 
+import { Instrumenter } from 'isparta';
+
 class GulpTasks {
 
-	constructor() {
+	get tasks() {
+		return [
+			'watch',
+			'build',
+			'nsp',
+			'coverage',
+			'test',
+			'default',
+		];
+	}
 
-		// Task configuration
-		this.config = {
+	get config() {
+		return {
+			build: {
+				source: 'app/**/*.js',
+				dest:   'dist',
+			},
 			nsp: {
 				package: path.resolve( 'package.json' ),
 			},
 			istanbul: {
 				read: {
 					includeUntested: true,
-					instrumenter:    isparta.Instrumenter,
+					instrumenter:    Instrumenter,
 				},
 				write: {
 					reporters: [ 'lcov' ],
@@ -30,9 +45,10 @@ class GulpTasks {
 				reporter: 'spec',
 			},
 		};
+	}
 
-		// Source / dest files & folders
-		this.files = {
+	get files() {
+		return {
 			js: {
 				source: [
 					'index.js',
@@ -53,22 +69,36 @@ class GulpTasks {
 		};
 	}
 
-	registerTasks() {
-		gulp.task( 'watch', this.watch );
-		gulp.task( 'test', this.test );
-		gulp.task( 'prepublish', this.shrinkWrap );
-		gulp.task( 'default', this.default );
+	/**
+	 * Once ES7 arrives we can just define class methods as arrow functions.
+	 * In the meantime, we need to bind each task method to the class.
+	 */
+	constructor() {
+		this.tasks.forEach(( task ) => {
+			this[ task ] = this[ task ].bind( this );
+			gulp.task( task, this[ task ] );
+		});
 	}
 
 	watch() {
 		gulp.watch( this.js.files.watch, this.test );
 	}
 
-	shrinkWrap() {
-		return nsp( this.config.nsp );
+	build() {
+		return gulp
+			.src(  this.config.build.source )
+			.pipe( babel() )
+			.pipe( gulp.dest( this.config.build.dest ) );
 	}
 
-	coveralls() {
+	/**
+	 * Checks for any potential security issues (NSP = Node Security Project).
+	 */
+	nsp( done ) {
+		return nsp( this.config.nsp, done );
+	}
+
+	coverage() {
 		if ( ! process.env.CI ) {
 			return;
 		}

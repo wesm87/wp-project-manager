@@ -1,0 +1,8 @@
+'use strict';
+
+module.exports = {
+	command: 'project create',
+	describe: 'scaffold new project',
+	builder: {},
+	handler: function handler(argv) {}
+};

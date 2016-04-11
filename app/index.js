@@ -31,13 +31,34 @@
 
 'use strict';
 
+import path     from 'path';
 import yargs    from 'yargs';
 import rimraf   from 'rimraf';
 import mkdirp   from 'mkdirp';
+import upsearch from 'utils-upsearch';
 
 import helpers  from './include/helpers';
 import project  from './include/project';
 import scaffold from './include/scaffold';
+
+const appPath  = __dirname;
+const rootPath = path.join( __dirname, '..' );
+const cwd      = process.cwd();
+
+global.__path = {
+	app:       appPath,
+	root:      rootPath,
+	cwd:       cwd,
+	project:   cwd,
+	includes:  path.join( appPath, 'include' ),
+	templates: path.join( rootPath, 'templates' ),
+	test:      path.join( rootPath, 'test' ),
+	config:    upsearch.sync( 'project.yml' ),
+};
+
+if ( ! __path.config ) {
+	__path.config = path.join( rootPath, 'project.yml' );
+}
 
 yargs.options({
 		'config': {
@@ -58,7 +79,7 @@ yargs.options({
 const argv = yargs.argv;
 
 if ( 'node-test' === argv.env ) {
-	__path.project = __path.projectTest;
+	__path.project = path.join( __path.root, '_test-project' );
 	rimraf.sync( __path.project );
 	mkdirp.sync( __path.project );
 }

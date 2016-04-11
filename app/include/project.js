@@ -5,8 +5,6 @@ import path    from 'path';
 
 import helpers from './helpers';
 
-_.upperSnakeCase = ( string ) => _.startCase( string ).replace( / /g, '_' );
-
 class Project {
 
 	/**
@@ -20,9 +18,9 @@ class Project {
 			global.__config = {};
 		}
 
-		if ( ! helpers.fileExists( __path.config ) ) {
-			__path.config = __path.configDefault;
-		}
+		_.upperSnakeCase = ( string ) => (
+			_.startCase( string ).replace( / /g, '_' )
+		);
 	}
 
 	/**
