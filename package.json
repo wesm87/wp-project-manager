@@ -74,6 +74,7 @@
   },
   "wpProjectManager": {
     "env": "development",
+    "vvv": true,
     "project": {
       "title": "New WP Project",
       "slug": "",
@@ -96,13 +97,15 @@
     },
     "admin": {
       "user": "admin",
-      "password": "admin_password",
+      "pass": "admin_password",
       "email": "admin@localhost.dev"
     },
     "db": {
       "name": "",
       "user": "wp",
-      "password": "wp",
+      "pass": "wp",
+      "rootUser": "root",
+      "rootPass": "root",
       "host": "localhost",
       "prefix": ""
     },

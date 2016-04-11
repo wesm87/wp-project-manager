@@ -54,7 +54,8 @@ class Project {
 	 */
 	get defaultConfig() {
 		return {
-			env:   'development',
+			env: 'development',
+			vvv: true,
 			project: {
 				title: 'New WP Project',
 				slug:  '',
@@ -76,14 +77,16 @@ class Project {
 				slug:     '',
 			},
 			admin: {
-				user: 'admin',
-				password: 'admin_password',
-				email:    'admin@localhost.dev',
+				user:  'admin',
+				pass:  'admin_password',
+				email: 'admin@localhost.dev',
 			},
 			db: {
 				name:     '',
 				user:     'wp',
-				password: 'wp',
+				pass:     'wp',
+				rootUser: 'root',
+				rootPass: 'root',
 				host:     'localhost',
 				prefix:   '',
 			},

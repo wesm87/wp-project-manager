@@ -37,6 +37,12 @@ class Scaffold {
 				]),
 			},
 
+			scripts: {
+				create: new Set([
+					'wp-init.sh',
+				]),
+			},
+
 			bedrock: {
 				create: new Set([
 					'.env',
@@ -86,19 +92,18 @@ class Scaffold {
 	}
 
 	init() {
+
+		this._data      = __config;
+		this._data.path = __path;
+
 		mkdirp.sync( __path.project );
 
-		if ( __config.vvv ) {
-			this.createInitScript();
-		} else {
-
-			if ( ! __config.project.title ) {
-				helpers.logFailure( 'Error: you must specify a project title. Check the README for more information.' );
-				return;
-			}
-
-			this.createProject();
+		if ( ! __config.project.title ) {
+			helpers.logFailure( 'Error: you must specify a project title. Check the README for usage information.' );
+			return;
 		}
+
+		this.createProject();
 	}
 
 	createProject() {
@@ -117,7 +122,12 @@ class Scaffold {
 	}
 
 	initProjectFiles() {
-		this.createFiles( 'vvv' );
+
+		this.createFiles( 'scripts' );
+
+		if ( __config.vvv ) {
+			this.createFiles( 'vvv' );
+		}
 	}
 
 	initRepo() {
@@ -202,7 +212,7 @@ class Scaffold {
 			` --url="${ __config.project.url }"` +
 			` --title="${ __config.project.title }"` +
 			` --admin_user="${ __config.admin.user }"` +
-			` --admin_password="${ __config.admin.password }"` +
+			` --admin_password="${ __config.admin.pass }"` +
 			` --admin_email="${ __config.admin.email }"` +
 			` --path="${ this.getBasePath( 'wordpress' ) }"`;
 
@@ -321,7 +331,8 @@ class Scaffold {
 
 		const basePaths = {
 			project:     '.',
-			vvv:         'vvv-config',
+			vvv:         'vvv',
+			scripts:     'scripts',
 			bedrock:     'htdocs',
 			wordpress:   'htdocs/web/wp',
 			plugin:      `htdocs/web/app/plugins/${ __config.plugin.slug }`,
@@ -414,7 +425,7 @@ class Scaffold {
 
 		try {
 			const contentOriginal = fs.readFileSync( source ).toString();
-			const contentRendered = mustache.render( contentOriginal, __config );
+			const contentRendered = mustache.render( contentOriginal, this._data );
 
 			fs.writeFileSync( dest, contentRendered );
 

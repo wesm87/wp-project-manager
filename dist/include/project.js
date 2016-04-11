@@ -205,6 +205,7 @@ var Project = function () {
 		get: function get() {
 			return {
 				env: 'development',
+				vvv: true,
 				project: {
 					title: 'New WP Project',
 					slug: '',
@@ -227,13 +228,15 @@ var Project = function () {
 				},
 				admin: {
 					user: 'admin',
-					password: 'admin_password',
+					pass: 'admin_password',
 					email: 'admin@localhost.dev'
 				},
 				db: {
 					name: '',
 					user: 'wp',
-					password: 'wp',
+					pass: 'wp',
+					rootUser: 'root',
+					rootPass: 'root',
 					host: 'localhost',
 					prefix: ''
 				},

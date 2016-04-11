@@ -72,6 +72,10 @@ var Scaffold = function () {
 				create: new Set(['vvv-hosts', 'vvv-init.sh', 'vvv-nginx.conf'])
 			},
 
+			scripts: {
+				create: new Set(['wp-init.sh'])
+			},
+
 			bedrock: {
 				create: new Set(['.env']),
 
@@ -93,19 +97,18 @@ var Scaffold = function () {
 	_createClass(Scaffold, [{
 		key: 'init',
 		value: function init() {
+
+			this._data = __config;
+			this._data.path = __path;
+
 			_mkdirp2.default.sync(__path.project);
 
-			if (__config.vvv) {
-				this.createInitScript();
-			} else {
-
-				if (!__config.project.title) {
-					_helpers2.default.logFailure('Error: you must specify a project title. Check the README for more information.');
-					return;
-				}
-
-				this.createProject();
+			if (!__config.project.title) {
+				_helpers2.default.logFailure('Error: you must specify a project title. Check the README for more information.');
+				return;
 			}
+
+			this.createProject();
 		}
 	}, {
 		key: 'createProject',
@@ -127,7 +130,12 @@ var Scaffold = function () {
 	}, {
 		key: 'initProjectFiles',
 		value: function initProjectFiles() {
-			this.createFiles('vvv');
+
+			this.createFiles('scripts');
+
+			if (__config.vvv) {
+				this.createFiles('vvv');
+			}
 		}
 	}, {
 		key: 'initRepo',
@@ -212,7 +220,7 @@ var Scaffold = function () {
 				return _helpers2.default.logSuccess('Tables exist.');
 			}
 
-			var command = 'wp core install' + (' --url="' + __config.project.url + '"') + (' --title="' + __config.project.title + '"') + (' --admin_user="' + __config.admin.user + '"') + (' --admin_password="' + __config.admin.password + '"') + (' --admin_email="' + __config.admin.email + '"') + (' --path="' + this.getBasePath('wordpress') + '"');
+			var command = 'wp core install' + (' --url="' + __config.project.url + '"') + (' --title="' + __config.project.title + '"') + (' --admin_user="' + __config.admin.user + '"') + (' --admin_password="' + __config.admin.pass + '"') + (' --admin_email="' + __config.admin.email + '"') + (' --path="' + this.getBasePath('wordpress') + '"');
 
 			this.execSync(command);
 			_helpers2.default.logSuccess('Tables created.');
@@ -339,7 +347,8 @@ var Scaffold = function () {
 
 			var basePaths = {
 				project: '.',
-				vvv: 'vvv-config',
+				vvv: 'vvv',
+				scripts: 'scripts',
 				bedrock: 'htdocs',
 				wordpress: 'htdocs/web/wp',
 				plugin: 'htdocs/web/app/plugins/' + __config.plugin.slug,
@@ -510,7 +519,7 @@ var Scaffold = function () {
 
 			try {
 				var contentOriginal = _fs2.default.readFileSync(source).toString();
-				var contentRendered = _mustache2.default.render(contentOriginal, __config);
+				var contentRendered = _mustache2.default.render(contentOriginal, this._data);
 
 				_fs2.default.writeFileSync(dest, contentRendered);
 
