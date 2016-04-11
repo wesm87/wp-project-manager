@@ -44,7 +44,6 @@ class Scaffold {
 
 				remove: new Set([
 					'composer.*',
-					'vendor',
 					'*.md',
 					'ruleset.xml',
 					'wp-cli.yml',

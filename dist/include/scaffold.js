@@ -75,7 +75,7 @@ var Scaffold = function () {
 			bedrock: {
 				create: new Set(['.env']),
 
-				remove: new Set(['composer.*', 'vendor', '*.md', 'ruleset.xml', 'wp-cli.yml', '.gitignore', '.travis.yml', '.env.example'])
+				remove: new Set(['composer.*', '*.md', 'ruleset.xml', 'wp-cli.yml', '.gitignore', '.travis.yml', '.env.example'])
 			},
 
 			project: {
