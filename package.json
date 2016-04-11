@@ -31,8 +31,8 @@
   ],
   "main": "index.js",
   "bin": {
-    "wppm": "bin/wp-project-manager",
-    "wp-project-manager": "bin/wp-project-manager"
+    "wppm": "bin/wp-project-manager.js",
+    "wp-project-manager": "bin/wp-project-manager.js"
   },
   "engines": {
     "node": "^5.10.0",
