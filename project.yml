@@ -1,29 +1,36 @@
 env: 'development'
+
 project:
-  title: 'New WP Project'
+  title: ''
   slug:  ''
   url:   ''
+
 repo:
   create: false,
-  url:    'https://github.com/wesm87/sage'
+  url:    ''
+
 plugin:
   scaffold: true
   name:     ''
   slug:     ''
+
 theme:
   scaffold: true
   name:     ''
   slug:     ''
+
 admin:
   username: 'admin'
   password: 'admin_password'
   email:    'admin@localhost.dev'
+
 db:
   name:     ''
   user:     'wp'
   password: 'wp'
   host:     'localhost'
   prefix:   ''
+
 secret:
   authKey:        ''
   secureAuthKey:  ''

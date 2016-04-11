@@ -1,13 +1,9 @@
 'use strict';
 
-import _        from 'lodash';
-import fs       from 'fs';
-import cp       from 'child_process';
-import path     from 'path';
-import rimraf   from 'rimraf';
-import mustache from 'mustache';
+import _       from 'lodash';
+import path    from 'path';
 
-import helpers  from './helpers';
+import helpers from './helpers';
 
 _.upperSnakeCase = ( string ) => _.startCase( string ).replace( / /g, '_' );
 
@@ -206,6 +202,8 @@ class Project {
 		});
 
 		// Set internal config values.
+		config.project.folder = path.basename( __path.project );
+
 		config.plugin.id      = _.snakeCase( config.plugin.name );
 		config.plugin.class   = _.upperSnakeCase( config.plugin.name );
 		config.plugin.package = _.upperSnakeCase( config.plugin.name );

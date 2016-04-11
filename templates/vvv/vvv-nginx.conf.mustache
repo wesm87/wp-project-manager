@@ -1,7 +1,7 @@
 server {
 	listen       80;
 	listen       443 ssl;
-	server_name  {{project.url}};
-	root         /srv/www/{{project.slug}}/htdocs/web;
+	server_name  {{ project.url }};
+	root         /srv/www/{{ project.folder }}/htdocs/web;
 	include      /etc/nginx/nginx-wp-common.conf;
 }

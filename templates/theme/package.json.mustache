@@ -1,7 +1,9 @@
 {
   "name": "{{ theme.slug }}",
   "version": "0.1.0",
+  {{#repo.url}}
   "repository": "{{ repo.url }}",
+  {{/repo.url}}
   "scripts": {
     "build": "gulp build"
   },

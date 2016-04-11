@@ -1,41 +1,55 @@
 {
-  "name": "wp-scaffolding",
-  "version": "0.0.0",
-  "description": "A Node CLI tool that sets up a custom dev environment and VVV site for a new WordPress project.",
-  "homepage": "https://github.com:Decisionary/wp-scaffold-project/",
+  "name": "@decisionary/wp-project-manager",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Node CLI tool that simplifies the process of setting up a new WordPress project and development environment.",
+  "homepage": "https://github.com/Decisionary/wp-project-manager",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Decisionary/wp-project-manager.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Decisionary/wp-project-manager/issues"
+  },
   "author": {
     "name": "Wes Moberly",
     "email": "wes.moberly@decisionarytech.com",
     "url": "https://github.com/wesm87"
   },
-  "main": "index.js",
+  "license": "SEE LICENSE IN LICENSE.md",
   "keywords": [
     "WordPress",
-    "Vagrant",
-    "VVV",
     "development",
+    "project",
+    "manager",
+    "starter",
+    "scaffold",
     "theme",
     "plugin",
-    "starter"
+    "vagrant",
+    "vvv"
   ],
+  "main": "index.js",
+  "bin": {
+    "wppm": "bin/wp-project-manager",
+    "wp-project-manager": "bin/wp-project-manager"
+  },
   "engines": {
     "node": "^5.10.0",
     "composer": "1.0.0-beta2"
   },
-  "repository": "Decisionary/wp-scaffold-project",
   "scripts": {
     "test": "gulp test"
   },
   "dependencies": {
     "babel-core": "^6.3.26",
     "babel-preset-es2015": "^6.3.13",
+    "colors": "^1.1.2",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
     "js-yaml": "^3.5.5",
     "lodash": "^4.7.0",
     "mkdirp": "^0.5.1",
     "mustache": "^2.2.1",
-    "node-composer-runner": "^0.1.0",
-    "nodegit": "^0.12.1",
     "rimraf": "^2.5.2",
     "utils-upsearch": "^1.0.0",
     "yargs": "^4.3.2"
@@ -57,7 +71,7 @@
       "__config": true
     }
   },
-  "wpScaffoldConfig": {
+  "wpProjectManager": {
     "env": "development",
     "project": {
       "title": "New WP Project",
@@ -92,14 +106,14 @@
       "prefix": ""
     },
     "secret": {
-      "authKey":        "",
-      "secureAuthKey":  "",
-      "loggedInKey":    "",
-      "nonceKey":       "",
-      "authSalt":       "",
+      "authKey": "",
+      "secureAuthKey": "",
+      "loggedInKey": "",
+      "nonceKey": "",
+      "authSalt": "",
       "secureAuthSalt": "",
-      "loggedInSalt":   "",
-      "nonceSalt":      ""
+      "loggedInSalt": "",
+      "nonceSalt": ""
     }
   }
 }

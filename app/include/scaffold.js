@@ -17,6 +17,14 @@ class Scaffold {
 	 * Class constructor. Sets default values for class properties.
 	 *
 	 * @since 0.1.0
+	 *
+	 * @todo Figure out better names for functions.
+	 * @todo DOCUMENT ALL THE THINGS! Maybe switch to rspec?
+	 * @todo Break this up into multiple classes.
+	 *           Scaffold should only handle project files and folders.
+	 *           Move WordPress / database setup into separate class.
+	 *           Move git commands into separate class.
+	 *
 	 */
 	constructor() {
 
@@ -81,19 +89,35 @@ class Scaffold {
 	}
 
 	init() {
-		this.initVVV();
+		if ( __config.vvv ) {
+			this.createInitScript();
+		} else {
+
+			if ( ! __config.project.title ) {
+				helpers.logFailure( 'Error: you must specify a project title. Check the README for more information.' );
+				return;
+			}
+
+			this.createProject();
+		}
+	}
+
+	createProject() {
+		this.initProjectFiles();
 		this.initRepo();
 		this.initDevLib();
 		this.initProject();
 	}
 
-	vvvInitScript() {
+	createInitScript() {
 		this.initWordPress();
 		this.initPlugin();
 		this.initTheme();
+
+		this.maybeInstallPackages();
 	}
 
-	initVVV() {
+	initProjectFiles() {
 		this.createFiles( 'vvv' );
 	}
 
@@ -298,6 +322,7 @@ class Scaffold {
 
 		const basePaths = {
 			project:     '.',
+			vvv:         'vvv-config',
 			bedrock:     'htdocs',
 			wordpress:   'htdocs/web/wp',
 			plugin:      `htdocs/web/app/plugins/${ __config.plugin.slug }`,
@@ -385,6 +410,8 @@ class Scaffold {
 		if ( helpers.fileExists( dest ) ) {
 			return helpers.logSuccess( `${ file } exists.` );
 		}
+
+		mkdirp.sync( base );
 
 		try {
 			const contentOriginal = fs.readFileSync( source ).toString();

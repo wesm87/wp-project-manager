@@ -3,8 +3,14 @@
 import fs     from 'fs';
 import YAML   from 'js-yaml';
 import crypto from 'crypto';
+import colors from 'colors';
 
 class Helpers {
+
+	constructor() {
+		this.okText    = '✔'.green;
+		this.errorText = '✘'.red;
+	}
 
 	/**
 	 * Logs a message indicating that the current check passed.
@@ -14,8 +20,7 @@ class Helpers {
 	 * @param {string} message An optional message to display after the checkmark.
 	 */
 	logSuccess( message = '' ) {
-		message = message.toString();
-		console.log( `✔ ${ message }`.trim() );
+		console.log( `${this.okText} ${ message }`.trim() );
 	}
 
 	/**
@@ -26,8 +31,7 @@ class Helpers {
 	 * @param {string} message An optional message to display after the cross..
 	 */
 	logFailure( message = '' ) {
-		message = message.toString();
-		console.log( `✘ ${ message }`.trim() );
+		console.log( `${this.errorText} ${ message }`.trim() );
 	}
 
 	/**

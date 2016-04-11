@@ -1,4 +1,75 @@
-### OSX ###
+### WordPress ###
+
+# Application
+mu-plugins/*
+plugins/*
+themes/*
+uploads/*
+upgrade/*
+!uploads/.gitkeep
+!plugins/.gitkeep
+!themes/.gitkeep
+!**/plugins/{{ plugin.slug }}
+!**/themes/{{ theme.slug }}
+
+# Core
+wp/
+
+# Cache / Backup
+backup-db/
+backups/
+blogs.dir/
+cache/
+advanced-cache.php
+wp-cache-config.php
+sitemap.xml
+sitemap.xml.gz
+.htaccess
+
+# WP-CLI
+db-sync
+sql-dump-*.sql
+
+# Dotenv
+.env
+.env.*
+!.env.example
+
+
+### Package Managers ###
+
+# Composer
+vendor
+
+# NPM
+node_modules
+.npm
+
+# Bower
+bower_components
+.bower-cache
+.bower-registry
+.bower-tmp
+
+
+### Miscellaneous Files ###
+
+# Vagrant
+bin
+.vagrant
+
+# Log files
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+
+### OS X ###
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -58,67 +129,3 @@ $RECYCLE.BIN/
 
 # Linux trash folder which might appear on any partition or disk
 .Trash-*
-
-### WordPress ###
-
-# Application
-mu-plugins/*
-plugins/*
-uploads/*
-upgrade/*
-!plugins/.gitkeep
-!uploads/.gitkeep
-
-# Core
-wp/
-
-# Cache / Backup
-backup-db/
-backups/
-blogs.dir/
-cache/
-advanced-cache.php
-wp-cache-config.php
-sitemap.xml
-sitemap.xml.gz
-.htaccess
-
-# WP-CLI
-db-sync
-sql-dump-*.sql
-
-# Dotenv
-.env
-.env.*
-!.env.example
-
-### Package Managers ###
-
-# Composer
-vendor
-
-# NPM
-node_modules
-.npm
-
-# Bower
-bower_components
-.bower-cache
-.bower-registry
-.bower-tmp
-
-### Everything Else ###
-
-# Vagrant
-bin
-.vagrant
-
-# Log files
-logs
-*.log
-npm-debug.log*
-
-# Runtime data
-pids
-*.pid
-*.seed
