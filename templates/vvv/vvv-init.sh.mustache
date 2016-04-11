@@ -1,7 +1,30 @@
 #!/usr/bin/env bash
 
+### Functions ###
+
+###
+## Logs a message indicating that the current check passed
+##
+## @param string $1 An optional message to display after the checkmark symbol
+###
+check_passed() {
+	echo "✔ $1"
+}
+
+###
+## Logs a message indicating that the current check failed
+##
+## @param string $1 An optional message to display after the cross
+###
+check_failed() {
+	echo "✘ $1"
+}
+
+
+### Install Dependencies ###
+
 # Update node and npm
-if [[ ! "$(node -v)" == 'v5.'* ]]; then
+if [[ "$(node -v)" != 'v5.'* ]]; then
 	curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
 	sudo apt-get install -y nodejs
 fi
@@ -16,5 +39,87 @@ if [ ! "$( type -t bower )" ]; then
 	sudo npm install -g bower
 fi
 
-# Create a new project
-node wp-project-manager --vvv
+
+### Move into the project folder ###
+cd ..
+
+
+### Create Database ###
+
+mysql --user=root --password=root <<< 'CREATE DATABASE IF NOT EXISTS `{{ db.name }}`;'
+mysql --user=root --password=root <<< 'GRANT ALL PRIVILEGES ON `{{ db.name }}`.* TO "{{ db.user }}"@"{{ db.host }}" IDENTIFIED BY "{{ db.password }}";'
+
+
+### Install WordPress ###
+
+echo '{{ plugin.slug }} :: Checking for WordPress database tables...'
+
+if $(wp core is-installed --allow-root); then
+	check_passed 'Tables exist'
+else
+	check_failed 'Creating now'
+
+	wp core install --allow-root --title="{{ project.title }}" \
+		--url="{{ project.url }}" --admin_email="{{ admin.email }}" \
+		--admin_user="{{ admin.user }}" --admin_password="{{ admin.password }}"
+fi
+
+
+{{# plugin.scaffold }}
+### Scaffold custom plugin ###
+
+echo '{{ plugin.slug }} :: Checking for custom plugin...'
+
+if $(wp plugin is-installed "{{ plugin.slug }}" --allow-root); then
+	check_passed 'Plugin exists'
+else
+	check_failed 'Installing now'
+
+	wp scaffold plugin "{{ plugin.slug }}" --allow-root --activate \
+		--plugin_name="{{ plugin.name }}"
+fi
+{{/ plugin.scaffold }}
+
+
+{{# theme.scaffold }}
+### Scaffold custom child theme ###
+
+if $(wp theme is-installed "{{ theme.slug }}" --allow-root); then
+	check_passed 'Theme exists'
+else
+	check_failed 'Installing now'
+
+	wp scaffold child-theme "{{ theme.slug }}" --allow-root --activate \
+		--theme_name="{{ theme.name }}" --parent_theme="blr-base-theme"
+fi
+{{/ theme.scaffold }}
+
+themes=(
+	blr-base-theme
+	{{# theme.scaffold }}{{ theme.slug }}{{/ theme.scaffold }}
+)
+
+plugins=(
+	soil
+	wp-stage-switcher
+	bj-lazy-load
+	broken-link-checker
+	google-sitemap-generator
+	jetpack
+	ml-slider
+	redirection
+	tinymce-advanced
+	wordpress-seo
+	wp-optimize
+	wp-smushit
+	{{# plugin.scaffold }}{{ plugin.slug }}{{/ plugin.scaffold }}
+)
+
+
+for theme in "${themes[@]}"; do
+	wp theme activate "$theme" --allow-root
+done
+
+for plugin in "${plugins[@]}"; do
+	wp plugin activate "$plugin" --allow-root
+done

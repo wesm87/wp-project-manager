@@ -24,6 +24,7 @@ WP Project Manager depends on the following tools / programs. You'll need to
 have all of these installed in order for everything to work properly:
 
 [Node.js](https://nodejs.org)  
+[Composer](https://getcomposer.org/)
 [Vagrant](https://www.vagrantup.com)  
 [VVV](https://github.com/Varying-Vagrant-Vagrants/VVV)
 

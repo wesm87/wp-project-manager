@@ -76,7 +76,7 @@ class Project {
 				slug:     '',
 			},
 			admin: {
-				username: 'admin',
+				user: 'admin',
 				password: 'admin_password',
 				email:    'admin@localhost.dev',
 			},
@@ -160,9 +160,9 @@ class Project {
 
 		if ( ! config.plugin.name ) {
 			if ( config.plugin.slug ) {
-				config.plugin.name = _.startCase( config.pluin.slug );
+				config.plugin.name = _.startCase( config.plugin.slug );
 			} else {
-				config.plugin.name = config.project.name;
+				config.plugin.name = config.project.title;
 			}
 		}
 
@@ -174,7 +174,7 @@ class Project {
 			if ( config.theme.slug ) {
 				config.theme.name = _.startCase( config.theme.slug );
 			} else {
-				config.theme.name = config.project.name;
+				config.theme.name = config.project.title;
 			}
 		}
 

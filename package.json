@@ -95,7 +95,7 @@
       "slug": ""
     },
     "admin": {
-      "username": "admin",
+      "user": "admin",
       "password": "admin_password",
       "email": "admin@localhost.dev"
     },

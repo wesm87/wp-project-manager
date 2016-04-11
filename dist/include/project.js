@@ -118,9 +118,9 @@ var Project = function () {
 
 			if (!config.plugin.name) {
 				if (config.plugin.slug) {
-					config.plugin.name = _lodash2.default.startCase(config.pluin.slug);
+					config.plugin.name = _lodash2.default.startCase(config.plugin.slug);
 				} else {
-					config.plugin.name = config.project.name;
+					config.plugin.name = config.project.title;
 				}
 			}
 
@@ -132,7 +132,7 @@ var Project = function () {
 				if (config.theme.slug) {
 					config.theme.name = _lodash2.default.startCase(config.theme.slug);
 				} else {
-					config.theme.name = config.project.name;
+					config.theme.name = config.project.title;
 				}
 			}
 
@@ -226,7 +226,7 @@ var Project = function () {
 					slug: ''
 				},
 				admin: {
-					username: 'admin',
+					user: 'admin',
 					password: 'admin_password',
 					email: 'admin@localhost.dev'
 				},
