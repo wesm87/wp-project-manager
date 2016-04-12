@@ -104,7 +104,7 @@ var Scaffold = function () {
 			_mkdirp2.default.sync(__path.project);
 
 			if (!__config.project.title) {
-				_helpers2.default.logFailure('Error: you must specify a project title. Check the README for more information.');
+				_helpers2.default.logFailure('Error: you must specify a project title. Check the README for usage information.');
 				return;
 			}
 
