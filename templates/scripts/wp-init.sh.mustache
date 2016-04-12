@@ -74,11 +74,6 @@ else
 fi
 {{/ theme.scaffold }}
 
-themes=(
-	blr-base-theme
-	{{# theme.scaffold }}{{ theme.slug }}{{/ theme.scaffold }}
-)
-
 plugins=(
 	acf-pro
 	bj-lazy-load
@@ -94,13 +89,7 @@ plugins=(
 	wordpress-seo
 	wp-optimize
 	wp-smushit
-	{{# plugin.scaffold }}{{ plugin.slug }}{{/ plugin.scaffold }}
 )
-
-
-for theme in "${themes[@]}"; do
-	wp theme activate "$theme" --allow-root
-done
 
 for plugin in "${plugins[@]}"; do
 	wp plugin activate "$plugin" --allow-root
