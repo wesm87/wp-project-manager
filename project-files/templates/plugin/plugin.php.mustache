@@ -1,10 +1,11 @@
 <?php
 /**
  * Plugin Name:  {{ plugin.name }}
- * Description:  Custom plugin for {{ project.title }}
- * Author:       YOUR_NAME_HERE
- * Author URI:   YOUR_WEBSITE_HERE
+ * Description:  Custom plugin for "{{ project.title }}"
+ * Author:       YOUR NAME HERE
+ * Author URI:   YOUR WEBSITE HERE
  * Text Domain:  {{ plugin.slug }}
+ * Domain Path:  /languages
  * Version:      0.1.0
  *
  * @package      {{ plugin.package }}
@@ -67,12 +68,12 @@ if ( ! class_exists( '{{ plugin.class }}' ) ) :
 
 			// Set includes path and assets URL.
 			self::$includes_path = plugin_dir_path( __FILE__ ) . 'includes';
-			self::$assets_url    = plugin_dir_url( __FILE__ ) . 'assets';
+			self::$assets_url    = plugin_dir_url( __FILE__ ) . 'assets/dist';
 
 			// Set action handlers.
-			add_action( 'init', array( $this, 'init' ) );
-			add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
-			add_action( 'wp_enqueue_scripts', array( $this, 'scripts_and_styles' ) );
+			add_action( 'init', [ $this, 'init' ] );
+			add_action( 'plugins_loaded', [ $this, 'plugins_loaded' ] );
+			add_action( 'wp_enqueue_scripts', [ $this, 'scripts_and_styles' ] );
 		}
 
 		/**

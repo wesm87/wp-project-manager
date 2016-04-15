@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-
-### Install Dependencies ###
-
 # Update node and npm
 if [[ "$(node -v)" != 'v5.'* ]]; then
 	curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
@@ -19,11 +16,5 @@ if [ ! "$( type -t bower )" ]; then
 	sudo npm install -g bower
 fi
 
-
-### Install / Configure WordPress ###
-
-# Move into project folder
-cd ..
-
 # Run WordPress init script
-source ./scripts/wp-init.sh
+sudo -EH -u "vagrant" bash ../scripts/wp-init.sh

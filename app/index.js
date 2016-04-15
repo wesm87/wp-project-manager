@@ -31,10 +31,9 @@
 
 'use strict';
 
+import fs       from 'fs-extra';
 import path     from 'path';
 import yargs    from 'yargs';
-import rimraf   from 'rimraf';
-import mkdirp   from 'mkdirp';
 import upsearch from 'utils-upsearch';
 
 import helpers  from './include/helpers';
@@ -51,7 +50,9 @@ global.__path = {
 	cwd:       cwd,
 	project:   cwd,
 	includes:  path.join( appPath, 'include' ),
-	templates: path.join( rootPath, 'templates' ),
+	assets:    path.join( rootPath, 'project-files', 'assets' ),
+	templates: path.join( rootPath, 'project-files', 'templates' ),
+	plugins:   path.join( rootPath, 'project-files', 'plugins' ),
 	test:      path.join( rootPath, 'test' ),
 	config:    upsearch.sync( 'project.yml' ),
 };
@@ -80,8 +81,8 @@ const argv = yargs.argv;
 
 if ( 'node-test' === argv.env ) {
 	__path.project = path.join( __path.root, '_test-project' );
-	rimraf.sync( __path.project );
-	mkdirp.sync( __path.project );
+	fs.removeSync( __path.project );
+	fs.mkdirpSync( __path.project );
 }
 
 project.parseConfig( argv );

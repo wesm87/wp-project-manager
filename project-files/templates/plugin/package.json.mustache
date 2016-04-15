@@ -1,14 +1,20 @@
 {
-  "name": "{{ theme.slug }}",
+  "name": "{{ plugin.slug }}",
   "version": "0.1.0",
-  {{#repo.url}}
-  "repository": "{{ repo.url }}",
-  {{/repo.url}}
+  "description": "Custom plugin for \"{{ project.title }}\"",
+  "license": "UNLICENSED",
+  "private": true,
+  "author": {
+    "name": "YOUR NAME HERE",
+    "email": "YOUR EMAIL HERE",
+    "url": "YOUR WEBSITE HERE"
+  },
   "scripts": {
     "build": "gulp build"
   },
   "engines": {
-    "node": "^5.10.0"
+    "node": "^5.10.0",
+    "composer": "^1.0.0-beta2"
   },
   "devDependencies": {
     "babel-core": "^6.3.26",

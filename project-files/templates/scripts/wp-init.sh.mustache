@@ -46,51 +46,32 @@ fi
 
 
 {{# plugin.scaffold }}
-### Scaffold custom plugin ###
+### Activate custom plugin ###
 
-echo '{{ plugin.slug }} :: Checking for custom plugin...'
+wp plugin activate "{{ plugin.slug }}" --allow-root
 
-if $(wp plugin is-installed "{{ plugin.slug }}" --allow-root); then
-	check_passed 'Plugin exists'
-else
-	check_failed 'Installing now'
 
-	wp scaffold plugin "{{ plugin.slug }}" --allow-root --activate \
-		--plugin_name="{{ plugin.name }}"
-fi
 {{/ plugin.scaffold }}
-
-
 {{# theme.scaffold }}
-### Scaffold custom child theme ###
+### Activate custom theme ###
 
-if $(wp theme is-installed "{{ theme.slug }}" --allow-root); then
-	check_passed 'Theme exists'
-else
-	check_failed 'Installing now'
+wp theme activate "{{ theme.slug }}" --allow-root
 
-	wp scaffold child-theme "{{ theme.slug }}" --allow-root --activate \
-		--theme_name="{{ theme.name }}" --parent_theme="blr-base-theme"
-fi
+
 {{/ theme.scaffold }}
+### Activate plugins ###
 
-plugins=(
-	acf-pro
-	bj-lazy-load
-	broken-link-checker
-	google-sitemap-generator
-	gravity-forms
-	jetpack
-	ml-slider
-	ml-slider-pro
-	monarch
-	soil
-	tinymce-advanced
-	wordpress-seo
+wp plugin activate --allow-root \
+	acf-pro \
+	bj-lazy-load \
+	broken-link-checker \
+	google-sitemap-generator \
+	gravity-forms \
+	jetpack \
+	ml-slider \
+	ml-slider-pro \
+	monarch \
+	soil \
+	tinymce-advanced \
+	wordpress-seo \
 	wp-optimize
-	wp-smushit
-)
-
-for plugin in "${plugins[@]}"; do
-	wp plugin activate "$plugin" --allow-root
-done

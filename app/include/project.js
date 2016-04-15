@@ -193,7 +193,7 @@ class Project {
 			config.db.prefix = helpers.randomString( 8 ) + '_';
 		}
 
-		[ 'auth', 'secureAuth', 'loggedIn', 'nonce' ].forEach( ( type ) => {
+		[ 'auth', 'secureAuth', 'loggedIn', 'nonce' ].forEach(( type ) => {
 			if ( ! config.secret[ `${type}Key` ] ) {
 				config.secret[ `${type}Key` ] = helpers.randomString( 64, 'base64' );
 			}

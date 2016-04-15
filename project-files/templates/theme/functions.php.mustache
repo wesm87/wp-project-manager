@@ -62,13 +62,13 @@ if ( ! class_exists( '{{ theme.class }}' ) ) :
 
 			// Set includes path and assets URL.
 			self::$includes_path = get_stylesheet_directory() . 'includes';
-			self::$assets_url    = get_stylesheet_directory_uri() . 'assets';
+			self::$assets_url    = get_stylesheet_directory_uri() . 'assets/dist';
 
 			// Include our theme class files.
 			$this->includes();
 
 			// Set action handlers.
-			add_action( 'wp_enqueue_scripts', array( $this, 'scripts_and_styles' ) );
+			add_action( 'wp_enqueue_scripts', [ $this, 'scripts_and_styles' ] );
 		}
 
 		/**

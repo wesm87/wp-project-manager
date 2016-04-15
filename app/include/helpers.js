@@ -1,43 +1,20 @@
 'use strict';
 
-import fs     from 'fs';
+import fs     from 'fs-extra';
+import path   from 'path';
 import YAML   from 'js-yaml';
 import crypto from 'crypto';
 import colors from 'colors';
 
+import log    from './log';
+
 class Helpers {
-
-	constructor() {
-		this.okText    = '✔'.green;
-		this.errorText = '✘'.red;
-	}
-
-	/**
-	 * Logs a message indicating that the current check passed.
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param {string} message An optional message to display after the checkmark.
-	 */
-	logSuccess( message = '' ) {
-		console.log( `${this.okText} ${ message }`.trim() );
-	}
-
-	/**
-	 * Logs a message indicating that the current check failed.
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param {string} message An optional message to display after the cross..
-	 */
-	logFailure( message = '' ) {
-		console.log( `${this.errorText} ${ message }`.trim() );
-	}
 
 	/**
 	 * Checks if the specified file or directory exists.
 	 *
 	 * @since 0.1.0
+	 * @since 0.2.0 Added 'symlink' type.
 	 *
 	 * @param  {string} path The path to check.
 	 * @param  {string} type Optional. A type to check the path against.
@@ -45,7 +22,7 @@ class Helpers {
 	 */
 	pathExists( path, type = 'any' ) {
 		try {
-			const info = fs.statSync( path );
+			const info = fs.lstatSync( path );
 
 			switch ( type ) {
 				case 'file' :
@@ -53,6 +30,9 @@ class Helpers {
 				case 'folder' :
 				case 'directory' :
 					return info.isDirectory();
+				case 'link':
+				case 'symlink':
+					return info.isSymbolicLink();
 				default:
 					return info ? true : false;
 			}
@@ -86,6 +66,18 @@ class Helpers {
 	}
 
 	/**
+	 * Checks if the specified symbolic link exists.
+	 *
+	 * @since 0.2.0
+	 *
+	 * @param  {string} path The path to the symbolic link to check.
+	 * @return {bool}        True the symbolic link exists; false if not.
+	 */
+	symlinkExists( path ) {
+		return this.pathExists( path, 'symlink' );
+	}
+
+	/**
 	 * Tries to load a YAML config file and parse it into JSON.
 	 *
 	 * @since 0.1.0
@@ -104,7 +96,7 @@ class Helpers {
 				return json;
 			}
 		} catch ( error ) {
-			console.log( `Error: ${error}` );
+			log.error( `${error}` );
 		}
 
 		// If the file doesn't exist or is empty, return an empty object.
@@ -140,7 +132,7 @@ class Helpers {
 				.slice( 0, length );
 
 		} catch ( error ) {
-			console.log( error );
+			log.error( error );
 			return '';
 		}
 	}

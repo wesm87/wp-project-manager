@@ -31,6 +31,10 @@
 
 'use strict';
 
+var _fsExtra = require('fs-extra');
+
+var _fsExtra2 = _interopRequireDefault(_fsExtra);
+
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
@@ -38,14 +42,6 @@ var _path2 = _interopRequireDefault(_path);
 var _yargs = require('yargs');
 
 var _yargs2 = _interopRequireDefault(_yargs);
-
-var _rimraf = require('rimraf');
-
-var _rimraf2 = _interopRequireDefault(_rimraf);
-
-var _mkdirp = require('mkdirp');
-
-var _mkdirp2 = _interopRequireDefault(_mkdirp);
 
 var _utilsUpsearch = require('utils-upsearch');
 
@@ -75,7 +71,9 @@ global.__path = {
   cwd: cwd,
   project: cwd,
   includes: _path2.default.join(appPath, 'include'),
-  templates: _path2.default.join(rootPath, 'templates'),
+  assets: _path2.default.join(rootPath, 'project-files', 'assets'),
+  templates: _path2.default.join(rootPath, 'project-files', 'templates'),
+  plugins: _path2.default.join(rootPath, 'project-files', 'plugins'),
   test: _path2.default.join(rootPath, 'test'),
   config: _utilsUpsearch2.default.sync('project.yml')
 };
@@ -96,8 +94,8 @@ var argv = _yargs2.default.argv;
 
 if ('node-test' === argv.env) {
   __path.project = _path2.default.join(__path.root, '_test-project');
-  _rimraf2.default.sync(__path.project);
-  _mkdirp2.default.sync(__path.project);
+  _fsExtra2.default.removeSync(__path.project);
+  _fsExtra2.default.mkdirpSync(__path.project);
 }
 
 _project2.default.parseConfig(argv);
