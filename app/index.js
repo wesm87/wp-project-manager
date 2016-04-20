@@ -34,56 +34,16 @@
 import fs       from 'fs-extra';
 import path     from 'path';
 import yargs    from 'yargs';
-import upsearch from 'utils-upsearch';
+
+global.__appPath  = __dirname;
+global.__rootPath = path.join( __dirname, '..' );
 
 import helpers  from './include/helpers';
 import project  from './include/project';
-import scaffold from './include/scaffold';
 
-const appPath  = __dirname;
-const rootPath = path.join( __dirname, '..' );
-const cwd      = process.cwd();
-
-global.__path = {
-	app:       appPath,
-	root:      rootPath,
-	cwd:       cwd,
-	project:   cwd,
-	includes:  path.join( appPath, 'include' ),
-	assets:    path.join( rootPath, 'project-files', 'assets' ),
-	templates: path.join( rootPath, 'project-files', 'templates' ),
-	plugins:   path.join( rootPath, 'project-files', 'plugins' ),
-	test:      path.join( rootPath, 'test' ),
-	config:    upsearch.sync( 'project.yml' ),
-};
-
-if ( ! __path.config ) {
-	__path.config = path.join( rootPath, 'project.yml' );
-}
-
-yargs.options({
-		'config': {
-			default: __path.config,
-		}
-	})
-	.config(
-		'config',
-		( configPath ) => helpers.loadYAML( configPath )
-	)
-	.pkgConf(
-		'wpProjectManager',
-		__path.cwd
-	)
+const argv = yargs
 	.help()
-	.completion();
-
-const argv = yargs.argv;
-
-if ( 'node-test' === argv.env ) {
-	__path.project = path.join( __path.root, '_test-project' );
-	fs.removeSync( __path.project );
-	fs.mkdirpSync( __path.project );
-}
-
-project.parseConfig( argv );
-scaffold.init();
+	.completion()
+	.command( require( './commands/config.create' ) )
+	.command( require( './commands/project.create' ) )
+	.argv;

@@ -1,6 +1,7 @@
 'use strict';
 
 import _        from 'lodash';
+import os       from 'os';
 import fs       from 'fs-extra';
 import cp       from 'child_process';
 import path     from 'path';
@@ -8,35 +9,30 @@ import mustache from 'mustache';
 
 import log      from './log';
 import helpers  from './helpers';
-import project  from './project';
+import Project  from './project';
 
-class Scaffold {
+/**
+ * @todo Figure out better names for functions.
+ * @todo Document all the things! Maybe switch to rspec?
+ * @todo Break this up into multiple classes.
+ *           Scaffold should only handle project files and folders.
+ *           Move WordPress / database setup into separate class.
+ *           Move git commands into separate class.
+ */
+class Scaffold extends Project {
 
-	/**
-	 * Class constructor. Sets default values for class properties.
-	 *
-	 * @since 0.1.0
-	 *
-	 * @todo Figure out better names for functions.
-	 * @todo DOCUMENT ALL THE THINGS! Maybe switch to rspec?
-	 * @todo Break this up into multiple classes.
-	 *           Scaffold should only handle project files and folders.
-	 *           Move WordPress / database setup into separate class.
-	 *           Move git commands into separate class.
-	 *
-	 */
-	constructor() {
-
-		this._files = {
+	static get files() {
+		return {
 			bedrock: {
 				remove: new Set([
 					'composer.*',
 					'*.md',
-					'ruleset.xml',
+					'phpcs.xml',
 					'wp-cli.yml',
 					'.gitignore',
 					'.travis.yml',
 					'.env.example',
+					'.editorconfig',
 				]),
 			},
 
@@ -50,22 +46,24 @@ class Scaffold {
 		};
 	}
 
-	init() {
+	static init() {
 
-		this._data      = __config;
-		this._data.path = __path;
+		fs.mkdirpSync( this.paths.project );
 
-		fs.mkdirpSync( __path.project );
-
-		if ( ! __config.project.title ) {
+		if ( ! this.config.project.title ) {
 			log.error( 'You must specify a project title. Check the README for usage information.' );
 			return;
+		}
+
+		if ( 'node-test' === this.config.env ) {
+			fs.removeSync( this.paths.project );
+			fs.mkdirpSync( this.paths.project );
 		}
 
 		this.createProject();
 	}
 
-	createProject() {
+	static createProject() {
 		this.initProjectFiles();
 		this.initRepo();
 		this.initDevLib();
@@ -74,30 +72,50 @@ class Scaffold {
 		this.initTheme();
 	}
 
-	createInitScript() {
+	static createInitScript() {
 		this.initWordPress();
 		this.maybeInstallPackages();
 	}
 
-	initProjectFiles() {
+	static initProjectFiles() {
 
 		this.scaffoldFiles( 'scripts' );
 
-		if ( __config.vvv ) {
+		if ( this.config.vvv ) {
 			this.scaffoldFiles( 'vvv' );
+		}
+
+		this.maybeCreateAuthFiles();
+	}
+
+	static maybeCreateAuthFiles() {
+
+		if ( ! this.config.token ) {
+			return;
+		}
+
+		const filePath = path.join( os.homedir(), '.composer/auth.json' );
+		const contents = JSON.stringify({
+			"github-oauth": {
+				"github.com": `${ this.config.token }`
+			}
+		});
+
+		if ( ! helpers.fileExists( filePath ) ) {
+			fs.writeFileSync( filePath, contents );
 		}
 	}
 
-	initRepo() {
+	static initRepo() {
 
-		if ( ! __config.repo.create ) {
+		if ( ! this.config.repo.create ) {
 			return;
 		}
 
 		log.info( 'Checking for Git repo...' );
 
 		const dirExists = helpers.directoryExists(
-			path.join( __path.project, '.git' )
+			path.join( this.paths.project, '.git' )
 		);
 
 		if ( dirExists ) {
@@ -110,8 +128,8 @@ class Scaffold {
 		}
 
 		// If the repo URL is set, add it as a remote.
-		if ( __config.repo.url ) {
-			let command = `git remote add origin ${ __config.repo.url }`;
+		if ( this.config.repo.url ) {
+			let command = `git remote add origin ${ this.config.repo.url }`;
 
 			if ( this.execSync( command ) ) {
 				log.ok( 'Remote URL added.' );
@@ -119,12 +137,12 @@ class Scaffold {
 		}
 	}
 
-	initDevLib() {
+	static initDevLib() {
 
 		log.info( 'Checking for wp-dev-lib submodule...' );
 
 		const dirExists = helpers.directoryExists(
-			path.join( __path.project, 'dev-lib' )
+			path.join( this.paths.project, 'dev-lib' )
 		);
 
 		if ( dirExists ) {
@@ -132,19 +150,19 @@ class Scaffold {
 		}
 
 		// Add the sub-module.
-		let command = 'git submodule add -b master https://github.com/xwp/wp-dev-lib.git dev-lib';
+		let command = 'git submodule add -f -b master https://github.com/xwp/wp-dev-lib.git dev-lib';
 
 		if ( this.execSync( command ) ) {
 			log.ok( 'Submodule added.' );
 		}
 	}
 
-	initProject() {
+	static initProject() {
 
 		log.info( 'Checking for Bedrock...' );
 
 		const dirExists = helpers.directoryExists(
-			path.join( __path.project, 'htdocs' )
+			path.join( this.paths.project, 'htdocs' )
 		);
 
 		if ( dirExists ) {
@@ -158,9 +176,9 @@ class Scaffold {
 			log.ok( 'Bedrock installed.' );
 		}
 
+		this.linkFiles( 'project' );
 		this.scaffoldFiles( 'project' );
 		this.scaffoldFiles( 'bedrock' );
-
 		this.removeFiles( 'bedrock' );
 
 		log.info( 'Installing project dependencies...' );
@@ -170,7 +188,7 @@ class Scaffold {
 		}
 	}
 
-	initWordPress() {
+	static initWordPress() {
 
 		log.info( 'Checking for database...' );
 
@@ -189,11 +207,11 @@ class Scaffold {
 		}
 
 		let command = 'wp core install' +
-			` --url="${ __config.project.url }"` +
-			` --title="${ __config.project.title }"` +
-			` --admin_user="${ __config.admin.user }"` +
-			` --admin_password="${ __config.admin.pass }"` +
-			` --admin_email="${ __config.admin.email }"` +
+			` --url="${ this.config.project.url }"` +
+			` --title="${ this.config.project.title }"` +
+			` --admin_user="${ this.config.admin.user }"` +
+			` --admin_password="${ this.config.admin.pass }"` +
+			` --admin_email="${ this.config.admin.email }"` +
 			` --path="${ this.getBasePath( 'wordpress' ) }"`;
 
 		if ( this.execSync( command ) ) {
@@ -201,9 +219,9 @@ class Scaffold {
 		}
 	}
 
-	initPlugin() {
+	static initPlugin() {
 
-		if ( ! __config.plugin.scaffold ) {
+		if ( ! this.config.plugin.scaffold ) {
 			return;
 		}
 
@@ -234,9 +252,9 @@ class Scaffold {
 		log.ok( 'Plugin created.' );
 	}
 
-	initTheme() {
+	static initTheme() {
 
-		if ( ! __config.theme.scaffold ) {
+		if ( ! this.config.theme.scaffold ) {
 			return;
 		}
 
@@ -276,7 +294,7 @@ class Scaffold {
 		log.ok( 'Done' );
 	}
 
-	exec( command, type = 'project', callback = null ) {
+	static exec( command, type = 'project', callback = null ) {
 
 		const options = {
 			cwd: this.getBasePath( type ),
@@ -299,7 +317,7 @@ class Scaffold {
 		});
 	}
 
-	execSync( command, type = 'project' ) {
+	static execSync( command, type = 'project' ) {
 
 		const options = {
 			cwd: this.getBasePath( type ),
@@ -314,7 +332,7 @@ class Scaffold {
 		}
 	}
 
-	getBasePath( type = 'project' ) {
+	static getBasePath( type = 'project' ) {
 
 		const basePaths = {
 			project:     '.',
@@ -322,8 +340,8 @@ class Scaffold {
 			scripts:     'scripts',
 			bedrock:     'htdocs',
 			wordpress:   'htdocs/web/wp',
-			plugin:      path.join( 'htdocs/web/app/plugins/', __config.plugin.slug ),
-			theme:       path.join( 'htdocs/web/app/themes/', __config.theme.slug ),
+			plugin:      path.join( 'htdocs/web/app/plugins/', this.config.plugin.slug ),
+			theme:       path.join( 'htdocs/web/app/themes/', this.config.theme.slug ),
 		};
 
 		// We convert the type to camel case so we don't run into issues if we
@@ -334,10 +352,10 @@ class Scaffold {
 			base = '';
 		}
 
-		return path.join( __path.project, base );
+		return path.join( this.paths.project, base );
 	}
 
-	getAssetsPath( type = 'theme' ) {
+	static getAssetsPath( type = 'theme' ) {
 
 		const assetsPaths = {
 			plugin: 'assets/source',
@@ -353,9 +371,9 @@ class Scaffold {
 		return path.join( this.getBasePath( type ), assetsPath );
 	}
 
-	copyAssets( type = 'theme', dir = '' ) {
+	static copyAssets( type = 'theme', dir = '' ) {
 
-		const source = path.join( __path.assets, type, dir );
+		const source = path.join( this.paths.assets, type, dir );
 		const dest   = path.join( this.getAssetsPath( type ), dir );
 
 		if ( ! helpers.directoryExists( source ) ) {
@@ -372,10 +390,10 @@ class Scaffold {
 		}
 	}
 
-	linkFiles( type = 'project' ) {
+	static linkFiles( type = 'project' ) {
 
 		const base  = this.getBasePath( type );
-		const files = this._files[ type ].remove;
+		const files = this.files[ type ].link;
 
 		if ( ! files ) {
 			return;
@@ -385,8 +403,8 @@ class Scaffold {
 
 			dest = path.join( dest, path.basename( source ) );
 
-			let destPath   = path.join( __path.project, dest );
-			let sourcePath = path.join( __path.project, source );
+			let destPath   = path.join( this.paths.project, dest );
+			let sourcePath = path.join( this.paths.project, source );
 
 			log.info( `Checking for ${ dest }...` );
 
@@ -403,10 +421,10 @@ class Scaffold {
 		}
 	}
 
-	removeFiles( type = 'project' ) {
+	static removeFiles( type = 'project' ) {
 
 		const base  = this.getBasePath( type );
-		const files = this._files[ type ].remove;
+		const files = this.files[ type ].remove;
 
 		if ( ! files ) {
 			return;
@@ -423,9 +441,9 @@ class Scaffold {
 		}
 	}
 
-	scaffoldFiles( type = 'project' ) {
+	static scaffoldFiles( type = 'project' ) {
 
-		const source = path.join( __path.templates, type );
+		const source = path.join( this.paths.templates, type );
 
 		if ( ! helpers.directoryExists( source ) ) {
 			return log.error( `${ source } is not a valid template directory` );
@@ -438,7 +456,7 @@ class Scaffold {
 
 				let filePath = path.join( source, file );
 
-				if ( helpers.fileExists( filePath ) ) {
+				if ( 0 !== file.indexOf( '.' ) && helpers.fileExists( filePath ) ) {
 					this.scaffoldFile( filePath, type );
 				}
 			});
@@ -447,7 +465,7 @@ class Scaffold {
 		}
 	}
 
-	scaffoldFile( source, type = 'project' ) {
+	static scaffoldFile( source, type = 'project' ) {
 
 		let file = path.basename( source, '.mustache' );
 
@@ -469,7 +487,7 @@ class Scaffold {
 
 		try {
 			const templateContent = fs.readFileSync( source ).toString();
-			const renderedContent = mustache.render( templateContent, this._data );
+			const renderedContent = mustache.render( templateContent, this.data );
 
 			fs.writeFileSync( dest, renderedContent );
 
@@ -480,4 +498,4 @@ class Scaffold {
 	}
 }
 
-export default new Scaffold();
+export default Scaffold;

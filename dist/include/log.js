@@ -19,7 +19,7 @@ var Log = function () {
 		_classCallCheck(this, Log);
 	}
 
-	_createClass(Log, [{
+	_createClass(Log, null, [{
 		key: 'info',
 
 
@@ -100,4 +100,4 @@ var Log = function () {
 	return Log;
 }();
 
-exports.default = new Log();
+exports.default = Log;

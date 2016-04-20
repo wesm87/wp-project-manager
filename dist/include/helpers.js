@@ -39,7 +39,7 @@ var Helpers = function () {
 		_classCallCheck(this, Helpers);
 	}
 
-	_createClass(Helpers, [{
+	_createClass(Helpers, null, [{
 		key: 'pathExists',
 
 
@@ -143,11 +143,32 @@ var Helpers = function () {
 					return json;
 				}
 			} catch (error) {
-				_log2.default.error('' + error);
+				_log2.default.error(error);
 			}
 
 			// If the file doesn't exist or is empty, return an empty object.
 			return {};
+		}
+
+		/**
+   * Takes a JSON string or object, parses it into YAML, and writes to a file.
+   *
+   * @since 0.3.0
+   *
+   * @param  {string} filePath The path to the file to write to.
+   * @param  {object} json     The JSON object to parse into YAML.
+   */
+
+	}, {
+		key: 'writeYAML',
+		value: function writeYAML(filePath, json) {
+			try {
+				// Convert JSON to YAML.
+				var yaml = _jsYaml2.default.safeDump(json, { noCompatMode: true });
+				_fsExtra2.default.writeFileSync(filePath, yaml);
+			} catch (error) {
+				_log2.default.error(error);
+			}
 		}
 
 		/**
@@ -189,4 +210,4 @@ var Helpers = function () {
 	return Helpers;
 }();
 
-exports.default = new Helpers();
+exports.default = Helpers;

@@ -43,10 +43,6 @@ var _yargs = require('yargs');
 
 var _yargs2 = _interopRequireDefault(_yargs);
 
-var _utilsUpsearch = require('utils-upsearch');
-
-var _utilsUpsearch2 = _interopRequireDefault(_utilsUpsearch);
-
 var _helpers = require('./include/helpers');
 
 var _helpers2 = _interopRequireDefault(_helpers);
@@ -55,48 +51,9 @@ var _project = require('./include/project');
 
 var _project2 = _interopRequireDefault(_project);
 
-var _scaffold = require('./include/scaffold');
-
-var _scaffold2 = _interopRequireDefault(_scaffold);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var appPath = __dirname;
-var rootPath = _path2.default.join(__dirname, '..');
-var cwd = process.cwd();
+global.__appPath = __dirname;
+global.__rootPath = _path2.default.join(__dirname, '..');
 
-global.__path = {
-  app: appPath,
-  root: rootPath,
-  cwd: cwd,
-  project: cwd,
-  includes: _path2.default.join(appPath, 'include'),
-  assets: _path2.default.join(rootPath, 'project-files', 'assets'),
-  templates: _path2.default.join(rootPath, 'project-files', 'templates'),
-  plugins: _path2.default.join(rootPath, 'project-files', 'plugins'),
-  test: _path2.default.join(rootPath, 'test'),
-  config: _utilsUpsearch2.default.sync('project.yml')
-};
-
-if (!__path.config) {
-  __path.config = _path2.default.join(rootPath, 'project.yml');
-}
-
-_yargs2.default.options({
-  'config': {
-    default: __path.config
-  }
-}).config('config', function (configPath) {
-  return _helpers2.default.loadYAML(configPath);
-}).pkgConf('wpProjectManager', __path.cwd).help().completion();
-
-var argv = _yargs2.default.argv;
-
-if ('node-test' === argv.env) {
-  __path.project = _path2.default.join(__path.root, '_test-project');
-  _fsExtra2.default.removeSync(__path.project);
-  _fsExtra2.default.mkdirpSync(__path.project);
-}
-
-_project2.default.parseConfig(argv);
-_scaffold2.default.init();
+var argv = _yargs2.default.help().completion().command(require('./commands/config.create')).command(require('./commands/project.create')).argv;

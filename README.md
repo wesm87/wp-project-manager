@@ -100,34 +100,53 @@ Open up your preferred command line application and enter the following:
 npm i -g https://github.com/Decisionary/wp-project-manager.git
 ```
 
-If you are installing on a server that is not aware of your GitHub credentials, but can use ssh for GitHub, use the following command:
+If you are installing on a server that is not aware of your GitHub credentials,
+but can use ssh for GitHub, use the following command:
 
 ```sh
 npm i -g git://git@github.com:Decisionary/wp-project-manager.git
 ```
-
 
 If you need access to the repo contact [JC][jc-email].
 
 
 ## Usage
 
-You can configure settings for your new project one of three ways:
+You can configure settings for your new project one of two ways:
 
 1. Create a `project.yml` file in your project folder or one of its parents.
-2. Add a new `wpProjectManager` key in your `package.json`.
-3. Specify individual settings via command arguments.
+2. Specify individual settings via command arguments.
 
 You'll need to specify at least a project title using one of the above methods;
-the rest will be filled in automatically. Check the `project.yml` or
-`package.json` included in this repository to see all of the available options.
-The command arguments use dot notation and match the structure of the config
-files. For example, if you wanted to set a custom theme name, you'd use
-`--theme.name="Theme Name"`.
+the rest will be filled in automatically. You can create a new `project.yml`
+using the following command:
 
-Note that `wppm` is just an alias for `wp-project-manager`, so if by chance
-you already have a program called `wppm` installed you can use the long form
-version instead.
+```sh
+wppm config create
+```
+
+The command arguments use dot notation and match the structure of the
+`project.yml` file. For example, if you wanted to set a custom theme name, you'd
+use `--theme.name="My Theme Name"`.
+
+It's also a good idea to specify a GitHub API token in your project config
+if you don't already have a `~/.composer/auth.json` file. First you'll need to
+[create a new token](https://github.com/settings/tokens/new?scopes=repo). Once
+you've done that, copy the new token and add it to your `project.yml` like so:
+
+```sh
+token: _YOUR_TOKEN_HERE_
+```
+
+...or pass the token as an argument: `--token=_YOUR_TOKEN_HERE_`
+
+If you'd rather just create the `auth.json` file, you can do so using the
+following command:
+
+```sh
+echo '{ "github-oauth": { "github.com": "_YOUR_TOKEN_HERE_" } }' > \
+  "$HOME/.composer/auth.json"
+```
 
 ### Creating a new project with VVV and Vagrant
 
@@ -141,7 +160,7 @@ mkdir www/new-project-folder
 
 cd www/new-project-folder
 
-wppm --project.title="My New Project"
+wppm project create --project.title="My New Project"
 
 cd -
 
@@ -204,13 +223,17 @@ bash ./scripts/wp-init.sh
 
 ### Special considerations
 
+If by chance you already have a program called `wppm` installed, we've included
+a `wp-project-manager` command as well (in fact, `wppm` is just an alias for
+`wp-project-manager`).
+
 If you plan on sharing a database between your production and development
 servers, you'll need to set `db.prefix` in your project config so it matches
 the prefix used in the production database. You can also use the the
 `--db.prefix` argument:
 
 ```sh
-wppm --db.prefix="myprefix_"
+wppm project create --db.prefix="myprefix_"
 ```
 
 

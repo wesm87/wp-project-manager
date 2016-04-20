@@ -12,6 +12,10 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
+var _os = require('os');
+
+var _os2 = _interopRequireDefault(_os);
+
 var _fsExtra = require('fs-extra');
 
 var _fsExtra2 = _interopRequireDefault(_fsExtra);
@@ -44,48 +48,42 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Scaffold = function () {
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-	/**
-  * Class constructor. Sets default values for class properties.
-  *
-  * @since 0.1.0
-  *
-  * @todo Figure out better names for functions.
-  * @todo DOCUMENT ALL THE THINGS! Maybe switch to rspec?
-  * @todo Break this up into multiple classes.
-  *           Scaffold should only handle project files and folders.
-  *           Move WordPress / database setup into separate class.
-  *           Move git commands into separate class.
-  *
-  */
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * @todo Figure out better names for functions.
+ * @todo Document all the things! Maybe switch to rspec?
+ * @todo Break this up into multiple classes.
+ *           Scaffold should only handle project files and folders.
+ *           Move WordPress / database setup into separate class.
+ *           Move git commands into separate class.
+ */
+
+var Scaffold = function (_Project) {
+	_inherits(Scaffold, _Project);
 
 	function Scaffold() {
 		_classCallCheck(this, Scaffold);
 
-		this._files = {
-			bedrock: {
-				remove: new Set(['composer.*', '*.md', 'ruleset.xml', 'wp-cli.yml', '.gitignore', '.travis.yml', '.env.example'])
-			},
-
-			project: {
-				link: new Map([['dev-lib/pre-commit', '.git/hooks'], ['dev-lib/.jshintrc', '.'], ['dev-lib/.jscsrc', '.']])
-			}
-		};
+		return _possibleConstructorReturn(this, Object.getPrototypeOf(Scaffold).apply(this, arguments));
 	}
 
-	_createClass(Scaffold, [{
+	_createClass(Scaffold, null, [{
 		key: 'init',
 		value: function init() {
 
-			this._data = __config;
-			this._data.path = __path;
+			_fsExtra2.default.mkdirpSync(this.paths.project);
 
-			_fsExtra2.default.mkdirpSync(__path.project);
-
-			if (!__config.project.title) {
+			if (!this.config.project.title) {
 				_log2.default.error('You must specify a project title. Check the README for usage information.');
 				return;
+			}
+
+			if ('node-test' === this.config.env) {
+				_fsExtra2.default.removeSync(this.paths.project);
+				_fsExtra2.default.mkdirpSync(this.paths.project);
 			}
 
 			this.createProject();
@@ -112,21 +110,42 @@ var Scaffold = function () {
 
 			this.scaffoldFiles('scripts');
 
-			if (__config.vvv) {
+			if (this.config.vvv) {
 				this.scaffoldFiles('vvv');
+			}
+
+			this.maybeCreateAuthFiles();
+		}
+	}, {
+		key: 'maybeCreateAuthFiles',
+		value: function maybeCreateAuthFiles() {
+
+			if (!this.config.token) {
+				return;
+			}
+
+			var filePath = _path2.default.join(_os2.default.homedir(), '.composer/auth.json');
+			var contents = JSON.stringify({
+				"github-oauth": {
+					"github.com": '' + this.config.token
+				}
+			});
+
+			if (!_helpers2.default.fileExists(filePath)) {
+				_fsExtra2.default.writeFileSync(filePath, contents);
 			}
 		}
 	}, {
 		key: 'initRepo',
 		value: function initRepo() {
 
-			if (!__config.repo.create) {
+			if (!this.config.repo.create) {
 				return;
 			}
 
 			_log2.default.info('Checking for Git repo...');
 
-			var dirExists = _helpers2.default.directoryExists(_path2.default.join(__path.project, '.git'));
+			var dirExists = _helpers2.default.directoryExists(_path2.default.join(this.paths.project, '.git'));
 
 			if (dirExists) {
 				return _log2.default.ok('Repo exists.');
@@ -138,8 +157,8 @@ var Scaffold = function () {
 			}
 
 			// If the repo URL is set, add it as a remote.
-			if (__config.repo.url) {
-				var command = 'git remote add origin ' + __config.repo.url;
+			if (this.config.repo.url) {
+				var command = 'git remote add origin ' + this.config.repo.url;
 
 				if (this.execSync(command)) {
 					_log2.default.ok('Remote URL added.');
@@ -152,14 +171,14 @@ var Scaffold = function () {
 
 			_log2.default.info('Checking for wp-dev-lib submodule...');
 
-			var dirExists = _helpers2.default.directoryExists(_path2.default.join(__path.project, 'dev-lib'));
+			var dirExists = _helpers2.default.directoryExists(_path2.default.join(this.paths.project, 'dev-lib'));
 
 			if (dirExists) {
 				return _log2.default.ok('Submodule exists.');
 			}
 
 			// Add the sub-module.
-			var command = 'git submodule add -b master https://github.com/xwp/wp-dev-lib.git dev-lib';
+			var command = 'git submodule add -f -b master https://github.com/xwp/wp-dev-lib.git dev-lib';
 
 			if (this.execSync(command)) {
 				_log2.default.ok('Submodule added.');
@@ -171,7 +190,7 @@ var Scaffold = function () {
 
 			_log2.default.info('Checking for Bedrock...');
 
-			var dirExists = _helpers2.default.directoryExists(_path2.default.join(__path.project, 'htdocs'));
+			var dirExists = _helpers2.default.directoryExists(_path2.default.join(this.paths.project, 'htdocs'));
 
 			if (dirExists) {
 				return _log2.default.ok('Bedrock exists');
@@ -184,9 +203,9 @@ var Scaffold = function () {
 				_log2.default.ok('Bedrock installed.');
 			}
 
+			this.linkFiles('project');
 			this.scaffoldFiles('project');
 			this.scaffoldFiles('bedrock');
-
 			this.removeFiles('bedrock');
 
 			_log2.default.info('Installing project dependencies...');
@@ -215,7 +234,7 @@ var Scaffold = function () {
 				return _log2.default.ok('Tables exist.');
 			}
 
-			var command = 'wp core install' + (' --url="' + __config.project.url + '"') + (' --title="' + __config.project.title + '"') + (' --admin_user="' + __config.admin.user + '"') + (' --admin_password="' + __config.admin.pass + '"') + (' --admin_email="' + __config.admin.email + '"') + (' --path="' + this.getBasePath('wordpress') + '"');
+			var command = 'wp core install' + (' --url="' + this.config.project.url + '"') + (' --title="' + this.config.project.title + '"') + (' --admin_user="' + this.config.admin.user + '"') + (' --admin_password="' + this.config.admin.pass + '"') + (' --admin_email="' + this.config.admin.email + '"') + (' --path="' + this.getBasePath('wordpress') + '"');
 
 			if (this.execSync(command)) {
 				_log2.default.ok('Tables created.');
@@ -225,7 +244,7 @@ var Scaffold = function () {
 		key: 'initPlugin',
 		value: function initPlugin() {
 
-			if (!__config.plugin.scaffold) {
+			if (!this.config.plugin.scaffold) {
 				return;
 			}
 
@@ -253,7 +272,7 @@ var Scaffold = function () {
 		key: 'initTheme',
 		value: function initTheme() {
 
-			if (!__config.theme.scaffold) {
+			if (!this.config.theme.scaffold) {
 				return;
 			}
 
@@ -343,8 +362,8 @@ var Scaffold = function () {
 				scripts: 'scripts',
 				bedrock: 'htdocs',
 				wordpress: 'htdocs/web/wp',
-				plugin: _path2.default.join('htdocs/web/app/plugins/', __config.plugin.slug),
-				theme: _path2.default.join('htdocs/web/app/themes/', __config.theme.slug)
+				plugin: _path2.default.join('htdocs/web/app/plugins/', this.config.plugin.slug),
+				theme: _path2.default.join('htdocs/web/app/themes/', this.config.theme.slug)
 			};
 
 			// We convert the type to camel case so we don't run into issues if we
@@ -355,7 +374,7 @@ var Scaffold = function () {
 				base = '';
 			}
 
-			return _path2.default.join(__path.project, base);
+			return _path2.default.join(this.paths.project, base);
 		}
 	}, {
 		key: 'getAssetsPath',
@@ -383,7 +402,7 @@ var Scaffold = function () {
 			var dir = arguments.length <= 1 || arguments[1] === undefined ? '' : arguments[1];
 
 
-			var source = _path2.default.join(__path.assets, type, dir);
+			var source = _path2.default.join(this.paths.assets, type, dir);
 			var dest = _path2.default.join(this.getAssetsPath(type), dir);
 
 			if (!_helpers2.default.directoryExists(source)) {
@@ -406,7 +425,7 @@ var Scaffold = function () {
 
 
 			var base = this.getBasePath(type);
-			var files = this._files[type].remove;
+			var files = this.files[type].link;
 
 			if (!files) {
 				return;
@@ -426,8 +445,8 @@ var Scaffold = function () {
 
 					dest = _path2.default.join(dest, _path2.default.basename(source));
 
-					var destPath = _path2.default.join(__path.project, dest);
-					var sourcePath = _path2.default.join(__path.project, source);
+					var destPath = _path2.default.join(this.paths.project, dest);
+					var sourcePath = _path2.default.join(this.paths.project, source);
 
 					_log2.default.info('Checking for ' + dest + '...');
 
@@ -464,7 +483,7 @@ var Scaffold = function () {
 
 
 			var base = this.getBasePath(type);
-			var files = this._files[type].remove;
+			var files = this.files[type].remove;
 
 			if (!files) {
 				return;
@@ -502,12 +521,12 @@ var Scaffold = function () {
 	}, {
 		key: 'scaffoldFiles',
 		value: function scaffoldFiles() {
-			var _this = this;
+			var _this2 = this;
 
 			var type = arguments.length <= 0 || arguments[0] === undefined ? 'project' : arguments[0];
 
 
-			var source = _path2.default.join(__path.templates, type);
+			var source = _path2.default.join(this.paths.templates, type);
 
 			if (!_helpers2.default.directoryExists(source)) {
 				return _log2.default.error(source + ' is not a valid template directory');
@@ -520,8 +539,8 @@ var Scaffold = function () {
 
 					var filePath = _path2.default.join(source, file);
 
-					if (_helpers2.default.fileExists(filePath)) {
-						_this.scaffoldFile(filePath, type);
+					if (0 !== file.indexOf('.') && _helpers2.default.fileExists(filePath)) {
+						_this2.scaffoldFile(filePath, type);
 					}
 				});
 			} catch (error) {
@@ -554,7 +573,7 @@ var Scaffold = function () {
 
 			try {
 				var templateContent = _fsExtra2.default.readFileSync(source).toString();
-				var renderedContent = _mustache2.default.render(templateContent, this._data);
+				var renderedContent = _mustache2.default.render(templateContent, this.data);
 
 				_fsExtra2.default.writeFileSync(dest, renderedContent);
 
@@ -563,9 +582,22 @@ var Scaffold = function () {
 				_log2.default.error(error);
 			}
 		}
+	}, {
+		key: 'files',
+		get: function get() {
+			return {
+				bedrock: {
+					remove: new Set(['composer.*', '*.md', 'phpcs.xml', 'wp-cli.yml', '.gitignore', '.travis.yml', '.env.example', '.editorconfig'])
+				},
+
+				project: {
+					link: new Map([['dev-lib/pre-commit', '.git/hooks'], ['dev-lib/.jshintrc', '.'], ['dev-lib/.jscsrc', '.']])
+				}
+			};
+		}
 	}]);
 
 	return Scaffold;
-}();
+}(_project2.default);
 
-exports.default = new Scaffold();
+exports.default = Scaffold;

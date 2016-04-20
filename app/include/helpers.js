@@ -20,7 +20,7 @@ class Helpers {
 	 * @param  {string} type Optional. A type to check the path against.
 	 * @return {bool}        True if path exists and is `type`; false if not.
 	 */
-	pathExists( path, type = 'any' ) {
+	static pathExists( path, type = 'any' ) {
 		try {
 			const info = fs.lstatSync( path );
 
@@ -49,7 +49,7 @@ class Helpers {
 	 * @param  {string} path The path to the file to check.
 	 * @return {bool}        True the file exists; false if not.
 	 */
-	fileExists( path ) {
+	static fileExists( path ) {
 		return this.pathExists( path, 'file' );
 	}
 
@@ -61,7 +61,7 @@ class Helpers {
 	 * @param  {string} path The path to the directory to check.
 	 * @return {bool}        True the directory exists; false if not.
 	 */
-	directoryExists( path ) {
+	static directoryExists( path ) {
 		return this.pathExists( path, 'directory' );
 	}
 
@@ -73,7 +73,7 @@ class Helpers {
 	 * @param  {string} path The path to the symbolic link to check.
 	 * @return {bool}        True the symbolic link exists; false if not.
 	 */
-	symlinkExists( path ) {
+	static symlinkExists( path ) {
 		return this.pathExists( path, 'symlink' );
 	}
 
@@ -86,7 +86,7 @@ class Helpers {
 	 * @return {object}          The parsed results. If the file is blank or
 	 *                           doesn't exist, we return an empty object.
 	 */
-	loadYAML( filePath ) {
+	static loadYAML( filePath ) {
 		try {
 			// Get file contents as JSON.
 			const json = YAML.safeLoad( fs.readFileSync( filePath, 'utf8' ) );
@@ -96,11 +96,29 @@ class Helpers {
 				return json;
 			}
 		} catch ( error ) {
-			log.error( `${error}` );
+			log.error( error );
 		}
 
 		// If the file doesn't exist or is empty, return an empty object.
 		return {};
+	}
+
+	/**
+	 * Takes a JSON string or object, parses it into YAML, and writes to a file.
+	 *
+	 * @since 0.3.0
+	 *
+	 * @param  {string} filePath The path to the file to write to.
+	 * @param  {object} json     The JSON object to parse into YAML.
+	 */
+	static writeYAML( filePath, json ) {
+		try {
+			// Convert JSON to YAML.
+			const yaml = YAML.safeDump( json, { noCompatMode: true } );
+			fs.writeFileSync( filePath, yaml );
+		} catch ( error ) {
+			log.error( error );
+		}
 	}
 
 	/**
@@ -112,7 +130,7 @@ class Helpers {
 	 * @param  {string} format  The string format to use (hex, base64, etc).
 	 * @return {string}         The randomly generated string.
 	 */
-	randomString( length, format = 'hex' ) {
+	static randomString( length, format = 'hex' ) {
 		try {
 
 			let numBytes;
@@ -138,4 +156,4 @@ class Helpers {
 	}
 }
 
-export default new Helpers();
+export default Helpers;

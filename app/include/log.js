@@ -11,7 +11,7 @@ class Log {
 	 *
 	 * @param {string} message
 	 */
-	info( message ) {
+	static info( message ) {
 		console.log( message );
 	}
 
@@ -22,7 +22,7 @@ class Log {
 	 *
 	 * @param {string} message
 	 */
-	debug( message ) {
+	static debug( message ) {
 		console.log( `${ message }`.cyan );
 	}
 
@@ -33,7 +33,7 @@ class Log {
 	 *
 	 * @param {string} [message]
 	 */
-	ok( message = '' ) {
+	static ok( message = '' ) {
 		console.log( `✔ ${ message }`.green );
 	}
 
@@ -44,7 +44,7 @@ class Log {
 	 *
 	 * @param {string} [message]
 	 */
-	warn( message = '' ) {
+	static warn( message = '' ) {
 		console.log( `✱ ${ message }`.yellow );
 	}
 
@@ -55,9 +55,9 @@ class Log {
 	 *
 	 * @param {string} [message]
 	 */
-	error( message = '' ) {
+	static error( message = '' ) {
 		console.log( `✘ ${ message }`.red.underline );
 	}
 }
 
-export default new Log();
+export default Log;

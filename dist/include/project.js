@@ -10,9 +10,25 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
+var _fsExtra = require('fs-extra');
+
+var _fsExtra2 = _interopRequireDefault(_fsExtra);
+
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
+
+var _yargs = require('yargs');
+
+var _yargs2 = _interopRequireDefault(_yargs);
+
+var _utilsUpsearch = require('utils-upsearch');
+
+var _utilsUpsearch2 = _interopRequireDefault(_utilsUpsearch);
+
+var _log = require('./log');
+
+var _log2 = _interopRequireDefault(_log);
 
 var _helpers = require('./helpers');
 
@@ -22,36 +38,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+if (!_lodash2.default.upperSnakeCase) {
+	_lodash2.default.upperSnakeCase = function (string) {
+		return _lodash2.default.startCase(string).replace(/ /g, '_');
+	};
+}
+
 var Project = function () {
-
-	/**
-  * Class constructor. Sets default values for class properties.
-  *
-  * @since 0.1.0
-  */
-
 	function Project() {
 		_classCallCheck(this, Project);
-
-		if (!global.__config) {
-			global.__config = {};
-		}
-
-		_lodash2.default.upperSnakeCase = function (string) {
-			return _lodash2.default.startCase(string).replace(/ /g, '_');
-		};
 	}
 
-	/**
-  * Config getter.
-  *
-  * @since 0.1.0
-  *
-  * @return {object} The current config settings.
-  */
-
-
-	_createClass(Project, [{
+	_createClass(Project, null, [{
 		key: 'loadConfig',
 
 
@@ -65,7 +63,9 @@ var Project = function () {
    * @param  {string} file The path to the config file.
    * @return {object}      The resulting config object.
    */
-		value: function loadConfig(file) {
+		value: function loadConfig() {
+			var file = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
 
 			var config = void 0;
 
@@ -77,7 +77,7 @@ var Project = function () {
 			// If we don't have a config object (or the config object is empty)
 			// fall back to the default config file.
 			if (!config || _lodash2.default.isEmpty(config)) {
-				config = _helpers2.default.loadYAML(__path.config);
+				config = _helpers2.default.loadYAML(this.paths.config);
 			}
 
 			return this.parseConfig(config);
@@ -158,7 +158,7 @@ var Project = function () {
 			});
 
 			// Set internal config values.
-			config.project.folder = _path2.default.basename(__path.project);
+			config.project.folder = _path2.default.basename(this.paths.project);
 
 			config.plugin.id = _lodash2.default.snakeCase(config.plugin.name);
 			config.plugin.class = _lodash2.default.upperSnakeCase(config.plugin.name);
@@ -168,20 +168,92 @@ var Project = function () {
 			config.theme.class = _lodash2.default.upperSnakeCase(config.theme.name);
 			config.theme.package = _lodash2.default.upperSnakeCase(config.theme.name);
 
-			// Update the global config settings.
-			global.__config = config;
-
 			// Return the updated config settings.
 			return config;
 		}
+
+		/**
+   * Creates a new `project.yml` file with the default settings.
+   *
+   * @since 0.3.0
+   *
+   * @param {[bool]} force Optional. If true and a config file already exists,
+   *                       it will be deleted and a new file will be created.
+   */
+
 	}, {
-		key: 'config',
+		key: 'createConfigFile',
+		value: function createConfigFile() {
+			var force = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
+
+			if (force && _helpers2.default.fileExists(this.paths.config)) {
+				_fsExtra2.default.removeSync(this.paths.config);
+			}
+
+			if (!_helpers2.default.fileExists(this.paths.config)) {
+				_helpers2.default.writeYAML(this.paths.config, this.defaultConfig);
+			}
+		}
+	}, {
+		key: 'paths',
+
+
+		/**
+   * Project paths (getter).
+   *
+   * @since 0.3.0
+   *
+   * @return {object} Project paths.
+   */
 		get: function get() {
-			return global.__config;
+			if (!this._paths) {
+				this._paths = {
+					root: __rootPath,
+					app: __appPath,
+					cwd: process.cwd(),
+					project: process.cwd(),
+					includes: _path2.default.join(__appPath, 'include'),
+					assets: _path2.default.join(__rootPath, 'project-files', 'assets'),
+					templates: _path2.default.join(__rootPath, 'project-files', 'templates'),
+					plugins: _path2.default.join(__rootPath, 'project-files', 'plugins'),
+					test: _path2.default.join(__rootPath, 'test'),
+					config: _utilsUpsearch2.default.sync('project.yml')
+				};
+
+				if ('node-test' === _yargs2.default.argv.env) {
+					this._paths.project = _path2.default.join(this._paths.root, '_test-project');
+				}
+
+				if (!this._paths.config) {
+					this._paths.config = _path2.default.join(this._paths.project, 'project.yml');
+				}
+			}
+
+			return this._paths;
 		}
 
 		/**
-   * Config setter.
+   * Project config (getter).
+   *
+   * @since 0.1.0
+   *
+   * @return {object} The current config settings.
+   */
+
+	}, {
+		key: 'config',
+		get: function get() {
+
+			if (!this._config) {
+				this._config = this.loadConfig();
+			}
+
+			return this._config;
+		}
+
+		/**
+   * Project config (setter).
    *
    * @since 0.1.0
    *
@@ -189,7 +261,17 @@ var Project = function () {
    */
 		,
 		set: function set(config) {
-			global.__config = this.parseConfig(config);
+			this._config = this.parseConfig(config);
+		}
+	}, {
+		key: 'data',
+		get: function get() {
+
+			if (!this._data) {
+				this._data = _lodash2.default.merge({}, this.config, { paths: this.paths });
+			}
+
+			return this._data;
 		}
 
 		/**
@@ -206,11 +288,11 @@ var Project = function () {
 			return {
 				env: 'development',
 				vvv: true,
+				token: '',
 				project: {
-					title: 'New WP Project',
+					title: '',
 					slug: '',
-					url: '',
-					repo: ''
+					url: ''
 				},
 				repo: {
 					create: false,
@@ -257,4 +339,4 @@ var Project = function () {
 	return Project;
 }();
 
-exports.default = new Project();
+exports.default = Project;
