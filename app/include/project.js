@@ -174,6 +174,8 @@ class Project {
 			config = helpers.loadYAML( this.paths.config );
 		}
 
+		config = _.merge( config, yargs.argv );
+
 		return this.parseConfig( config );
 	}
 
@@ -216,7 +218,7 @@ class Project {
 		}
 
 		if ( ! config.plugin.slug ) {
-			config.plugin.slug = config.project.slug;
+			config.plugin.slug = _.kebabCase( config.plugin.name );
 		}
 
 		if ( ! config.theme.name ) {
@@ -228,7 +230,7 @@ class Project {
 		}
 
 		if ( ! config.theme.slug ) {
-			config.theme.slug = config.project.slug;
+			config.theme.slug = _.kebabCase( config.theme.name );
 		}
 
 		if ( ! config.db.name ) {

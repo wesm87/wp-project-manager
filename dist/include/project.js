@@ -80,6 +80,8 @@ var Project = function () {
 				config = _helpers2.default.loadYAML(this.paths.config);
 			}
 
+			config = _lodash2.default.merge(config, _yargs2.default.argv);
+
 			return this.parseConfig(config);
 		}
 
@@ -125,7 +127,7 @@ var Project = function () {
 			}
 
 			if (!config.plugin.slug) {
-				config.plugin.slug = config.project.slug;
+				config.plugin.slug = _lodash2.default.kebabCase(config.plugin.name);
 			}
 
 			if (!config.theme.name) {
@@ -137,7 +139,7 @@ var Project = function () {
 			}
 
 			if (!config.theme.slug) {
-				config.theme.slug = config.project.slug;
+				config.theme.slug = _lodash2.default.kebabCase(config.theme.name);
 			}
 
 			if (!config.db.name) {

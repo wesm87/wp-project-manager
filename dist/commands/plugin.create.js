@@ -1,5 +1,9 @@
 'use strict';
 
+var _log = require('../include/log');
+
+var _log2 = _interopRequireDefault(_log);
+
 var _project = require('../include/project');
 
 var _project2 = _interopRequireDefault(_project);
@@ -15,6 +19,7 @@ module.exports = {
 	describe: 'scaffold new plugin',
 	builder: {},
 	handler: function handler(argv) {
+
 		_scaffold2.default.initPlugin();
 	}
 };

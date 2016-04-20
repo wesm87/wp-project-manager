@@ -56,4 +56,4 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 global.__appPath = __dirname;
 global.__rootPath = _path2.default.join(__dirname, '..');
 
-var argv = _yargs2.default.help().completion().command(require('./commands/config.create')).command(require('./commands/project.create')).argv;
+var argv = _yargs2.default.help().completion().command(require('./commands/config.create')).command(require('./commands/project.create')).command(require('./commands/plugin.create')).command(require('./commands/theme.create')).argv;

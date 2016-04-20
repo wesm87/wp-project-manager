@@ -46,4 +46,6 @@ const argv = yargs
 	.completion()
 	.command( require( './commands/config.create' ) )
 	.command( require( './commands/project.create' ) )
+	.command( require( './commands/plugin.create' ) )
+	.command( require( './commands/theme.create' ) )
 	.argv;
