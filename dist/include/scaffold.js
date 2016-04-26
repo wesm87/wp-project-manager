@@ -94,7 +94,6 @@ var Scaffold = function (_Project) {
 		key: 'createProject',
 		value: function createProject() {
 			this.initProjectFiles();
-			this.parseTemplateData();
 			this.initRepo();
 			this.initDevLib();
 			this.initProject();
@@ -113,6 +112,7 @@ var Scaffold = function (_Project) {
 
 			this.maybeCreateAuthFiles();
 			this.maybeCopyPluginZips();
+			this.parseTemplateData();
 
 			this.scaffoldFiles('scripts');
 

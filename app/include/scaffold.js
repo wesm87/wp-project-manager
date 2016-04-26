@@ -67,7 +67,6 @@ class Scaffold extends Project {
 
 	static createProject() {
 		this.initProjectFiles();
-		this.parseTemplateData();
 		this.initRepo();
 		this.initDevLib();
 		this.initProject();
@@ -84,6 +83,7 @@ class Scaffold extends Project {
 
 		this.maybeCreateAuthFiles();
 		this.maybeCopyPluginZips();
+		this.parseTemplateData();
 
 		this.scaffoldFiles( 'scripts' );
 
