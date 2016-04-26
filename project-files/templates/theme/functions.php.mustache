@@ -5,110 +5,106 @@
  * @package {{ theme.package }}
  */
 
-namespace {{ theme.package }};
+namespace {{ theme.namespace }};
 
 // Exit if called directly.
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( '{{ theme.class }}' ) ) :
+/**
+ * Main theme class.
+ *
+ * @since 0.1.0
+ */
+class {{ theme.class }} {
 
 	/**
-	 * Main theme class.
+	 * The theme version.
+	 *
+	 * @since 0.1.0
+	 * @var string
+	 */
+	const VERSION = '0.1.0';
+
+	/**
+	 * The theme ID.
+	 *
+	 * This provides a consistent ID string for things like option names.
+	 *
+	 * @since 0.1.0
+	 * @var string
+	 */
+	const THEME_ID = '{{ theme.id }}';
+
+	/**
+	 * Path to the theme includes folder.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var string
+	 */
+	public static $includes_path;
+
+	/**
+	 * URL to the theme assets folder.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var string
+	 */
+	public static $assets_url;
+
+	/**
+	 * Theme class constructor.
 	 *
 	 * @since 0.1.0
 	 */
-	class {{ theme.class }} {
+	public function __construct() {
 
-		/**
-		 * The theme version.
-		 *
-		 * @since 0.1.0
-		 * @var string
-		 */
-		const VERSION = '0.1.0';
+		// Set includes path and assets URL.
+		self::$includes_path = get_stylesheet_directory() . '/includes';
+		self::$assets_url    = get_stylesheet_directory_uri() . '/assets/dist';
 
-		/**
-		 * The theme ID.
-		 *
-		 * This provides a consistent ID string for things like option names.
-		 *
-		 * @since 0.1.0
-		 * @var string
-		 */
-		const THEME_ID = '{{ theme.id }}';
+		// Include our theme class files.
+		$this->includes();
 
-		/**
-		 * Path to the theme includes folder.
-		 *
-		 * @since 0.1.0
-		 * @access public
-		 * @var string
-		 */
-		public static $includes_path;
-
-		/**
-		 * URL to the theme assets folder.
-		 *
-		 * @since 0.1.0
-		 * @access public
-		 * @var string
-		 */
-		public static $assets_url;
-
-		/**
-		 * Theme class constructor.
-		 *
-		 * @since 0.1.0
-		 */
-		public function __construct() {
-
-			// Set includes path and assets URL.
-			self::$includes_path = get_stylesheet_directory() . '/includes';
-			self::$assets_url    = get_stylesheet_directory_uri() . '/assets/dist';
-
-			// Include our theme class files.
-			$this->includes();
-
-			// Set action handlers.
-			add_action( 'wp_enqueue_scripts', [ $this, 'scripts_and_styles' ] );
-		}
-
-		/**
-		 * Includes theme class files.
-		 *
-		 * @since 0.1.0
-		 */
-		public function includes() {
-
-		}
-
-		/**
-		 * Enqueue theme scripts and styles.
-		 *
-		 * @since 0.1.0
-		 */
-		public function scripts_and_styles() {
-
-			$version = ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? time() : null;
-
-			wp_enqueue_style( 'blr/main', $this->asset_url( 'css/app.css' ), false, $version );
-		}
-
-		/**
-		 * Returns the URL to an asset file.
-		 *
-		 * @since 0.1.0
-		 *
-		 * @param string $rel_path Relative path to the asset file.
-		 *
-		 * @return string
-		 */
-		protected function asset_url( $rel_path ) {
-			return trailingslashit( self::$assets_url ) . $rel_path;
-		}
+		// Set action handlers.
+		add_action( 'wp_enqueue_scripts', [ $this, 'scripts_and_styles' ] );
 	}
 
-	// Instantiate the main theme class.
-	new {{ theme.class }}();
+	/**
+	 * Includes theme class files.
+	 *
+	 * @since 0.1.0
+	 */
+	public function includes() {
 
-endif;
+	}
+
+	/**
+	 * Enqueue theme scripts and styles.
+	 *
+	 * @since 0.1.0
+	 */
+	public function scripts_and_styles() {
+
+		$version = ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? time() : null;
+
+		wp_enqueue_style( 'blr/main', $this->asset_url( 'css/app.css' ), false, $version );
+	}
+
+	/**
+	 * Returns the URL to an asset file.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param string $rel_path Relative path to the asset file.
+	 *
+	 * @return string
+	 */
+	protected function asset_url( $rel_path ) {
+		return trailingslashit( self::$assets_url ) . $rel_path;
+	}
+}
+
+// Instantiate the main theme class.
+new {{ theme.class }}();

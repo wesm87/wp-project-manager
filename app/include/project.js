@@ -234,25 +234,27 @@ class Project {
 			config.db.prefix = helpers.randomString( 8 ) + '_';
 		}
 
-		[ 'auth', 'secureAuth', 'loggedIn', 'nonce' ].forEach(( type ) => {
-			if ( ! config.secret[ `${type}Key` ] ) {
-				config.secret[ `${type}Key` ] = helpers.randomString( 64, 'base64' );
+		[ 'auth', 'secure_auth', 'logged_in', 'nonce' ].forEach(( type ) => {
+			if ( ! config.secret[ `${type}_key` ] ) {
+				config.secret[ `${type}_key` ] = helpers.randomString( 64, 'base64' );
 			}
-			if ( ! config.secret[ `${type}Salt` ] ) {
-				config.secret[ `${type}Salt` ] = helpers.randomString( 64, 'base64' );
+			if ( ! config.secret[ `${type}_salt` ] ) {
+				config.secret[ `${type}_salt` ] = helpers.randomString( 64, 'base64' );
 			}
 		});
 
 		// Set internal config values.
 		config.project.folder = path.basename( this.paths.project );
 
-		config.plugin.id      = _.snakeCase( config.plugin.name );
-		config.plugin.class   = _.upperSnakeCase( config.plugin.name );
-		config.plugin.package = _.upperSnakeCase( config.project.name ) + '\\Plugin';
+		config.plugin.id        = _.snakeCase( config.plugin.name );
+		config.plugin.class     = _.upperSnakeCase( config.plugin.name );
+		config.plugin.package   = _.upperSnakeCase( config.project.name ) + '\\Plugin';
+		config.plugin.namespace = config.plugin.package;
 
-		config.theme.id       = _.snakeCase( config.theme.name );
-		config.theme.class    = _.upperSnakeCase( config.theme.name );
-		config.theme.package  = _.upperSnakeCase( config.project.name ) + '\\Theme';
+		config.theme.id         = _.snakeCase( config.theme.name );
+		config.theme.class      = _.upperSnakeCase( config.theme.name );
+		config.theme.package    = _.upperSnakeCase( config.project.name ) + '\\Theme';
+		config.theme.namespace  = config.theme.package;
 
 		// Return the updated config settings.
 		return config;

@@ -277,17 +277,31 @@ class Scaffold extends Project {
 			'includes',
 			'assets/source/css',
 			'assets/source/js',
+			'assets/source/fonts',
 			'assets/dist/css',
 			'assets/dist/js',
+			'assets/dist/fonts',
 		];
 
-		pluginDirs.forEach( ( dir ) => {
+		pluginDirs.forEach( dir => {
 			try {
 				fs.mkdirpSync( path.join( basePath, dir ) );
 			} catch ( error ) {
-				if ( ! _.isEmpty( error ) ) {
-					log.error( error );
-				}
+				log.error( error );
+			}
+		});
+
+		const pluginFiles = [
+			'assets/dist/css/.gitkeep',
+			'assets/dist/js/.gitkeep',
+			'assets/dist/fonts/.gitkeep',
+		];
+
+		pluginFiles.forEach( file => {
+			try {
+				fs.ensureFileSync( file );
+			} catch ( error ) {
+
 			}
 		});
 
@@ -318,17 +332,31 @@ class Scaffold extends Project {
 			'includes',
 			'assets/source/css',
 			'assets/source/js',
+			'assets/source/fonts',
 			'assets/dist/css',
 			'assets/dist/js',
+			'assets/dist/fonts',
 		];
 
 		themeDirs.forEach( ( dir ) => {
 			try {
 				fs.mkdirpSync( path.join( basePath, dir ) );
 			} catch ( error ) {
-				if ( ! _.isEmpty( error ) ) {
-					log.error( error );
-				}
+				log.error( error );
+			}
+		});
+
+		const themeFiles = [
+			'assets/dist/css/.gitkeep',
+			'assets/dist/js/.gitkeep',
+			'assets/dist/fonts/.gitkeep',
+		];
+
+		themeFiles.forEach( file => {
+			try {
+				fs.ensureFileSync( file );
+			} catch ( error ) {
+
 			}
 		});
 

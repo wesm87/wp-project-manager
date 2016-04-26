@@ -150,12 +150,12 @@ var Project = function () {
 				config.db.prefix = _helpers2.default.randomString(8) + '_';
 			}
 
-			['auth', 'secureAuth', 'loggedIn', 'nonce'].forEach(function (type) {
-				if (!config.secret[type + 'Key']) {
-					config.secret[type + 'Key'] = _helpers2.default.randomString(64, 'base64');
+			['auth', 'secure_auth', 'logged_in', 'nonce'].forEach(function (type) {
+				if (!config.secret[type + '_key']) {
+					config.secret[type + '_key'] = _helpers2.default.randomString(64, 'base64');
 				}
-				if (!config.secret[type + 'Salt']) {
-					config.secret[type + 'Salt'] = _helpers2.default.randomString(64, 'base64');
+				if (!config.secret[type + '_salt']) {
+					config.secret[type + '_salt'] = _helpers2.default.randomString(64, 'base64');
 				}
 			});
 
@@ -164,11 +164,13 @@ var Project = function () {
 
 			config.plugin.id = _lodash2.default.snakeCase(config.plugin.name);
 			config.plugin.class = _lodash2.default.upperSnakeCase(config.plugin.name);
-			config.plugin.package = _lodash2.default.upperSnakeCase(config.plugin.name);
+			config.plugin.package = _lodash2.default.upperSnakeCase(config.project.name) + '\\Plugin';
+			config.plugin.namespace = config.plugin.package;
 
 			config.theme.id = _lodash2.default.snakeCase(config.theme.name);
 			config.theme.class = _lodash2.default.upperSnakeCase(config.theme.name);
-			config.theme.package = _lodash2.default.upperSnakeCase(config.theme.name);
+			config.theme.package = _lodash2.default.upperSnakeCase(config.project.name) + '\\Theme';
+			config.theme.namespace = config.theme.package;
 
 			// Return the updated config settings.
 			return config;

@@ -11,113 +11,109 @@
  * @package      {{ plugin.package }}
  */
 
-namespace {{ plugin.package }};
+namespace {{ plugin.namespace }};
 
 // Exit if called directly.
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( '{{ plugin.class }}' ) ) :
+/**
+ * Main plugin class.
+ *
+ * @since 0.1.0
+ */
+class {{ plugin.class }} {
 
 	/**
-	 * Main plugin class.
+	 * The plugin version.
+	 *
+	 * @since 0.1.0
+	 * @var string
+	 */
+	const VERSION = '0.1.0';
+
+	/**
+	 * The plugin ID.
+	 *
+	 * This provides a consistent ID string for things like option names.
+	 *
+	 * @since 0.1.0
+	 * @var string
+	 */
+	const PLUGIN_ID = '{{ plugin.id }}';
+
+	/**
+	 * Path to the plugin includes folder.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var string
+	 */
+	public static $includes_path;
+
+	/**
+	 * URL to the plugin assets folder.
+	 *
+	 * @since 0.1.0
+	 * @access public
+	 * @var string
+	 */
+	public static $assets_url;
+
+	/**
+	 * Plugin class constructor.
 	 *
 	 * @since 0.1.0
 	 */
-	class {{ plugin.class }} {
+	public function __construct() {
 
-		/**
-		 * The plugin version.
-		 *
-		 * @since 0.1.0
-		 * @var string
-		 */
-		const VERSION = '0.1.0';
+		// Set includes path and assets URL.
+		self::$includes_path = plugin_dir_path( __FILE__ ) . 'includes';
+		self::$assets_url    = plugin_dir_url( __FILE__ ) . 'assets/dist';
 
-		/**
-		 * The plugin ID.
-		 *
-		 * This provides a consistent ID string for things like option names.
-		 *
-		 * @since 0.1.0
-		 * @var string
-		 */
-		const PLUGIN_ID = '{{ plugin.id }}';
-
-		/**
-		 * Path to the plugin includes folder.
-		 *
-		 * @since 0.1.0
-		 * @access public
-		 * @var string
-		 */
-		public static $includes_path;
-
-		/**
-		 * URL to the plugin assets folder.
-		 *
-		 * @since 0.1.0
-		 * @access public
-		 * @var string
-		 */
-		public static $assets_url;
-
-		/**
-		 * Plugin class constructor.
-		 *
-		 * @since 0.1.0
-		 */
-		public function __construct() {
-
-			// Set includes path and assets URL.
-			self::$includes_path = plugin_dir_path( __FILE__ ) . 'includes';
-			self::$assets_url    = plugin_dir_url( __FILE__ ) . 'assets/dist';
-
-			// Set action handlers.
-			add_action( 'init', [ $this, 'init' ] );
-			add_action( 'plugins_loaded', [ $this, 'plugins_loaded' ] );
-			add_action( 'wp_enqueue_scripts', [ $this, 'scripts_and_styles' ] );
-		}
-
-		/**
-		 * Runs when the `init` action is fired.
-		 *
-		 * @since 0.1.0
-		 */
-		public function init() {
-
-		}
-
-		/**
-		 * Runs after all plugins are loaded.
-		 *
-		 * @since 0.1.0
-		 */
-		public function plugins_loaded() {
-
-			// Include our plugin class files.
-			$this->includes();
-		}
-
-		/**
-		 * Includes plugin class files.
-		 *
-		 * @since 0.1.0
-		 */
-		public function includes() {
-
-		}
-
-		/**
-		 * Enqueue plugin scripts and styles.
-		 *
-		 * @since 0.1.0
-		 */
-		public function scripts_and_styles() {
-
-		}
+		// Set action handlers.
+		add_action( 'init', [ $this, 'init' ] );
+		add_action( 'plugins_loaded', [ $this, 'plugins_loaded' ] );
+		add_action( 'wp_enqueue_scripts', [ $this, 'scripts_and_styles' ] );
 	}
 
-	// Instantiate the main plugin class.
-	new {{ plugin.class }}();
+	/**
+	 * Runs when the `init` action is fired.
+	 *
+	 * @since 0.1.0
+	 */
+	public function init() {
 
-endif;
+	}
+
+	/**
+	 * Runs after all plugins are loaded.
+	 *
+	 * @since 0.1.0
+	 */
+	public function plugins_loaded() {
+
+		// Include our plugin class files.
+		$this->includes();
+	}
+
+	/**
+	 * Includes plugin class files.
+	 *
+	 * @since 0.1.0
+	 */
+	public function includes() {
+
+	}
+
+	/**
+	 * Enqueue plugin scripts and styles.
+	 *
+	 * @since 0.1.0
+	 */
+	public function scripts_and_styles() {
+
+	}
+}
+
+// Instantiate the main plugin class.
+new {{ plugin.class }}();

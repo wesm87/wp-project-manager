@@ -299,16 +299,22 @@ var Scaffold = function (_Project) {
 
 			this.scaffoldFiles('plugin');
 
-			var pluginDirs = ['includes', 'assets/source/css', 'assets/source/js', 'assets/dist/css', 'assets/dist/js'];
+			var pluginDirs = ['includes', 'assets/source/css', 'assets/source/js', 'assets/source/fonts', 'assets/dist/css', 'assets/dist/js', 'assets/dist/fonts'];
 
 			pluginDirs.forEach(function (dir) {
 				try {
 					_fsExtra2.default.mkdirpSync(_path2.default.join(basePath, dir));
 				} catch (error) {
-					if (!_lodash2.default.isEmpty(error)) {
-						_log2.default.error(error);
-					}
+					_log2.default.error(error);
 				}
+			});
+
+			var pluginFiles = ['assets/dist/css/.gitkeep', 'assets/dist/js/.gitkeep', 'assets/dist/fonts/.gitkeep'];
+
+			pluginFiles.forEach(function (file) {
+				try {
+					_fsExtra2.default.ensureFileSync(file);
+				} catch (error) {}
 			});
 
 			_log2.default.ok('Plugin created.');
@@ -336,16 +342,22 @@ var Scaffold = function (_Project) {
 
 			this.scaffoldFiles('theme');
 
-			var themeDirs = ['includes', 'assets/source/css', 'assets/source/js', 'assets/dist/css', 'assets/dist/js'];
+			var themeDirs = ['includes', 'assets/source/css', 'assets/source/js', 'assets/source/fonts', 'assets/dist/css', 'assets/dist/js', 'assets/dist/fonts'];
 
 			themeDirs.forEach(function (dir) {
 				try {
 					_fsExtra2.default.mkdirpSync(_path2.default.join(basePath, dir));
 				} catch (error) {
-					if (!_lodash2.default.isEmpty(error)) {
-						_log2.default.error(error);
-					}
+					_log2.default.error(error);
 				}
+			});
+
+			var themeFiles = ['assets/dist/css/.gitkeep', 'assets/dist/js/.gitkeep', 'assets/dist/fonts/.gitkeep'];
+
+			themeFiles.forEach(function (file) {
+				try {
+					_fsExtra2.default.ensureFileSync(file);
+				} catch (error) {}
 			});
 
 			this.copyAssets('theme', 'css');
