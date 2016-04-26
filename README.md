@@ -239,7 +239,20 @@ bash ./scripts/wp-init.sh
 - When you create a new project, the various authentication keys and salts used
   by WordPress internally are automatically generated for you. If you'd prefer
   to generate these yourself, just [visit this URL](https://roots.io/salts.html)
-  and copy the the block under
+  and copy the the block under "Yaml Format", then paste it into your
+  `project.yml` in the `secret` section. For example:
+
+  ```yml
+  secret:
+    auth_key: "rt$^QrOSkvKmUNO17db5CoQ2^H=,Fs#{YDD7rSVL!O%{FBXWRCl@@k)BbHuNH}O2"
+    secure_auth_key: "m_LZ0HW2>fBcrB&+JS]Ol<@ld&vK*vQ*c=2N5mp`x_<9B2-{j8*8s0gYzpzj=*Hw"
+    logged_in_key: "QB`Wcfp%iF<$qEkXfl;i,R76H_|;VpgOx$b5*_o?@iyw/W)K$h)j_{]).3x6G,>*"
+    nonce_key: "3`+TRW&s<r{BwD}Df3+r]icoQUvP*Z)|{N,1A3g>c%fT/<Q#o_po|xYR3+.Hah,z"
+    auth_salt: "qzgA5Q7H*;d8P9(N5R*PL-BQN^_J5,8c<&%C4]l_WL<6):e-3u*^g.+V[e30b:=x"
+    secure_auth_salt: "yUw!e;6W:7_3EJEv@rGF)V7T5Y:&x@i=R8Rq2ZSk|M{q/0Vy^^2qekf0xC?zDBX9"
+    logged_in_salt: "fBd[CBI:]DLr6yn85=9S4OWkTx6p]:WZg%T*2+]DUz]O]ZaHU:|,6l;EOGs!kn[H"
+    nonce_salt: "n(K=-uWc.lY5i^Fgc+X*U@nZL-lF<imt8o+etZ1-<t{RN7m|Bu^HvuMszQaA{7_+"
+  ```
 
 
 ## Project Structure
