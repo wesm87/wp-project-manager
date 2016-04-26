@@ -299,23 +299,7 @@ var Scaffold = function (_Project) {
 
 			this.scaffoldFiles('plugin');
 
-			var pluginDirs = ['includes', 'assets/source/css', 'assets/source/js', 'assets/source/fonts', 'assets/dist/css', 'assets/dist/js', 'assets/dist/fonts'];
-
-			pluginDirs.forEach(function (dir) {
-				try {
-					_fsExtra2.default.mkdirpSync(_path2.default.join(basePath, dir));
-				} catch (error) {
-					_log2.default.error(error);
-				}
-			});
-
-			var pluginFiles = ['assets/dist/css/.gitkeep', 'assets/dist/js/.gitkeep', 'assets/dist/fonts/.gitkeep'];
-
-			pluginFiles.forEach(function (file) {
-				try {
-					_fsExtra2.default.ensureFileSync(_path2.default.join(basePath, file));
-				} catch (error) {}
-			});
+			this.createPlaceholders('plugin');
 
 			_log2.default.ok('Plugin created.');
 		}
@@ -342,23 +326,7 @@ var Scaffold = function (_Project) {
 
 			this.scaffoldFiles('theme');
 
-			var themeDirs = ['includes', 'assets/source/css', 'assets/source/js', 'assets/source/fonts', 'assets/dist/css', 'assets/dist/js', 'assets/dist/fonts'];
-
-			themeDirs.forEach(function (dir) {
-				try {
-					_fsExtra2.default.mkdirpSync(_path2.default.join(basePath, dir));
-				} catch (error) {
-					_log2.default.error(error);
-				}
-			});
-
-			var themeFiles = ['assets/dist/css/.gitkeep', 'assets/dist/js/.gitkeep', 'assets/dist/fonts/.gitkeep'];
-
-			themeFiles.forEach(function (file) {
-				try {
-					_fsExtra2.default.ensureFileSync(_path2.default.join(basePath, file));
-				} catch (error) {}
-			});
+			this.createPlaceholders('theme');
 
 			this.copyAssets('theme', 'css');
 
@@ -468,6 +436,32 @@ var Scaffold = function (_Project) {
 			}
 
 			return _path2.default.join(this.getBasePath(type), assetsPath);
+		}
+	}, {
+		key: 'createPlaceholders',
+		value: function createPlaceholders() {
+			var type = arguments.length <= 0 || arguments[0] === undefined ? 'theme' : arguments[0];
+
+
+			var base = this.getBasePath(type);
+
+			var dirs = ['includes', 'assets/source/css', 'assets/source/js', 'assets/source/images', 'assets/source/fonts', 'assets/dist/css', 'assets/dist/js', 'assets/dist/images', 'assets/dist/fonts'];
+
+			var files = ['assets/dist/css/.gitkeep', 'assets/dist/js/.gitkeep', 'assets/dist/images/.gitkeep', 'assets/dist/fonts/.gitkeep'];
+
+			dirs.forEach(function (dir) {
+				try {
+					_fsExtra2.default.mkdirpSync(_path2.default.join(base, dir));
+				} catch (error) {
+					_log2.default.error(error);
+				}
+			});
+
+			files.forEach(function (file) {
+				try {
+					_fsExtra2.default.ensureFileSync(_path2.default.join(base, file));
+				} catch (error) {}
+			});
 		}
 	}, {
 		key: 'copyAssets',
@@ -663,12 +657,12 @@ var Scaffold = function (_Project) {
 		key: 'files',
 		get: function get() {
 			return {
-				bedrock: {
-					remove: new Set(['composer.*', '*.md', 'phpcs.xml', 'wp-cli.yml', '.gitignore', '.travis.yml', '.env.example', '.editorconfig'])
-				},
-
 				project: {
 					link: new Map([['dev-lib/pre-commit', '.git/hooks'], ['dev-lib/.jshintrc', '.'], ['dev-lib/.jscsrc', '.']])
+				},
+
+				bedrock: {
+					remove: new Set(['composer.*', '*.md', 'phpcs.xml', 'wp-cli.yml', '.gitignore', '.travis.yml', '.env.example', '.editorconfig'])
 				}
 			};
 		}

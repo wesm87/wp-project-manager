@@ -25,6 +25,14 @@ class Scaffold extends Project {
 
 	static get files() {
 		return {
+			project: {
+				link: new Map([
+					[ 'dev-lib/pre-commit', '.git/hooks' ],
+					[ 'dev-lib/.jshintrc' , '.'          ],
+					[ 'dev-lib/.jscsrc'   , '.'          ],
+				]),
+			},
+
 			bedrock: {
 				remove: new Set([
 					'composer.*',
@@ -35,14 +43,6 @@ class Scaffold extends Project {
 					'.travis.yml',
 					'.env.example',
 					'.editorconfig',
-				]),
-			},
-
-			project: {
-				link: new Map([
-					[ 'dev-lib/pre-commit', '.git/hooks' ],
-					[ 'dev-lib/.jshintrc' , '.'          ],
-					[ 'dev-lib/.jscsrc'   , '.'          ],
 				]),
 			},
 		};
@@ -273,37 +273,7 @@ class Scaffold extends Project {
 
 		this.scaffoldFiles( 'plugin' );
 
-		const pluginDirs = [
-			'includes',
-			'assets/source/css',
-			'assets/source/js',
-			'assets/source/fonts',
-			'assets/dist/css',
-			'assets/dist/js',
-			'assets/dist/fonts',
-		];
-
-		pluginDirs.forEach( dir => {
-			try {
-				fs.mkdirpSync( path.join( basePath, dir ) );
-			} catch ( error ) {
-				log.error( error );
-			}
-		});
-
-		const pluginFiles = [
-			'assets/dist/css/.gitkeep',
-			'assets/dist/js/.gitkeep',
-			'assets/dist/fonts/.gitkeep',
-		];
-
-		pluginFiles.forEach( file => {
-			try {
-				fs.ensureFileSync( path.join( basePath, file ) );
-			} catch ( error ) {
-
-			}
-		});
+		this.createPlaceholders( 'plugin' );
 
 		log.ok( 'Plugin created.' );
 	}
@@ -328,37 +298,7 @@ class Scaffold extends Project {
 
 		this.scaffoldFiles( 'theme' );
 
-		const themeDirs = [
-			'includes',
-			'assets/source/css',
-			'assets/source/js',
-			'assets/source/fonts',
-			'assets/dist/css',
-			'assets/dist/js',
-			'assets/dist/fonts',
-		];
-
-		themeDirs.forEach( ( dir ) => {
-			try {
-				fs.mkdirpSync( path.join( basePath, dir ) );
-			} catch ( error ) {
-				log.error( error );
-			}
-		});
-
-		const themeFiles = [
-			'assets/dist/css/.gitkeep',
-			'assets/dist/js/.gitkeep',
-			'assets/dist/fonts/.gitkeep',
-		];
-
-		themeFiles.forEach( file => {
-			try {
-				fs.ensureFileSync( path.join( basePath, file ) );
-			} catch ( error ) {
-
-			}
-		});
+		this.createPlaceholders( 'theme' );
 
 		this.copyAssets( 'theme', 'css' );
 
@@ -453,6 +393,46 @@ class Scaffold extends Project {
 		}
 
 		return path.join( this.getBasePath( type ), assetsPath );
+	}
+
+	static createPlaceholders( type = 'theme' ) {
+
+		const base = this.getBasePath( type );
+
+		const dirs = [
+			'includes',
+			'assets/source/css',
+			'assets/source/js',
+			'assets/source/images',
+			'assets/source/fonts',
+			'assets/dist/css',
+			'assets/dist/js',
+			'assets/dist/images',
+			'assets/dist/fonts',
+		];
+
+		const files = [
+			'assets/dist/css/.gitkeep',
+			'assets/dist/js/.gitkeep',
+			'assets/dist/images/.gitkeep',
+			'assets/dist/fonts/.gitkeep',
+		];
+
+		dirs.forEach( ( dir ) => {
+			try {
+				fs.mkdirpSync( path.join( base, dir ) );
+			} catch ( error ) {
+				log.error( error );
+			}
+		});
+
+		files.forEach( file => {
+			try {
+				fs.ensureFileSync( path.join( base, file ) );
+			} catch ( error ) {
+
+			}
+		});
 	}
 
 	static copyAssets( type = 'theme', dir = '' ) {
