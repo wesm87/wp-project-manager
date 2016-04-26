@@ -248,11 +248,11 @@ class Project {
 
 		config.plugin.id      = _.snakeCase( config.plugin.name );
 		config.plugin.class   = _.upperSnakeCase( config.plugin.name );
-		config.plugin.package = _.upperSnakeCase( config.plugin.name );
+		config.plugin.package = _.upperSnakeCase( config.project.name ) + '\\Plugin';
 
 		config.theme.id       = _.snakeCase( config.theme.name );
 		config.theme.class    = _.upperSnakeCase( config.theme.name );
-		config.theme.package  = _.upperSnakeCase( config.theme.name );
+		config.theme.package  = _.upperSnakeCase( config.project.name ) + '\\Theme';
 
 		// Return the updated config settings.
 		return config;

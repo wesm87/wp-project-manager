@@ -80,8 +80,15 @@ class GulpTasks {
 	}
 
 	build( done ) {
+
 		this.buildCSS();
 		this.buildJS();
+
+		fs.copySync(
+			'bower_components/font-awesome/fonts',
+			'assets/dist/fonts'
+		);
+
 		return done();
 	}
 

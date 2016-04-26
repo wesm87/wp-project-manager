@@ -5,6 +5,8 @@
  * @package {{ theme.package }}
  */
 
+namespace {{ theme.package }};
+
 // Exit if called directly.
 defined( 'ABSPATH' ) || exit;
 
@@ -61,8 +63,8 @@ if ( ! class_exists( '{{ theme.class }}' ) ) :
 		public function __construct() {
 
 			// Set includes path and assets URL.
-			self::$includes_path = get_stylesheet_directory() . 'includes';
-			self::$assets_url    = get_stylesheet_directory_uri() . 'assets/dist';
+			self::$includes_path = get_stylesheet_directory() . '/includes';
+			self::$assets_url    = get_stylesheet_directory_uri() . '/assets/dist';
 
 			// Include our theme class files.
 			$this->includes();
@@ -87,6 +89,22 @@ if ( ! class_exists( '{{ theme.class }}' ) ) :
 		 */
 		public function scripts_and_styles() {
 
+			$version = ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? time() : null;
+
+			wp_enqueue_style( 'blr/main', $this->asset_url( 'css/app.css' ), false, $version );
+		}
+
+		/**
+		 * Returns the URL to an asset file.
+		 *
+		 * @since 0.1.0
+		 *
+		 * @param string $rel_path Relative path to the asset file.
+		 *
+		 * @return string
+		 */
+		protected function asset_url( $rel_path ) {
+			return trailingslashit( self::$assets_url ) . $rel_path;
 		}
 	}
 
