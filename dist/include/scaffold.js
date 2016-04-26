@@ -313,7 +313,7 @@ var Scaffold = function (_Project) {
 
 			pluginFiles.forEach(function (file) {
 				try {
-					_fsExtra2.default.ensureFileSync(file);
+					_fsExtra2.default.ensureFileSync(_path2.default.join(basePath, file));
 				} catch (error) {}
 			});
 
@@ -356,7 +356,7 @@ var Scaffold = function (_Project) {
 
 			themeFiles.forEach(function (file) {
 				try {
-					_fsExtra2.default.ensureFileSync(file);
+					_fsExtra2.default.ensureFileSync(_path2.default.join(basePath, file));
 				} catch (error) {}
 			});
 

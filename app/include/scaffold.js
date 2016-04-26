@@ -299,7 +299,7 @@ class Scaffold extends Project {
 
 		pluginFiles.forEach( file => {
 			try {
-				fs.ensureFileSync( file );
+				fs.ensureFileSync( path.join( basePath, file ) );
 			} catch ( error ) {
 
 			}
@@ -354,7 +354,7 @@ class Scaffold extends Project {
 
 		themeFiles.forEach( file => {
 			try {
-				fs.ensureFileSync( file );
+				fs.ensureFileSync( path.join( basePath, file ) );
 			} catch ( error ) {
 
 			}
