@@ -26,10 +26,6 @@ var _utilsUpsearch = require('utils-upsearch');
 
 var _utilsUpsearch2 = _interopRequireDefault(_utilsUpsearch);
 
-var _log = require('./log');
-
-var _log2 = _interopRequireDefault(_log);
-
 var _helpers = require('./helpers');
 
 var _helpers2 = _interopRequireDefault(_helpers);
@@ -43,6 +39,10 @@ if (!_lodash2.default.upperSnakeCase) {
 		return _lodash2.default.startCase(string).replace(/ /g, '_');
 	};
 }
+
+/**
+ * Project config settings and helper methods.
+ */
 
 var Project = function () {
 	function Project() {
@@ -69,14 +69,14 @@ var Project = function () {
 
 			var config = void 0;
 
-			// Try to load the file if one was passed.
-			if (file) {
+			// Try to load the config file if one was passed and it exists.
+			if (file && _helpers2.default.fileExists(file)) {
 				config = _helpers2.default.loadYAML(file);
 			}
 
 			// If we don't have a config object (or the config object is empty)
 			// fall back to the default config file.
-			if (!config || _lodash2.default.isEmpty(config)) {
+			if (_lodash2.default.isEmpty(config) && _helpers2.default.fileExists(this.paths.config)) {
 				config = _helpers2.default.loadYAML(this.paths.config);
 			}
 
@@ -179,8 +179,8 @@ var Project = function () {
    *
    * @since 0.3.0
    *
-   * @param {[bool]} force Optional. If true and a config file already exists,
-   *                       it will be deleted and a new file will be created.
+   * @param {bool} [force] If true and a config file already exists, it will
+   *                       be deleted and a new file will be created.
    */
 
 	}, {
@@ -202,28 +202,32 @@ var Project = function () {
 
 
 		/**
-   * Project paths (getter).
+   * Gets project paths.
    *
    * @since 0.3.0
    *
-   * @return {object} Project paths.
+   * @return {object}
    */
 		get: function get() {
+
 			if (!this._paths) {
+
+				var rootPath = _path2.default.join(__appPath, '..');
+
 				this._paths = {
-					root: __rootPath,
 					app: __appPath,
+					root: rootPath,
 					cwd: process.cwd(),
 					project: process.cwd(),
 					includes: _path2.default.join(__appPath, 'include'),
-					assets: _path2.default.join(__rootPath, 'project-files', 'assets'),
-					templates: _path2.default.join(__rootPath, 'project-files', 'templates'),
-					plugins: _path2.default.join(__rootPath, 'project-files', 'plugins'),
-					test: _path2.default.join(__rootPath, 'test'),
+					assets: _path2.default.join(rootPath, 'project-files', 'assets'),
+					templates: _path2.default.join(rootPath, 'project-files', 'templates'),
+					plugins: _path2.default.join(rootPath, 'project-files', 'plugins'),
+					test: _path2.default.join(rootPath, 'test'),
 					config: _utilsUpsearch2.default.sync('project.yml')
 				};
 
-				if ('node-test' === _yargs2.default.argv.env) {
+				if (this._paths.root === this._paths.project) {
 					this._paths.project = _path2.default.join(this._paths.root, '_test-project');
 				}
 
@@ -236,11 +240,11 @@ var Project = function () {
 		}
 
 		/**
-   * Project config (getter).
+   * Gets config.
    *
    * @since 0.1.0
    *
-   * @return {object} The current config settings.
+   * @return {object}
    */
 
 	}, {
@@ -255,41 +259,31 @@ var Project = function () {
 		}
 
 		/**
-   * Project config (setter).
+   * Sets config.
    *
    * @since 0.1.0
    *
-   * @param  {object} config The new config settings.
+   * @param {object} config The new config settings.
    */
 		,
 		set: function set(config) {
 			this._config = this.parseConfig(config);
 		}
-	}, {
-		key: 'data',
-		get: function get() {
-
-			if (!this._data) {
-				this._data = _lodash2.default.merge({}, this.config, { paths: this.paths });
-			}
-
-			return this._data;
-		}
 
 		/**
-   * Returns the default project config settings.
+   * Gets default config settings.
    *
    * @since 0.1.0
    *
-   * @return {object} The default config settings.
+   * @return {object}
    */
 
 	}, {
 		key: 'defaultConfig',
 		get: function get() {
 			return {
-				env: 'development',
 				vvv: true,
+				debug: false,
 				token: '',
 				project: {
 					title: '',
@@ -319,20 +313,20 @@ var Project = function () {
 					name: '',
 					user: 'wp',
 					pass: 'wp',
-					rootUser: 'root',
-					rootPass: 'root',
 					host: 'localhost',
+					root_user: 'root',
+					root_pass: 'root',
 					prefix: ''
 				},
 				secret: {
-					authKey: '',
-					secureAuthKey: '',
-					loggedInKey: '',
-					nonceKey: '',
-					authSalt: '',
-					secureAuthSalt: '',
-					loggedInSalt: '',
-					nonceSalt: ''
+					auth_key: '',
+					auth_salt: '',
+					secure_auth_key: '',
+					secure_auth_salt: '',
+					logged_in_key: '',
+					logged_in_salt: '',
+					nonce_key: '',
+					nonce_salt: ''
 				}
 			};
 		}

@@ -223,18 +223,23 @@ bash ./scripts/wp-init.sh
 
 ### Special considerations
 
-If by chance you already have a program called `wppm` installed, we've included
-a `wp-project-manager` command as well (in fact, `wppm` is just an alias for
-`wp-project-manager`).
+- If by chance you already have a program called `wppm` installed, we've included
+  a `wp-project-manager` command as well (in fact, `wppm` is just an alias for
+  `wp-project-manager`).
 
-If you plan on sharing a database between your production and development
-servers, you'll need to set `db.prefix` in your project config so it matches
-the prefix used in the production database. You can also use the the
-`--db.prefix` argument:
+- If you plan on sharing a database between your production and development
+  servers, you'll need to set `db.prefix` in your project config so it matches
+  the prefix used in the production database. You can also use the the
+  `--db.prefix` argument:
 
-```sh
-wppm project create --db.prefix="myprefix_"
-```
+  ```sh
+  wppm project create --db.prefix="myprefix_"
+  ```
+
+- When you create a new project, the various authentication keys and salts used
+  by WordPress internally are automatically generated for you. If you'd prefer
+  to generate these yourself, just [visit this URL](https://roots.io/salts.html)
+  and copy the the block under
 
 
 ## Project Structure

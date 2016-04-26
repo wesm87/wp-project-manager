@@ -1,13 +1,14 @@
 'use strict';
 
 import fs     from 'fs-extra';
-import path   from 'path';
 import YAML   from 'js-yaml';
 import crypto from 'crypto';
-import colors from 'colors';
 
 import log    from './log';
 
+/**
+ * Helper functions.
+ */
 class Helpers {
 
 	/**
@@ -75,6 +76,33 @@ class Helpers {
 	 */
 	static symlinkExists( path ) {
 		return this.pathExists( path, 'symlink' );
+	}
+
+	/**
+	 * Takes a directory path and returns an array containing the contents of
+	 * the directory.
+	 *
+	 * @since 0.4.0
+	 *
+	 * @param  {string} dir             The directory path.
+	 * @param  {bool}   [includeHidden] If true, hidden files are included.
+	 *                                  Default is false.
+	 *
+	 * @return {array}  The directory contents.
+	 */
+	static readDir( dir, includeHidden ) {
+
+		try {
+			let files = fs.readdirSync( dir );
+
+			if ( ! includeHidden ) {
+				files = files.filter( file => 0 !== file.indexOf( '.' ) );
+			}
+
+			return files;
+		} catch ( error ) {
+			log.error( error );
+		}
 	}
 
 	/**

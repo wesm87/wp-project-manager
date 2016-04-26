@@ -1,3 +1,4 @@
+'use strict';
 
 import project from '../include/project';
 

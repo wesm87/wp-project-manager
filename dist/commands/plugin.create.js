@@ -1,13 +1,5 @@
 'use strict';
 
-var _log = require('../include/log');
-
-var _log2 = _interopRequireDefault(_log);
-
-var _project = require('../include/project');
-
-var _project2 = _interopRequireDefault(_project);
-
 var _scaffold = require('../include/scaffold');
 
 var _scaffold2 = _interopRequireDefault(_scaffold);
@@ -18,8 +10,7 @@ module.exports = {
 	command: 'plugin create',
 	describe: 'scaffold new plugin',
 	builder: {},
-	handler: function handler(argv) {
-
+	handler: function handler() {
 		_scaffold2.default.initPlugin();
 	}
 };

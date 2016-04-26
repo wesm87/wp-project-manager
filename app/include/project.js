@@ -6,7 +6,6 @@ import path     from 'path';
 import yargs    from 'yargs';
 import upsearch from 'utils-upsearch';
 
-import log      from './log';
 import helpers  from './helpers';
 
 if ( ! _.upperSnakeCase ) {
@@ -15,31 +14,38 @@ if ( ! _.upperSnakeCase ) {
 	);
 }
 
+/**
+ * Project config settings and helper methods.
+ */
 class Project {
 
 	/**
-	 * Project paths (getter).
+	 * Gets project paths.
 	 *
 	 * @since 0.3.0
 	 *
-	 * @return {object} Project paths.
+	 * @return {object}
 	 */
 	static get paths() {
+
 		if ( ! this._paths ) {
+
+			const rootPath = path.join( __appPath, '..' );
+
 			this._paths = {
-				root:      __rootPath,
 				app:       __appPath,
+				root:      rootPath,
 				cwd:       process.cwd(),
 				project:   process.cwd(),
 				includes:  path.join( __appPath, 'include' ),
-				assets:    path.join( __rootPath, 'project-files', 'assets' ),
-				templates: path.join( __rootPath, 'project-files', 'templates' ),
-				plugins:   path.join( __rootPath, 'project-files', 'plugins' ),
-				test:      path.join( __rootPath, 'test' ),
+				assets:    path.join( rootPath, 'project-files', 'assets' ),
+				templates: path.join( rootPath, 'project-files', 'templates' ),
+				plugins:   path.join( rootPath, 'project-files', 'plugins' ),
+				test:      path.join( rootPath, 'test' ),
 				config:    upsearch.sync( 'project.yml' ),
 			};
 
-			if ( 'node-test' === yargs.argv.env ) {
+			if ( this._paths.root === this._paths.project ) {
 				this._paths.project = path.join( this._paths.root, '_test-project' );
 			}
 
@@ -52,11 +58,11 @@ class Project {
 	}
 
 	/**
-	 * Project config (getter).
+	 * Gets config.
 	 *
 	 * @since 0.1.0
 	 *
-	 * @return {object} The current config settings.
+	 * @return {object}
 	 */
 	static get config() {
 
@@ -68,40 +74,27 @@ class Project {
 	}
 
 	/**
-	 * Project config (setter).
+	 * Sets config.
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param  {object} config The new config settings.
+	 * @param {object} config The new config settings.
 	 */
 	static set config( config ) {
 		this._config = this.parseConfig( config );
 	}
 
-	static get data() {
-
-		if ( ! this._data ) {
-			this._data = _.merge(
-				{},
-				this.config,
-				{ paths: this.paths }
-			);
-		}
-
-		return this._data;
-	}
-
 	/**
-	 * Returns the default project config settings.
+	 * Gets default config settings.
 	 *
 	 * @since 0.1.0
 	 *
-	 * @return {object} The default config settings.
+	 * @return {object}
 	 */
 	static get defaultConfig() {
 		return {
-			env: 'development',
 			vvv: true,
+			debug: false,
 			token: '',
 			project: {
 				title: '',
@@ -128,23 +121,23 @@ class Project {
 				email: 'admin@localhost.dev',
 			},
 			db: {
-				name:     '',
-				user:     'wp',
-				pass:     'wp',
-				rootUser: 'root',
-				rootPass: 'root',
-				host:     'localhost',
-				prefix:   '',
+				name:      '',
+				user:      'wp',
+				pass:      'wp',
+				host:      'localhost',
+				root_user: 'root',
+				root_pass: 'root',
+				prefix:    '',
 			},
 			secret: {
-				authKey:        '',
-				secureAuthKey:  '',
-				loggedInKey:    '',
-				nonceKey:       '',
-				authSalt:       '',
-				secureAuthSalt: '',
-				loggedInSalt:   '',
-				nonceSalt:      '',
+				auth_key:         '',
+				auth_salt:        '',
+				secure_auth_key:  '',
+				secure_auth_salt: '',
+				logged_in_key:    '',
+				logged_in_salt:   '',
+				nonce_key:        '',
+				nonce_salt:       '',
 			},
 		};
 	}
@@ -163,14 +156,14 @@ class Project {
 
 		let config;
 
-		// Try to load the file if one was passed.
-		if ( file ) {
+		// Try to load the config file if one was passed and it exists.
+		if ( file && helpers.fileExists( file ) ) {
 			config = helpers.loadYAML( file );
 		}
 
 		// If we don't have a config object (or the config object is empty)
 		// fall back to the default config file.
-		if ( ! config || _.isEmpty( config ) ) {
+		if ( _.isEmpty( config ) && helpers.fileExists( this.paths.config ) ) {
 			config = helpers.loadYAML( this.paths.config );
 		}
 
@@ -270,8 +263,8 @@ class Project {
 	 *
 	 * @since 0.3.0
 	 *
-	 * @param {[bool]} force Optional. If true and a config file already exists,
-	 *                       it will be deleted and a new file will be created.
+	 * @param {bool} [force] If true and a config file already exists, it will
+	 *                       be deleted and a new file will be created.
 	 */
 	static createConfigFile( force = false ) {
 

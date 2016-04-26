@@ -1,16 +1,15 @@
-env: development
-
-vvv: true
-
+vvv:   true
+debug: true
 token:
 
 project:
+  multisite: false
   title:
   slug:
   url:
 
 repo:
-  create: false,
+  create: false
   url:
 
 plugin:
@@ -30,19 +29,19 @@ admin:
 
 db:
   name:
-  user:     wp
-  pass:     wp
-  host:     localhost
-  rootUser: root
-  rootPass: root
+  user:      wp
+  pass:      wp
+  host:      localhost
+  root_user: root
+  root_pass: root
   prefix:
 
 secret:
-  authKey:
-  secureAuthKey:
-  loggedInKey:
-  nonceKey:
-  authSalt:
-  secureAuthSalt:
-  loggedInSalt:
-  nonceSalt:
+  auth_key:
+  secure_auth_key:
+  logged_in_key:
+  nonce_key:
+  auth_salt:
+  secure_auth_salt:
+  logged_in_salt:
+  nonce_salt:

@@ -53,12 +53,14 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
+ * Scaffolds out project files, plugins, themes, etc.
+ *
  * @todo Figure out better names for functions.
  * @todo Document all the things! Maybe switch to rspec?
  * @todo Break this up into multiple classes.
- *           Scaffold should only handle project files and folders.
- *           Move WordPress / database setup into separate class.
- *           Move git commands into separate class.
+ *       - Scaffold class should only handle project files and folders.
+ *       - Move WordPress / database setup into separate class.
+ *       - Move git commands into separate class?
  */
 
 var Scaffold = function (_Project) {
@@ -92,6 +94,7 @@ var Scaffold = function (_Project) {
 		key: 'createProject',
 		value: function createProject() {
 			this.initProjectFiles();
+			this.parseTemplateData();
 			this.initRepo();
 			this.initDevLib();
 			this.initProject();
@@ -108,13 +111,14 @@ var Scaffold = function (_Project) {
 		key: 'initProjectFiles',
 		value: function initProjectFiles() {
 
+			this.maybeCreateAuthFiles();
+			this.maybeCopyPluginZips();
+
 			this.scaffoldFiles('scripts');
 
 			if (this.config.vvv) {
 				this.scaffoldFiles('vvv');
 			}
-
-			this.maybeCreateAuthFiles();
 		}
 	}, {
 		key: 'maybeCreateAuthFiles',
@@ -126,14 +130,51 @@ var Scaffold = function (_Project) {
 
 			var filePath = _path2.default.join(_os2.default.homedir(), '.composer/auth.json');
 			var contents = JSON.stringify({
-				"github-oauth": {
-					"github.com": '' + this.config.token
+				'github-oauth': {
+					'github.com': '' + this.config.token
 				}
 			});
 
 			if (!_helpers2.default.fileExists(filePath)) {
 				_fsExtra2.default.writeFileSync(filePath, contents);
 			}
+		}
+	}, {
+		key: 'maybeCopyPluginZips',
+		value: function maybeCopyPluginZips() {
+
+			if (!_helpers2.default.directoryExists(this.paths.plugins)) {
+				return;
+			}
+
+			_log2.default.message('Copying plugin ZIPs...');
+
+			var source = this.paths.plugins;
+			var dest = _path2.default.join(this.paths.project, 'plugin-zips');
+
+			_fsExtra2.default.copySync(source, dest);
+
+			_log2.default.ok('Plugin ZIPs copied.');
+		}
+	}, {
+		key: 'parseTemplateData',
+		value: function parseTemplateData() {
+			var _this2 = this;
+
+			var pluginZipsDir = _path2.default.join(this.paths.project, 'plugin-zips');
+
+			this.templateData = this.config;
+
+			if (!this.templateData.pluginZips) {
+				this.templateData.pluginZips = [];
+			}
+
+			_helpers2.default.readDir(pluginZipsDir).forEach(function (val) {
+				_this2.templateData.pluginZips.push({
+					name: _path2.default.basename(val, '.zip'),
+					file: val
+				});
+			});
 		}
 	}, {
 		key: 'initRepo',
@@ -143,7 +184,7 @@ var Scaffold = function (_Project) {
 				return;
 			}
 
-			_log2.default.info('Checking for Git repo...');
+			_log2.default.message('Checking for Git repo...');
 
 			var dirExists = _helpers2.default.directoryExists(_path2.default.join(this.paths.project, '.git'));
 
@@ -152,7 +193,7 @@ var Scaffold = function (_Project) {
 			}
 
 			// Initialize repo.
-			if (this.execSync('git init')) {
+			if (this.execSync('git init', 'project', false)) {
 				_log2.default.ok('Repo initialized.');
 			}
 
@@ -160,7 +201,7 @@ var Scaffold = function (_Project) {
 			if (this.config.repo.url) {
 				var command = 'git remote add origin ' + this.config.repo.url;
 
-				if (this.execSync(command)) {
+				if (this.execSync(command, 'project', false)) {
 					_log2.default.ok('Remote URL added.');
 				}
 			}
@@ -169,7 +210,7 @@ var Scaffold = function (_Project) {
 		key: 'initDevLib',
 		value: function initDevLib() {
 
-			_log2.default.info('Checking for wp-dev-lib submodule...');
+			_log2.default.message('Checking for wp-dev-lib submodule...');
 
 			var dirExists = _helpers2.default.directoryExists(_path2.default.join(this.paths.project, 'dev-lib'));
 
@@ -180,7 +221,7 @@ var Scaffold = function (_Project) {
 			// Add the sub-module.
 			var command = 'git submodule add -f -b master https://github.com/xwp/wp-dev-lib.git dev-lib';
 
-			if (this.execSync(command)) {
+			if (this.execSync(command, 'project', false)) {
 				_log2.default.ok('Submodule added.');
 			}
 		}
@@ -188,7 +229,7 @@ var Scaffold = function (_Project) {
 		key: 'initProject',
 		value: function initProject() {
 
-			_log2.default.info('Checking for Bedrock...');
+			_log2.default.message('Checking for Bedrock...');
 
 			var dirExists = _helpers2.default.directoryExists(_path2.default.join(this.paths.project, 'htdocs'));
 
@@ -199,7 +240,7 @@ var Scaffold = function (_Project) {
 			// Install Bedrock.
 			var command = 'composer create-project roots/bedrock htdocs --no-install';
 
-			if (this.execSync(command)) {
+			if (this.execSync(command, 'project', false)) {
 				_log2.default.ok('Bedrock installed.');
 			}
 
@@ -208,9 +249,9 @@ var Scaffold = function (_Project) {
 			this.scaffoldFiles('bedrock');
 			this.removeFiles('bedrock');
 
-			_log2.default.info('Installing project dependencies...');
+			_log2.default.message('Installing project dependencies...');
 
-			if (this.execSync('composer install')) {
+			if (this.execSync('composer install', 'project', false)) {
 				_log2.default.ok('Dependencies installed.');
 			}
 		}
@@ -218,7 +259,7 @@ var Scaffold = function (_Project) {
 		key: 'initWordPress',
 		value: function initWordPress() {
 
-			_log2.default.info('Checking for database...');
+			_log2.default.message('Checking for database...');
 
 			if (this.execSync('wp db tables')) {
 				return _log2.default.ok('Database exists.');
@@ -228,7 +269,7 @@ var Scaffold = function (_Project) {
 				_log2.default.ok('Database created.');
 			}
 
-			_log2.default.info('Checking for WordPress database tables...');
+			_log2.default.message('Checking for WordPress database tables...');
 
 			if (this.execSync('wp core is-installed')) {
 				return _log2.default.ok('Tables exist.');
@@ -248,7 +289,7 @@ var Scaffold = function (_Project) {
 				return;
 			}
 
-			_log2.default.info('Checking for plugin...');
+			_log2.default.message('Checking for plugin...');
 
 			var basePath = this.getBasePath('plugin');
 
@@ -258,15 +299,24 @@ var Scaffold = function (_Project) {
 
 			this.scaffoldFiles('plugin');
 
-			['includes', 'assets/source/css', 'assets/source/js', 'assets/dist/css', 'assets/dist/js'].forEach(function (dir) {
+			var pluginDirs = ['includes', 'assets/source/css', 'assets/source/js', 'assets/dist/css', 'assets/dist/js'];
+
+			pluginDirs.forEach(function (dir) {
 				try {
 					_fsExtra2.default.mkdirpSync(_path2.default.join(basePath, dir));
 				} catch (error) {
-					_log2.default.error(error);
+					if (!_lodash2.default.isEmpty(error)) {
+						_log2.default.error(error);
+					}
 				}
 			});
 
 			_log2.default.ok('Plugin created.');
+		}
+	}, {
+		key: 'createPluginTests',
+		value: function createPluginTests() {
+			_log2.default.error('This feature is not ready');
 		}
 	}, {
 		key: 'initTheme',
@@ -276,7 +326,7 @@ var Scaffold = function (_Project) {
 				return;
 			}
 
-			_log2.default.info('Checking for child theme...');
+			_log2.default.message('Checking for child theme...');
 
 			var basePath = this.getBasePath('theme');
 
@@ -286,11 +336,15 @@ var Scaffold = function (_Project) {
 
 			this.scaffoldFiles('theme');
 
-			['includes', 'assets/source/css', 'assets/source/js', 'assets/dist/css', 'assets/dist/js'].forEach(function (dir) {
+			var themeDirs = ['includes', 'assets/source/css', 'assets/source/js', 'assets/dist/css', 'assets/dist/js'];
+
+			themeDirs.forEach(function (dir) {
 				try {
 					_fsExtra2.default.mkdirpSync(_path2.default.join(basePath, dir));
 				} catch (error) {
-					_log2.default.error(error);
+					if (!_lodash2.default.isEmpty(error)) {
+						_log2.default.error(error);
+					}
 				}
 			});
 
@@ -298,12 +352,17 @@ var Scaffold = function (_Project) {
 
 			_log2.default.ok('Theme created.');
 
-			_log2.default.info('Installing theme dependencies...');
+			_log2.default.message('Installing theme dependencies...');
 
 			this.execSync('npm install', 'theme');
 			this.execSync('bower install', 'theme');
 
 			_log2.default.ok('Done');
+		}
+	}, {
+		key: 'createThemeTests',
+		value: function createThemeTests() {
+			_log2.default.error('This feature is not ready');
 		}
 	}, {
 		key: 'exec',
@@ -336,6 +395,7 @@ var Scaffold = function (_Project) {
 		key: 'execSync',
 		value: function execSync(command) {
 			var type = arguments.length <= 1 || arguments[1] === undefined ? 'project' : arguments[1];
+			var logError = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
 
 
 			var options = {
@@ -346,7 +406,9 @@ var Scaffold = function (_Project) {
 				_child_process2.default.execSync(command, options);
 				return true;
 			} catch (error) {
-				_log2.default.error(error);
+				if (logError && !_lodash2.default.isEmpty(error)) {
+					_log2.default.error(error);
+				}
 				return false;
 			}
 		}
@@ -415,7 +477,9 @@ var Scaffold = function (_Project) {
 
 				_log2.default.ok(_lodash2.default.startCase(type) + ' assets created.');
 			} catch (error) {
-				_log2.default.error(error);
+				if (!_lodash2.default.isEmpty(error)) {
+					_log2.default.error(error);
+				}
 			}
 		}
 	}, {
@@ -445,10 +509,10 @@ var Scaffold = function (_Project) {
 
 					dest = _path2.default.join(dest, _path2.default.basename(source));
 
-					var destPath = _path2.default.join(this.paths.project, dest);
-					var sourcePath = _path2.default.join(this.paths.project, source);
+					var destPath = _path2.default.join(base, dest);
+					var sourcePath = _path2.default.join(base, source);
 
-					_log2.default.info('Checking for ' + dest + '...');
+					_log2.default.message('Checking for ' + dest + '...');
 
 					if (_helpers2.default.symlinkExists(destPath)) {
 						return _log2.default.ok(dest + ' exists.');
@@ -458,7 +522,9 @@ var Scaffold = function (_Project) {
 						_fsExtra2.default.ensureSymlinkSync(destPath, sourcePath);
 						_log2.default.ok(dest + ' created.');
 					} catch (error) {
-						_log2.default.error(error);
+						if (!_lodash2.default.isEmpty(error)) {
+							_log2.default.error(error);
+						}
 					}
 				}
 			} catch (err) {
@@ -501,7 +567,11 @@ var Scaffold = function (_Project) {
 
 					try {
 						_fsExtra2.default.removeSync(filePath);
-					} catch (error) {}
+					} catch (error) {
+						if (!_lodash2.default.isEmpty(error)) {
+							_log2.default.error(error);
+						}
+					}
 				}
 			} catch (err) {
 				_didIteratorError2 = true;
@@ -521,7 +591,7 @@ var Scaffold = function (_Project) {
 	}, {
 		key: 'scaffoldFiles',
 		value: function scaffoldFiles() {
-			var _this2 = this;
+			var _this3 = this;
 
 			var type = arguments.length <= 0 || arguments[0] === undefined ? 'project' : arguments[0];
 
@@ -532,19 +602,12 @@ var Scaffold = function (_Project) {
 				return _log2.default.error(source + ' is not a valid template directory');
 			}
 
-			try {
-				var dirs = _fsExtra2.default.readdirSync(source);
+			var dirs = _helpers2.default.readDir(source);
 
+			if (!_lodash2.default.isEmpty(dirs)) {
 				dirs.forEach(function (file) {
-
-					var filePath = _path2.default.join(source, file);
-
-					if (0 !== file.indexOf('.') && _helpers2.default.fileExists(filePath)) {
-						_this2.scaffoldFile(filePath, type);
-					}
+					_this3.scaffoldFile(_path2.default.join(source, file), type);
 				});
-			} catch (error) {
-				_log2.default.error(error);
 			}
 		}
 	}, {
@@ -560,7 +623,7 @@ var Scaffold = function (_Project) {
 				file = file.replace('_', '.');
 			}
 
-			_log2.default.info('Checking for ' + file + '...');
+			_log2.default.message('Checking for ' + file + '...');
 
 			var base = this.getBasePath(type);
 			var dest = _path2.default.join(base, file);
@@ -573,13 +636,15 @@ var Scaffold = function (_Project) {
 
 			try {
 				var templateContent = _fsExtra2.default.readFileSync(source).toString();
-				var renderedContent = _mustache2.default.render(templateContent, this.data);
+				var renderedContent = _mustache2.default.render(templateContent, this.templateData);
 
 				_fsExtra2.default.writeFileSync(dest, renderedContent);
 
 				_log2.default.ok(file + ' created.');
 			} catch (error) {
-				_log2.default.error(error);
+				if (!_lodash2.default.isEmpty(error)) {
+					_log2.default.error(error);
+				}
 			}
 		}
 	}, {

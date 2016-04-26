@@ -16,7 +16,6 @@
 	"undef": true,
 	"unused": true,
 	"globals": {
-		"__rootPath": false,
 		"__appPath": false
 	}
 }

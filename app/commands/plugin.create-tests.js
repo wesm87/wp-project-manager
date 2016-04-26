@@ -3,10 +3,10 @@
 import scaffold from '../include/scaffold';
 
 module.exports = {
-	command:  'plugin create',
-	describe: 'scaffold new plugin',
+	command:  'plugin create-tests',
+	describe: 'create plugin unit tests',
 	builder:  {},
 	handler() {
-		scaffold.initPlugin();
+		scaffold.createPluginTests();
 	},
 };

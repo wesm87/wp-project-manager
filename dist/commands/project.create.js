@@ -10,7 +10,7 @@ module.exports = {
 	command: 'project create',
 	describe: 'scaffold new project',
 	builder: {},
-	handler: function handler(argv) {
+	handler: function handler() {
 		_scaffold2.default.init();
 	}
 };

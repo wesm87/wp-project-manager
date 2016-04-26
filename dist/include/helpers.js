@@ -10,10 +10,6 @@ var _fsExtra = require('fs-extra');
 
 var _fsExtra2 = _interopRequireDefault(_fsExtra);
 
-var _path = require('path');
-
-var _path2 = _interopRequireDefault(_path);
-
 var _jsYaml = require('js-yaml');
 
 var _jsYaml2 = _interopRequireDefault(_jsYaml);
@@ -22,10 +18,6 @@ var _crypto = require('crypto');
 
 var _crypto2 = _interopRequireDefault(_crypto);
 
-var _colors = require('colors');
-
-var _colors2 = _interopRequireDefault(_colors);
-
 var _log = require('./log');
 
 var _log2 = _interopRequireDefault(_log);
@@ -33,6 +25,10 @@ var _log2 = _interopRequireDefault(_log);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Helper functions.
+ */
 
 var Helpers = function () {
 	function Helpers() {
@@ -119,6 +115,38 @@ var Helpers = function () {
 		key: 'symlinkExists',
 		value: function symlinkExists(path) {
 			return this.pathExists(path, 'symlink');
+		}
+
+		/**
+   * Takes a directory path and returns an array containing the contents of
+   * the directory.
+   *
+   * @since 0.4.0
+   *
+   * @param  {string} dir             The directory path.
+   * @param  {bool}   [includeHidden] If true, hidden files are included.
+   *                                  Default is false.
+   *
+   * @return {array}  The directory contents.
+   */
+
+	}, {
+		key: 'readDir',
+		value: function readDir(dir, includeHidden) {
+
+			try {
+				var files = _fsExtra2.default.readdirSync(dir);
+
+				if (!includeHidden) {
+					files = files.filter(function (file) {
+						return 0 !== file.indexOf('.');
+					});
+				}
+
+				return files;
+			} catch (error) {
+				_log2.default.error(error);
+			}
 		}
 
 		/**

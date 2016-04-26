@@ -22,26 +22,22 @@
  * You can also specify the path using the `--config` argument. For example:
  *     `node wp-manager --config=/path/to/config.yml`.
  *
- * @todo Separate script out into individual command modules.
- *       @todo Add argument validation and sanitization.
- *       @todo Add description, usage, example, and copyright messages.
+ * @todo Finish separating script out into individual command modules.
+ * @todo Add argument validation and sanitization.
+ * @todo Add description, usage, example, and copyright messages.
  * @todo Add functions to validate, sanitize, and/or format Git repo URLs.
  * @todo Add the ability to install VVV using WP Project Manager.
+ * @todo Switch to using `async` / `await` and convert all the `*Sync()` methods
+ *       we're currently using to their async counterparts.
  */
 
 'use strict';
 
-import fs       from 'fs-extra';
-import path     from 'path';
-import yargs    from 'yargs';
+import yargs from 'yargs';
 
-global.__appPath  = __dirname;
-global.__rootPath = path.join( __dirname, '..' );
+global.__appPath = __dirname;
 
-import helpers  from './include/helpers';
-import project  from './include/project';
-
-const argv = yargs
+yargs
 	.help()
 	.completion()
 	.command( require( './commands/config.create' ) )

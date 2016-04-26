@@ -14,55 +14,19 @@
       "type": "vcs",
       "name": "decisionary/blr-base-theme",
       "url": "https://github.com/Decisionary/blr-base-theme.git"
-    },
+    }{{# pluginZips }},
     {
       "type": "package",
       "package": {
-        "name": "wpackagist-plugin/acf-pro",
+        "name": "wpackagist-plugin/{{ name }}",
         "type": "wordpress-plugin",
-        "version": "5.3.7",
+        "version": "1.0.0",
         "dist": {
-          "url": "{{{ paths.plugins }}}/advanced-custom-fields-pro.zip",
+          "url": "./plugin-zips/{{ file }}",
           "type": "zip"
         }
       }
-    },
-    {
-      "type": "package",
-      "package": {
-        "name": "wpackagist-plugin/gravity-forms",
-        "type": "wordpress-plugin",
-        "version": "1.9.18",
-        "dist": {
-          "url": "{{{ paths.plugins }}}/gravityforms.zip",
-          "type": "zip"
-        }
-      }
-    },
-    {
-      "type": "package",
-      "package": {
-        "name": "wpackagist-plugin/ml-slider-pro",
-        "type": "wordpress-plugin",
-        "version": "2.6.6",
-        "dist": {
-          "url": "{{{ paths.plugins }}}/ml-slider-pro.zip",
-          "type": "zip"
-        }
-      }
-    },
-    {
-      "type": "package",
-      "package": {
-        "name": "wpackagist-plugin/monarch",
-        "type": "wordpress-plugin",
-        "version": "1.2.7.2",
-        "dist": {
-          "url": "{{{ paths.plugins }}}/monarch.zip",
-          "type": "zip"
-        }
-      }
-    }
+    }{{/ pluginZips }}
   ],
   "require": {
     "php": ">=5.5",
@@ -77,18 +41,15 @@
     "wpackagist-plugin/bj-lazy-load": "^1.0",
     "wpackagist-plugin/broken-link-checker": "^1.11",
     "wpackagist-plugin/google-sitemap-generator": "^4.0",
-    "wpackagist-plugin/jetpack": "^3.9",
-    "wpackagist-plugin/ml-slider": "^3.3.6",
+    "wpackagist-plugin/jetpack": "^4.0",
+    "wpackagist-plugin/ml-slider": "^3.3",
     "wpackagist-plugin/redirection": "^2.4",
     "wpackagist-plugin/tinymce-advanced": "^4.2",
-    "wpackagist-plugin/w3-total-cache": "^0.9.4.1",
+    "wpackagist-plugin/w3-total-cache": "^0.9",
     "wpackagist-plugin/wordpress-seo": "^3.1",
-    "wpackagist-plugin/wp-optimize": "^1.8.9.10",
-    "wpackagist-plugin/wp-smushit": "^2.1",
-    "wpackagist-plugin/acf-pro": "*",
-    "wpackagist-plugin/gravity-forms": "*",
-    "wpackagist-plugin/ml-slider-pro": "*",
-    "wpackagist-plugin/monarch": "*"
+    "wpackagist-plugin/wp-optimize": "^1.8",
+    "wpackagist-plugin/wp-smushit": "^2.1"{{# pluginZips }},
+    "wpackagist-plugin/{{ name }}": "*"{{/ pluginZips }}
   },
   "extra": {
     "installer-paths": {

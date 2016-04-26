@@ -22,38 +22,23 @@
  * You can also specify the path using the `--config` argument. For example:
  *     `node wp-manager --config=/path/to/config.yml`.
  *
- * @todo Separate script out into individual command modules.
- *       @todo Add argument validation and sanitization.
- *       @todo Add description, usage, example, and copyright messages.
+ * @todo Finish separating script out into individual command modules.
+ * @todo Add argument validation and sanitization.
+ * @todo Add description, usage, example, and copyright messages.
  * @todo Add functions to validate, sanitize, and/or format Git repo URLs.
  * @todo Add the ability to install VVV using WP Project Manager.
+ * @todo Switch to using `async` / `await` and convert all the `*Sync()` methods
+ *       we're currently using to their async counterparts.
  */
 
 'use strict';
-
-var _fsExtra = require('fs-extra');
-
-var _fsExtra2 = _interopRequireDefault(_fsExtra);
-
-var _path = require('path');
-
-var _path2 = _interopRequireDefault(_path);
 
 var _yargs = require('yargs');
 
 var _yargs2 = _interopRequireDefault(_yargs);
 
-var _helpers = require('./include/helpers');
-
-var _helpers2 = _interopRequireDefault(_helpers);
-
-var _project = require('./include/project');
-
-var _project2 = _interopRequireDefault(_project);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 global.__appPath = __dirname;
-global.__rootPath = _path2.default.join(__dirname, '..');
 
-var argv = _yargs2.default.help().completion().command(require('./commands/config.create')).command(require('./commands/project.create')).command(require('./commands/plugin.create')).command(require('./commands/theme.create')).argv;
+_yargs2.default.help().completion().command(require('./commands/config.create')).command(require('./commands/project.create')).command(require('./commands/plugin.create')).command(require('./commands/theme.create')).argv;

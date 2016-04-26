@@ -6,98 +6,170 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _colors = require('colors');
 
 var _colors2 = _interopRequireDefault(_colors);
+
+var _project = require('./project');
+
+var _project2 = _interopRequireDefault(_project);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+/**
+ * Logger class. Contains various methods (debug, info, ok, warn, error, etc.)
+ * that take a string or object-like value, apply an associated style, and log
+ * it. Some styles also prepend an associated icon identifier to the message.
+ */
+
 var Log = function () {
+	_createClass(Log, [{
+		key: 'styles',
+
+
+		/**
+   * Message styles.
+   *
+   * @since 0.4.0
+   *
+   * @member {object}
+   */
+		get: function get() {
+			return {
+				ok: ['green'],
+				info: ['cyan'],
+				warn: ['yellow', 'underline'],
+				error: ['red', 'underline'],
+				debug: ['cyan', 'underline'],
+				message: ['reset']
+			};
+		}
+
+		/**
+   * Message icons. Includes plain-text fallbacks for Windows, since the CMD
+   * prompt supports a very limited character set.
+   *
+   * @since 0.4.0
+   *
+   * @see https://github.com/sindresorhus/log-symbols
+   *
+   * @member {object}
+   */
+
+	}, {
+		key: 'icons',
+		get: function get() {
+
+			if ('win32' === process.platform) {
+				return {
+					ok: '√',
+					info: 'i',
+					warn: '‼',
+					error: '×',
+					debug: '*'
+				};
+			}
+
+			return {
+				ok: '✔',
+				info: 'ℹ',
+				warn: '⚠',
+				error: '✘',
+				debug: '✱'
+			};
+		}
+
+		/**
+   * Class constructor.
+   *
+   * @since 0.4.0
+   */
+
+	}]);
+
 	function Log() {
+		var _this = this;
+
 		_classCallCheck(this, Log);
+
+		if (this.instance) {
+			return this.instance;
+		}
+
+		// Set the colors theme based on our styles.
+		_colors2.default.setTheme(this.styles);
+
+		// Automatically create methods for each style.
+		_lodash2.default.keys(this.styles).forEach(function (style) {
+			_this[style] = function (message) {
+				return _this._log(message, style);
+			};
+		});
+
+		this.instance = this;
 	}
 
-	_createClass(Log, null, [{
-		key: 'info',
+	/**
+  * Logs a message with an optional style.
+  *
+  * If message is an object, array, function, class, etc. it is converted to
+  * a string using `JSON.stringify()`.
+  *
+  * @since 0.4.0
+  *
+  * @access private
+  *
+  * @param {mixed}  message
+  * @param {string} [style] A style to apply to the message.
+  */
 
 
-		/**
-   * Logs an informational message.
-   *
-   * @since 0.2.0
-   *
-   * @param {string} message
-   */
-		value: function info(message) {
+	_createClass(Log, [{
+		key: '_log',
+		value: function _log(message, style) {
+
+			// Convert object-like messages to string.
+			if (_lodash2.default.isObjectLike(message)) {
+				message = JSON.stringify(message, null, 2);
+			}
+
+			// Don't log anything if message is empty.
+			if (_lodash2.default.isEmpty(message)) {
+				return;
+			}
+
+			// Make sure the message is a string.
+			message = message.toString();
+
+			// Check if a valid style was specified.
+			if (style && message[style]) {
+
+				// Bail if the style is 'debug' and debugging is disabled.
+				if ('debug' === style && !_project2.default.debug) {
+					return;
+				}
+
+				// If the style has an associated icon, prepend it to the message.
+				if (this.icons[style]) {
+					message = this.icons[style] + ' ' + message;
+				}
+
+				// Apply the style to the message.
+				message = message[style];
+			}
+
+			// Log the message.
 			console.log(message);
-		}
-
-		/**
-   * Logs a debug message.
-   *
-   * @since 0.2.0
-   *
-   * @param {string} message
-   */
-
-	}, {
-		key: 'debug',
-		value: function debug(message) {
-			console.log(('' + message).cyan);
-		}
-
-		/**
-   * Logs an OK symbol and optional message.
-   *
-   * @since 0.2.0
-   *
-   * @param {string} [message]
-   */
-
-	}, {
-		key: 'ok',
-		value: function ok() {
-			var message = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-
-			console.log(('✔ ' + message).green);
-		}
-
-		/**
-   * Logs a warning symbol and optional message.
-   *
-   * @since 0.2.0
-   *
-   * @param {string} [message]
-   */
-
-	}, {
-		key: 'warn',
-		value: function warn() {
-			var message = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-
-			console.log(('✱ ' + message).yellow);
-		}
-
-		/**
-   * Logs an error symbol and optional message.
-   *
-   * @since 0.2.0
-   *
-   * @param {string} [message]
-   */
-
-	}, {
-		key: 'error',
-		value: function error() {
-			var message = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-
-			console.log(('✘ ' + message).red.underline);
 		}
 	}]);
 
 	return Log;
 }();
 
-exports.default = Log;
+exports.default = new Log();

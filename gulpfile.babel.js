@@ -1,13 +1,12 @@
 'use strict';
 
-import path      from 'path';
-import gulp      from 'gulp';
-import nsp       from 'gulp-nsp';
-import babel     from 'gulp-babel';
-import istanbul  from 'gulp-istanbul';
-import mochaTask from 'gulp-mocha';
-import coveralls from 'gulp-coveralls';
-
+import path         from 'path';
+import gulp         from 'gulp';
+import nsp          from 'gulp-nsp';
+import babel        from 'gulp-babel';
+import istanbul     from 'gulp-istanbul';
+import mochaTask    from 'gulp-mocha';
+import coveralls    from 'gulp-coveralls';
 import { Instrumenter } from 'isparta';
 
 class GulpTasks {
@@ -25,10 +24,6 @@ class GulpTasks {
 
 	get config() {
 		return {
-			build: {
-				source: 'app/**/*.js',
-				dest:   'dist',
-			},
 			nsp: {
 				package: path.resolve( 'package.json' ),
 			},
@@ -38,11 +33,14 @@ class GulpTasks {
 					instrumenter:    Instrumenter,
 				},
 				write: {
-					reporters: [ 'lcov' ],
+					reporters: [ 'lcov', 'text', 'text-summary', 'json', 'html' ],
 				},
 			},
 			mocha: {
-				reporter: 'spec',
+				reporter:  'spec',
+				require:   'chai',
+				compilers: 'js:babel-core/register',
+				recursive: true,
 			},
 		};
 	}
@@ -50,18 +48,10 @@ class GulpTasks {
 	get files() {
 		return {
 			js: {
-				source: [
-					'index.js',
-					'bin/**/*.js',
-				],
-				tests: [
-					'test/**/*.js',
-				],
-				watch: [
-					'index.js',
-					'bin/**/*.js',
-					'test/**/*.js',
-				]
+				source: 'app/**/*.js',
+				dest:   'dist',
+				tests:  'test/**/*.js',
+				watch:  [ 'app/**/*.js', 'test/**/*.js' ],
 			},
 			coverage: {
 				source: path.join( __dirname, 'coverage/lcov.info' ),
@@ -81,14 +71,14 @@ class GulpTasks {
 	}
 
 	watch() {
-		gulp.watch( this.js.files.watch, this.test );
+		gulp.watch( this.files.js.watch, this.test );
 	}
 
 	build() {
 		return gulp
-			.src(  this.config.build.source )
+			.src(  this.files.js.source )
 			.pipe( babel() )
-			.pipe( gulp.dest( this.config.build.dest ) );
+			.pipe( gulp.dest( this.files.js.dest ) );
 	}
 
 	/**
@@ -108,16 +98,21 @@ class GulpTasks {
 			.pipe( coveralls() );
 	}
 
-	test() {
-		return gulp
+	test( done ) {
+		console.log( this.config.istanbul.read );
+		gulp
 			.src(  this.files.js.source )
 			.pipe( istanbul( this.config.istanbul.read ) )
 			.pipe( istanbul.hookRequire() )
 			.on( 'finish', () => {
+				console.log( this.config.mocha );
+				console.log( this.config.istanbul );
+				console.log( this.files.js.tests );
 				return gulp
 					.src(  this.files.js.tests )
 					.pipe( mochaTask( this.config.mocha ) )
-					.pipe( istanbul.writeReports( this.config.istanbul.write ) );
+					.pipe( istanbul.writeReports( this.config.istanbul.write ) )
+					.on( 'end', done );
 			});
 	}
 
@@ -127,3 +122,26 @@ class GulpTasks {
 }
 
 new GulpTasks();
+
+
+
+function test() {
+	return gulp.src( 'test/**/*.js' )
+		.pipe( mochaTask() );
+}
+
+function coverage( done ) {
+	gulp
+		.src([ 'app/**/*.js' ])
+		.pipe( istanbul({ instrumenter: Instrumenter }) )
+		.pipe( istanbul.hookRequire() )
+		.on( 'finish', function() {
+			return test()
+				.pipe(istanbul.writeReports())
+				.on('end', done);
+		});
+}
+
+// Run our tests as the default task
+gulp.task( 'default', test );
+gulp.task( 'coverage', coverage );

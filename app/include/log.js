@@ -1,63 +1,137 @@
 'use strict';
 
-import colors from 'colors';
+import _       from 'lodash';
+import colors  from 'colors';
 
+import project from './project';
+
+
+/**
+ * Logger class. Contains various methods (debug, info, ok, warn, error, etc.)
+ * that take a string or object-like value, apply an associated style, and log
+ * it. Some styles also prepend an associated icon identifier to the message.
+ */
 class Log {
 
 	/**
-	 * Logs an informational message.
+	 * Message styles.
 	 *
-	 * @since 0.2.0
+	 * @since 0.4.0
 	 *
-	 * @param {string} message
+	 * @member {object}
 	 */
-	static info( message ) {
+	get styles() {
+		return {
+			ok:      [ 'green' ],
+			info:    [ 'cyan' ],
+			warn:    [ 'yellow', 'underline' ],
+			error:   [ 'red', 'underline' ],
+			debug:   [ 'cyan', 'underline' ],
+			message: [ 'reset' ],
+		};
+	}
+
+	/**
+	 * Message icons. Includes plain-text fallbacks for Windows, since the CMD
+	 * prompt supports a very limited character set.
+	 *
+	 * @since 0.4.0
+	 *
+	 * @see https://github.com/sindresorhus/log-symbols
+	 *
+	 * @member {object}
+	 */
+	get icons() {
+
+		if ( 'win32' === process.platform ) {
+			return {
+				ok:    '√',
+				info:  'i',
+				warn:  '‼',
+				error: '×',
+				debug: '*',
+			};
+		}
+
+		return {
+			ok:    '✔',
+			info:  'ℹ',
+			warn:  '⚠',
+			error: '✘',
+			debug: '✱',
+		};
+	}
+
+	/**
+	 * Class constructor.
+	 *
+	 * @since 0.4.0
+	 */
+	constructor() {
+
+		if ( this.instance ) {
+			return this.instance;
+		}
+
+		// Set the colors theme based on our styles.
+		colors.setTheme( this.styles );
+
+		// Automatically create methods for each style.
+		_.keys( this.styles ).forEach(( style ) => {
+			this[ style ] = message => this._log( message, style );
+		});
+
+		this.instance = this;
+	}
+
+	/**
+	 * Logs a message with an optional style.
+	 *
+	 * If message is an object, array, function, class, etc. it is converted to
+	 * a string using `JSON.stringify()`.
+	 *
+	 * @since 0.4.0
+	 *
+	 * @access private
+	 *
+	 * @param {mixed}  message
+	 * @param {string} [style] A style to apply to the message.
+	 */
+	_log( message, style ) {
+
+		// Convert object-like messages to string.
+		if ( _.isObjectLike( message ) ) {
+			message = JSON.stringify( message, null, 2 );
+		}
+
+		// Don't log anything if message is empty.
+		if ( _.isEmpty( message ) ) {
+			return;
+		}
+
+		// Make sure the message is a string.
+		message = message.toString();
+
+		// Check if a valid style was specified.
+		if ( style && message[ style ] ) {
+
+			// Bail if the style is 'debug' and debugging is disabled.
+			if ( 'debug' === style && ! project.debug ) {
+				return;
+			}
+
+			// If the style has an associated icon, prepend it to the message.
+			if ( this.icons[ style ] ) {
+				message = this.icons[ style ] + ' ' + message;
+			}
+
+			// Apply the style to the message.
+			message = message[ style ];
+		}
+
+		// Log the message.
 		console.log( message );
-	}
-
-	/**
-	 * Logs a debug message.
-	 *
-	 * @since 0.2.0
-	 *
-	 * @param {string} message
-	 */
-	static debug( message ) {
-		console.log( `${ message }`.cyan );
-	}
-
-	/**
-	 * Logs an OK symbol and optional message.
-	 *
-	 * @since 0.2.0
-	 *
-	 * @param {string} [message]
-	 */
-	static ok( message = '' ) {
-		console.log( `✔ ${ message }`.green );
-	}
-
-	/**
-	 * Logs a warning symbol and optional message.
-	 *
-	 * @since 0.2.0
-	 *
-	 * @param {string} [message]
-	 */
-	static warn( message = '' ) {
-		console.log( `✱ ${ message }`.yellow );
-	}
-
-	/**
-	 * Logs an error symbol and optional message.
-	 *
-	 * @since 0.2.0
-	 *
-	 * @param {string} [message]
-	 */
-	static error( message = '' ) {
-		console.log( `✘ ${ message }`.red.underline );
 	}
 }
 
-export default Log;
+export default new Log();

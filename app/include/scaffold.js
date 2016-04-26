@@ -12,12 +12,14 @@ import helpers  from './helpers';
 import Project  from './project';
 
 /**
+ * Scaffolds out project files, plugins, themes, etc.
+ *
  * @todo Figure out better names for functions.
  * @todo Document all the things! Maybe switch to rspec?
  * @todo Break this up into multiple classes.
- *           Scaffold should only handle project files and folders.
- *           Move WordPress / database setup into separate class.
- *           Move git commands into separate class.
+ *       - Scaffold class should only handle project files and folders.
+ *       - Move WordPress / database setup into separate class.
+ *       - Move git commands into separate class?
  */
 class Scaffold extends Project {
 
@@ -65,6 +67,7 @@ class Scaffold extends Project {
 
 	static createProject() {
 		this.initProjectFiles();
+		this.parseTemplateData();
 		this.initRepo();
 		this.initDevLib();
 		this.initProject();
@@ -79,13 +82,14 @@ class Scaffold extends Project {
 
 	static initProjectFiles() {
 
+		this.maybeCreateAuthFiles();
+		this.maybeCopyPluginZips();
+
 		this.scaffoldFiles( 'scripts' );
 
 		if ( this.config.vvv ) {
 			this.scaffoldFiles( 'vvv' );
 		}
-
-		this.maybeCreateAuthFiles();
 	}
 
 	static maybeCreateAuthFiles() {
@@ -96,8 +100,8 @@ class Scaffold extends Project {
 
 		const filePath = path.join( os.homedir(), '.composer/auth.json' );
 		const contents = JSON.stringify({
-			"github-oauth": {
-				"github.com": `${ this.config.token }`
+			'github-oauth': {
+				'github.com': `${ this.config.token }`
 			}
 		});
 
@@ -106,13 +110,47 @@ class Scaffold extends Project {
 		}
 	}
 
+	static maybeCopyPluginZips() {
+
+		if ( ! helpers.directoryExists( this.paths.plugins ) ) {
+			return;
+		}
+
+		log.message( 'Copying plugin ZIPs...' );
+
+		const source = this.paths.plugins;
+		const dest   = path.join( this.paths.project, 'plugin-zips' );
+
+		fs.copySync( source, dest );
+
+		log.ok( 'Plugin ZIPs copied.' );
+	}
+
+	static parseTemplateData() {
+
+		const pluginZipsDir = path.join( this.paths.project, 'plugin-zips' );
+
+		this.templateData = this.config;
+
+		if ( ! this.templateData.pluginZips ) {
+			this.templateData.pluginZips = [];
+		}
+
+		helpers.readDir( pluginZipsDir ).forEach( val => {
+			this.templateData.pluginZips.push({
+				name: path.basename( val, '.zip' ),
+				file: val,
+			});
+		});
+	}
+
 	static initRepo() {
 
 		if ( ! this.config.repo.create ) {
 			return;
 		}
 
-		log.info( 'Checking for Git repo...' );
+		log.message( 'Checking for Git repo...' );
 
 		const dirExists = helpers.directoryExists(
 			path.join( this.paths.project, '.git' )
@@ -123,7 +161,7 @@ class Scaffold extends Project {
 		}
 
 		// Initialize repo.
-		if ( this.execSync( 'git init' ) ) {
+		if ( this.execSync( 'git init', 'project', false ) ) {
 			log.ok( 'Repo initialized.' );
 		}
 
@@ -131,7 +169,7 @@ class Scaffold extends Project {
 		if ( this.config.repo.url ) {
 			let command = `git remote add origin ${ this.config.repo.url }`;
 
-			if ( this.execSync( command ) ) {
+			if ( this.execSync( command, 'project', false ) ) {
 				log.ok( 'Remote URL added.' );
 			}
 		}
@@ -139,7 +177,7 @@ class Scaffold extends Project {
 
 	static initDevLib() {
 
-		log.info( 'Checking for wp-dev-lib submodule...' );
+		log.message( 'Checking for wp-dev-lib submodule...' );
 
 		const dirExists = helpers.directoryExists(
 			path.join( this.paths.project, 'dev-lib' )
@@ -152,14 +190,14 @@ class Scaffold extends Project {
 		// Add the sub-module.
 		let command = 'git submodule add -f -b master https://github.com/xwp/wp-dev-lib.git dev-lib';
 
-		if ( this.execSync( command ) ) {
+		if ( this.execSync( command, 'project', false ) ) {
 			log.ok( 'Submodule added.' );
 		}
 	}
 
 	static initProject() {
 
-		log.info( 'Checking for Bedrock...' );
+		log.message( 'Checking for Bedrock...' );
 
 		const dirExists = helpers.directoryExists(
 			path.join( this.paths.project, 'htdocs' )
@@ -172,7 +210,7 @@ class Scaffold extends Project {
 		// Install Bedrock.
 		let command = 'composer create-project roots/bedrock htdocs --no-install';
 
-		if ( this.execSync( command ) ) {
+		if ( this.execSync( command, 'project', false ) ) {
 			log.ok( 'Bedrock installed.' );
 		}
 
@@ -181,16 +219,16 @@ class Scaffold extends Project {
 		this.scaffoldFiles( 'bedrock' );
 		this.removeFiles( 'bedrock' );
 
-		log.info( 'Installing project dependencies...' );
+		log.message( 'Installing project dependencies...' );
 
-		if ( this.execSync( 'composer install' ) ) {
+		if ( this.execSync( 'composer install', 'project', false ) ) {
 			log.ok( 'Dependencies installed.' );
 		}
 	}
 
 	static initWordPress() {
 
-		log.info( 'Checking for database...' );
+		log.message( 'Checking for database...' );
 
 		if ( this.execSync( 'wp db tables' ) ) {
 			return log.ok( 'Database exists.' );
@@ -200,7 +238,7 @@ class Scaffold extends Project {
 			log.ok( 'Database created.' );
 		}
 
-		log.info( 'Checking for WordPress database tables...' );
+		log.message( 'Checking for WordPress database tables...' );
 
 		if ( this.execSync( 'wp core is-installed' ) ) {
 			return log.ok( 'Tables exist.' );
@@ -225,7 +263,7 @@ class Scaffold extends Project {
 			return;
 		}
 
-		log.info( 'Checking for plugin...' );
+		log.message( 'Checking for plugin...' );
 
 		const basePath = this.getBasePath( 'plugin' );
 
@@ -235,21 +273,29 @@ class Scaffold extends Project {
 
 		this.scaffoldFiles( 'plugin' );
 
-		[
+		const pluginDirs = [
 			'includes',
 			'assets/source/css',
 			'assets/source/js',
 			'assets/dist/css',
 			'assets/dist/js',
-		].forEach( ( dir ) => {
+		];
+
+		pluginDirs.forEach( ( dir ) => {
 			try {
 				fs.mkdirpSync( path.join( basePath, dir ) );
 			} catch ( error ) {
-				log.error( error );
+				if ( ! _.isEmpty( error ) ) {
+					log.error( error );
+				}
 			}
 		});
 
 		log.ok( 'Plugin created.' );
+	}
+
+	static createPluginTests() {
+		log.error( 'This feature is not ready' );
 	}
 
 	static initTheme() {
@@ -258,7 +304,7 @@ class Scaffold extends Project {
 			return;
 		}
 
-		log.info( 'Checking for child theme...' );
+		log.message( 'Checking for child theme...' );
 
 		const basePath = this.getBasePath( 'theme' );
 
@@ -268,17 +314,21 @@ class Scaffold extends Project {
 
 		this.scaffoldFiles( 'theme' );
 
-		[
+		const themeDirs = [
 			'includes',
 			'assets/source/css',
 			'assets/source/js',
 			'assets/dist/css',
 			'assets/dist/js',
-		].forEach( ( dir ) => {
+		];
+
+		themeDirs.forEach( ( dir ) => {
 			try {
 				fs.mkdirpSync( path.join( basePath, dir ) );
 			} catch ( error ) {
-				log.error( error );
+				if ( ! _.isEmpty( error ) ) {
+					log.error( error );
+				}
 			}
 		});
 
@@ -286,12 +336,16 @@ class Scaffold extends Project {
 
 		log.ok( 'Theme created.' );
 
-		log.info( 'Installing theme dependencies...' );
+		log.message( 'Installing theme dependencies...' );
 
 		this.execSync( 'npm install', 'theme' );
 		this.execSync( 'bower install', 'theme' );
 
 		log.ok( 'Done' );
+	}
+
+	static createThemeTests() {
+		log.error( 'This feature is not ready' );
 	}
 
 	static exec( command, type = 'project', callback = null ) {
@@ -317,7 +371,7 @@ class Scaffold extends Project {
 		});
 	}
 
-	static execSync( command, type = 'project' ) {
+	static execSync( command, type = 'project', logError = true ) {
 
 		const options = {
 			cwd: this.getBasePath( type ),
@@ -327,7 +381,9 @@ class Scaffold extends Project {
 			cp.execSync( command, options );
 			return true;
 		} catch( error ) {
-			log.error( error );
+			if ( logError && ! _.isEmpty( error ) ) {
+				log.error( error );
+			}
 			return false;
 		}
 	}
@@ -386,7 +442,9 @@ class Scaffold extends Project {
 
 			log.ok( `${ _.startCase( type ) } assets created.` );
 		} catch ( error ) {
-			log.error( error );
+			if ( ! _.isEmpty( error ) ) {
+				log.error( error );
+			}
 		}
 	}
 
@@ -403,10 +461,10 @@ class Scaffold extends Project {
 
 			dest = path.join( dest, path.basename( source ) );
 
-			let destPath   = path.join( this.paths.project, dest );
-			let sourcePath = path.join( this.paths.project, source );
+			let destPath   = path.join( base, dest );
+			let sourcePath = path.join( base, source );
 
-			log.info( `Checking for ${ dest }...` );
+			log.message( `Checking for ${ dest }...` );
 
 			if ( helpers.symlinkExists( destPath ) ) {
 				return log.ok( `${ dest } exists.` );
@@ -416,7 +474,9 @@ class Scaffold extends Project {
 				fs.ensureSymlinkSync( destPath, sourcePath );
 				log.ok( `${ dest } created.` );
 			} catch ( error ) {
-				log.error( error );
+				if ( ! _.isEmpty( error ) ) {
+					log.error( error );
+				}
 			}
 		}
 	}
@@ -436,7 +496,9 @@ class Scaffold extends Project {
 			try {
 				fs.removeSync( filePath );
 			} catch( error ) {
-
+				if ( ! _.isEmpty( error ) ) {
+					log.error( error );
+				}
 			}
 		}
 	}
@@ -449,19 +511,12 @@ class Scaffold extends Project {
 			return log.error( `${ source } is not a valid template directory` );
 		}
 
-		try {
-			const dirs = fs.readdirSync( source );
+		const dirs = helpers.readDir( source );
 
-			dirs.forEach( ( file ) => {
-
-				let filePath = path.join( source, file );
-
-				if ( 0 !== file.indexOf( '.' ) && helpers.fileExists( filePath ) ) {
-					this.scaffoldFile( filePath, type );
-				}
+		if ( ! _.isEmpty( dirs ) ) {
+			dirs.forEach( file => {
+				this.scaffoldFile( path.join( source, file ), type );
 			});
-		} catch ( error ) {
-			log.error( error );
 		}
 	}
 
@@ -474,7 +529,7 @@ class Scaffold extends Project {
 			file = file.replace( '_', '.' );
 		}
 
-		log.info( `Checking for ${ file }...` );
+		log.message( `Checking for ${ file }...` );
 
 		const base = this.getBasePath( type );
 		const dest = path.join( base, file );
@@ -487,13 +542,15 @@ class Scaffold extends Project {
 
 		try {
 			const templateContent = fs.readFileSync( source ).toString();
-			const renderedContent = mustache.render( templateContent, this.data );
+			const renderedContent = mustache.render( templateContent, this.templateData );
 
 			fs.writeFileSync( dest, renderedContent );
 
 			log.ok( `${ file } created.` );
 		} catch ( error ) {
-			log.error( error );
+			if ( ! _.isEmpty( error ) ) {
+				log.error( error );
+			}
 		}
 	}
 }

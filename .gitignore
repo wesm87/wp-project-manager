@@ -3,6 +3,9 @@
 # Internal test project folder
 _test-project
 
+# Code coverage
+coverage
+
 ### Package Managers ###
 
 # Composer
