@@ -1,8 +1,8 @@
 {
   "name": "@decisionary/wp-project-manager",
+  "description": "A Node CLI tool that simplifies the process of setting up a new WordPress project and development environment.",
   "version": "0.4.3",
   "private": true,
-  "description": "A Node CLI tool that simplifies the process of setting up a new WordPress project and development environment.",
   "homepage": "https://github.com/Decisionary/wp-project-manager",
   "repository": {
     "type": "git",
