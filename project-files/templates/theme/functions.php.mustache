@@ -72,6 +72,30 @@ class {{ theme.class }} {
 	}
 
 	/**
+	 * Returns the path to an includes file.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param string $rel_path Relative path to the file.
+	 * @return string
+	 */
+	public function include_path( $rel_path ) {
+		return self::$includes_path . $rel_path;
+	}
+
+	/**
+	 * Returns the URL to an asset file.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param string $rel_path Relative path to the asset file.
+	 * @return string
+	 */
+	public function asset_url( $rel_path ) {
+		return self::$assets_url . $rel_path;
+	}
+
+	/**
 	 * Includes theme class files.
 	 *
 	 * @since 0.1.0
@@ -89,20 +113,8 @@ class {{ theme.class }} {
 
 		$version = ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? time() : null;
 
-		wp_enqueue_style( 'blr/main', $this->asset_url( 'css/app.css' ), false, $version );
-	}
-
-	/**
-	 * Returns the URL to an asset file.
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param string $rel_path Relative path to the asset file.
-	 *
-	 * @return string
-	 */
-	protected function asset_url( $rel_path ) {
-		return trailingslashit( self::$assets_url ) . $rel_path;
+		wp_enqueue_style( '{{ theme.slug }}/main', $this->asset_url( 'css/app.css' ), false, $version );
+		wp_enqueue_script( '{{ theme.slug }}/main', $this->asset_url( 'js/app.js' ), [ 'jquery' ], $version, true );
 	}
 }
 
