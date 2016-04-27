@@ -3,6 +3,7 @@
   "description": "A Node CLI tool that simplifies the process of setting up a new WordPress project and development environment.",
   "version": "0.4.4",
   "private": true,
+  "license": "SEE LICENSE IN LICENSE.md",
   "homepage": "https://github.com/Decisionary/wp-project-manager",
   "repository": {
     "type": "git",
@@ -11,12 +12,9 @@
   "bugs": {
     "url": "https://github.com/Decisionary/wp-project-manager/issues"
   },
-  "author": {
-    "name": "Wes Moberly",
-    "email": "wes.moberly@decisionarytech.com",
-    "url": "https://github.com/wesm87"
-  },
-  "license": "SEE LICENSE IN LICENSE.md",
+  "contributors": [
+    "Wes Moberly <wes.moberly@decisionarytech.com> (http://decisionarytech.com)"
+  ],
   "keywords": [
     "WordPress",
     "development",

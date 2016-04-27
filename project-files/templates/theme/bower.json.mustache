@@ -1,7 +1,14 @@
 {
   "name": "{{ theme.slug }}",
-  "license": "UNLICENSED",
   "private": true,
+  "license": "UNLICENSED",
+  {{# repo.url }}
+  "homepage": "{{ repo.url }}",
+  "repository": {
+    "type": "git",
+    "url": "{{ repo.url }}.git"
+  },
+  {{/ repo.url }}
   "ignore": [
     "**/.*",
     "node_modules",

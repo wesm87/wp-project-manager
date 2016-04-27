@@ -14,7 +14,8 @@
       "type": "vcs",
       "name": "decisionary/blr-base-theme",
       "url": "https://github.com/Decisionary/blr-base-theme.git"
-    }{{# pluginZips }},
+    }
+    {{# pluginZips }},
     {
       "type": "package",
       "package": {
@@ -26,7 +27,8 @@
           "type": "zip"
         }
       }
-    }{{/ pluginZips }}
+    }
+    {{/ pluginZips }}
   ],
   "require": {
     "php": ">=5.5",
@@ -48,8 +50,10 @@
     "wpackagist-plugin/w3-total-cache": "^0.9",
     "wpackagist-plugin/wordpress-seo": "^3.1",
     "wpackagist-plugin/wp-optimize": "^1.8",
-    "wpackagist-plugin/wp-smushit": "^2.1"{{# pluginZips }},
-    "wpackagist-plugin/{{ name }}": "*"{{/ pluginZips }}
+    "wpackagist-plugin/wp-smushit": "^2.1"
+    {{# pluginZips }},
+    "wpackagist-plugin/{{ name }}": "*"
+    {{/ pluginZips }}
   },
   "extra": {
     "installer-paths": {

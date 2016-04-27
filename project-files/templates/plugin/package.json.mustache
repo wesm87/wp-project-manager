@@ -1,20 +1,29 @@
 {
   "name": "{{ plugin.slug }}",
   "version": "0.1.0",
-  "description": "Custom plugin for \"{{ project.title }}\"",
-  "license": "UNLICENSED",
+  "description": "Custom plugin for {{ project.title }}",
   "private": true,
-  "author": {
-    "name": "Your Name",
-    "email": "your-email@example.com",
-    "url": "http://your-website.example.com"
+  "license": "UNLICENSED",
+  {{# repo.url }}
+  "homepage": "{{ repo.url }}",
+  "repository": {
+    "type": "git",
+    "url": "{{ repo.url }}.git"
   },
-  "scripts": {
-    "build": "gulp build"
+  "bugs": {
+    "url": "{{ repo.url }}/issues"
   },
+  {{/ repo.url }}
+  "contributors": [
+    "YOUR NAME <your-email@example.com> (http://your-website.example.com)"
+  ],
+  "main": "gulpfile.babel.js",
   "engines": {
     "node": "^5.10.0",
     "composer": "^1.0.0-beta2"
+  },
+  "scripts": {
+    "build": "gulp build"
   },
   "devDependencies": {
     "babel-core": "^6.3.26",
