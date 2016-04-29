@@ -40,8 +40,8 @@ else
 	check_failed 'Creating now'
 
 	wp core install --allow-root --title="{{ project.title }}" \
-		--url="{{ project.url }}" --admin_email="{{ admin.email }}" \
-		--admin_user="{{ admin.user }}" --admin_password="{{ admin.pass }}"
+		--url="{{{ project.url }}}" --admin_email="{{{ admin.email }}}" \
+		--admin_user="{{{ admin.user }}}" --admin_password="{{{ admin.pass }}}"
 fi
 
 
