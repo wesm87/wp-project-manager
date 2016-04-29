@@ -1,14 +1,14 @@
 <?php
 /**
  * Plugin Name:  {{ plugin.name }}
- * Description:  Custom plugin for "{{ project.title }}"
+ * Description:  Custom plugin{{# project.title }} for "{{ project.title }}"{{/ project.title }}
  * Author:       YOUR NAME HERE
  * Author URI:   YOUR WEBSITE HERE
  * Text Domain:  {{ plugin.slug }}
  * Domain Path:  /languages
  * Version:      0.1.0
  *
- * @package      {{ plugin.package }}
+ * @package      {{ plugin.namespace }}
  */
 
 namespace {{ plugin.namespace }};
@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 0.1.0
  */
-class {{ plugin.class }} {
+class Plugin {
 
 	/**
 	 * The plugin version.
@@ -85,7 +85,7 @@ class {{ plugin.class }} {
 	 * @return string
 	 */
 	public function include_path( $rel_path ) {
-		return self::$includes_path . $rel_path;
+		return self::$includes_path . '/' . $rel_path;
 	}
 
 	/**
@@ -97,7 +97,7 @@ class {{ plugin.class }} {
 	 * @return string
 	 */
 	public function asset_url( $rel_path ) {
-		return self::$assets_url . $rel_path;
+		return self::$assets_url . '/' . $rel_path;
 	}
 
 	/**
@@ -140,4 +140,4 @@ class {{ plugin.class }} {
 }
 
 // Instantiate the main plugin class.
-new {{ plugin.class }}();
+new Plugin();

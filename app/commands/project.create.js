@@ -1,4 +1,3 @@
-'use strict';
 
 import scaffold from '../include/scaffold';
 
@@ -8,5 +7,6 @@ module.exports = {
 	builder:  {},
 	handler() {
 		scaffold.init();
+		scaffold.createProject();
 	},
 };

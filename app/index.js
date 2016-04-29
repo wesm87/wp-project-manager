@@ -31,14 +31,12 @@
  *       we're currently using to their async counterparts.
  */
 
-'use strict';
-
 import yargs from 'yargs';
 
 global.__appPath = __dirname;
 
-yargs
-	.help()
+// eslint-disable-next-line no-unused-expressions
+yargs.help()
 	.completion()
 	.command( require( './commands/config.create' ) )
 	.command( require( './commands/project.create' ) )

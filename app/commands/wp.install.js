@@ -1,4 +1,3 @@
-'use strict';
 
 import log from '../include/log';
 

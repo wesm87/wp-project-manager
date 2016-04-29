@@ -1,10 +1,12 @@
-'use strict';
 
 import fs     from 'fs-extra';
 import YAML   from 'js-yaml';
-import crypto from 'crypto';
+import crypto from 'crypto'; // eslint-disable-line no-shadow
 
 import log    from './log';
+
+const BYTES_TO_HEX    = 0.5;
+const BYTES_TO_BASE64 = 0.75;
 
 /**
  * Helper functions.
@@ -26,16 +28,16 @@ class Helpers {
 			const info = fs.lstatSync( path );
 
 			switch ( type ) {
-				case 'file' :
-					return info.isFile();
-				case 'folder' :
-				case 'directory' :
-					return info.isDirectory();
-				case 'link':
-				case 'symlink':
-					return info.isSymbolicLink();
-				default:
-					return info ? true : false;
+			case 'file' :
+				return info.isFile();
+			case 'folder' :
+			case 'directory' :
+				return info.isDirectory();
+			case 'link':
+			case 'symlink':
+				return info.isSymbolicLink();
+			default:
+				return !! info;
 			}
 		} catch ( error ) {
 			return false;
@@ -96,12 +98,14 @@ class Helpers {
 			let files = fs.readdirSync( dir );
 
 			if ( ! includeHidden ) {
+
+				// eslint-disable-next-line no-magic-numbers
 				files = files.filter( file => 0 !== file.indexOf( '.' ) );
 			}
 
 			return files;
 		} catch ( error ) {
-			log.error( error );
+			return [];
 		}
 	}
 
@@ -115,7 +119,9 @@ class Helpers {
 	 *                           doesn't exist, we return an empty object.
 	 */
 	static loadYAML( filePath ) {
+
 		try {
+
 			// Get file contents as JSON.
 			const json = YAML.safeLoad( fs.readFileSync( filePath, 'utf8' ) );
 
@@ -140,9 +146,12 @@ class Helpers {
 	 * @param  {object} json     The JSON object to parse into YAML.
 	 */
 	static writeYAML( filePath, json ) {
+
 		try {
+
 			// Convert JSON to YAML.
 			const yaml = YAML.safeDump( json, { noCompatMode: true } );
+
 			fs.writeFileSync( filePath, yaml );
 		} catch ( error ) {
 			log.error( error );
@@ -154,31 +163,35 @@ class Helpers {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param  {int}    length  The number of characters to include in the string.
+	 * @param  {int}    strLen  The number of characters to include in the string.
 	 * @param  {string} format  The string format to use (hex, base64, etc).
 	 * @return {string}         The randomly generated string.
 	 */
-	static randomString( length, format = 'hex' ) {
+	static randomString( strLen, format = 'hex' ) {
+
 		try {
 
 			let numBytes;
 
 			// Adjust number of bytes based on desired string format.
 			if ( 'hex' === format ) {
+
 				// 1 byte = 2 hex characters.
-				numBytes = Math.ceil( length / 2 );
+				numBytes = Math.ceil( strLen * BYTES_TO_HEX );
 			} else if ( 'base64' === format ) {
+
 				// 1 byte = 4/3 base64 characters.
-				numBytes = Math.ceil( length / ( 4 / 3 ) );
+				numBytes = Math.ceil( strLen * BYTES_TO_BASE64 );
 			}
 
 			return crypto
 				.randomBytes( numBytes )
 				.toString( format )
-				.slice( 0, length );
+				.slice( 0, strLen ); // eslint-disable-line no-magic-numbers
 
 		} catch ( error ) {
 			log.error( error );
+
 			return '';
 		}
 	}

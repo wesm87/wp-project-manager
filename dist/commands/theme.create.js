@@ -11,6 +11,7 @@ module.exports = {
 	describe: 'scaffold new child theme',
 	builder: {},
 	handler: function handler() {
+		_scaffold2.default.init();
 		_scaffold2.default.initTheme();
 	}
 };

@@ -1,4 +1,3 @@
-'use strict';
 
 import project from '../include/project';
 
@@ -8,5 +7,5 @@ module.exports = {
 	builder:  {},
 	handler( argv ) {
 		project.createConfigFile( argv.force );
-	}
+	},
 };

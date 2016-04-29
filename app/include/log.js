@@ -1,9 +1,13 @@
-'use strict';
 
-import _       from 'lodash';
+import _ from 'lodash';
 import colors  from 'colors';
 
 import project from './project';
+
+/**
+ * The number of spaces to use for a tab when formatting JSON strings.
+ */
+const JSON_TAB_WIDTH = 2;
 
 
 /**
@@ -69,17 +73,27 @@ class Log {
 	 */
 	constructor() {
 
-		if ( this.instance ) {
-			return this.instance;
+		if ( ! this.instance ) {
+			this.init();
 		}
+
+		return this.instance;
+	}
+
+	/**
+	 * Initialize class and store the class instance.
+	 *
+	 * @since 0.5.0
+	 */
+	init() {
 
 		// Set the colors theme based on our styles.
 		colors.setTheme( this.styles );
 
 		// Automatically create methods for each style.
-		_.keys( this.styles ).forEach(( style ) => {
+		_.keys( this.styles ).forEach( style => {
 			this[ style ] = message => this._log( message, style );
-		});
+		} );
 
 		this.instance = this;
 	}
@@ -94,14 +108,14 @@ class Log {
 	 *
 	 * @access private
 	 *
-	 * @param {mixed}  message
+	 * @param {mixed}  message The message to log.
 	 * @param {string} [style] A style to apply to the message.
 	 */
 	_log( message, style ) {
 
 		// Convert object-like messages to string.
 		if ( _.isObjectLike( message ) ) {
-			message = JSON.stringify( message, null, 2 );
+			message = JSON.stringify( message, null, JSON_TAB_WIDTH );
 		}
 
 		// Don't log anything if message is empty.
@@ -122,7 +136,7 @@ class Log {
 
 			// If the style has an associated icon, prepend it to the message.
 			if ( this.icons[ style ] ) {
-				message = this.icons[ style ] + ' ' + message;
+				message =  `${ this.icons[ style ] } ${ message }`;
 			}
 
 			// Apply the style to the message.

@@ -23,6 +23,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
+ * The number of spaces to use for a tab when formatting JSON strings.
+ */
+var JSON_TAB_WIDTH = 2;
+
+/**
  * Logger class. Contains various methods (debug, info, ok, warn, error, etc.)
  * that take a string or object-like value, apply an associated style, and log
  * it. Some styles also prepend an associated icon identifier to the message.
@@ -94,49 +99,61 @@ var Log = function () {
 	}]);
 
 	function Log() {
-		var _this = this;
-
 		_classCallCheck(this, Log);
 
-		if (this.instance) {
-			return this.instance;
+		if (!this.instance) {
+			this.init();
 		}
 
-		// Set the colors theme based on our styles.
-		_colors2.default.setTheme(this.styles);
-
-		// Automatically create methods for each style.
-		_lodash2.default.keys(this.styles).forEach(function (style) {
-			_this[style] = function (message) {
-				return _this._log(message, style);
-			};
-		});
-
-		this.instance = this;
+		return this.instance;
 	}
 
 	/**
-  * Logs a message with an optional style.
+  * Initialize class and store the class instance.
   *
-  * If message is an object, array, function, class, etc. it is converted to
-  * a string using `JSON.stringify()`.
-  *
-  * @since 0.4.0
-  *
-  * @access private
-  *
-  * @param {mixed}  message
-  * @param {string} [style] A style to apply to the message.
+  * @since 0.5.0
   */
 
 
 	_createClass(Log, [{
+		key: 'init',
+		value: function init() {
+			var _this = this;
+
+			// Set the colors theme based on our styles.
+			_colors2.default.setTheme(this.styles);
+
+			// Automatically create methods for each style.
+			_lodash2.default.keys(this.styles).forEach(function (style) {
+				_this[style] = function (message) {
+					return _this._log(message, style);
+				};
+			});
+
+			this.instance = this;
+		}
+
+		/**
+   * Logs a message with an optional style.
+   *
+   * If message is an object, array, function, class, etc. it is converted to
+   * a string using `JSON.stringify()`.
+   *
+   * @since 0.4.0
+   *
+   * @access private
+   *
+   * @param {mixed}  message The message to log.
+   * @param {string} [style] A style to apply to the message.
+   */
+
+	}, {
 		key: '_log',
 		value: function _log(message, style) {
 
 			// Convert object-like messages to string.
 			if (_lodash2.default.isObjectLike(message)) {
-				message = JSON.stringify(message, null, 2);
+				message = JSON.stringify(message, null, JSON_TAB_WIDTH);
 			}
 
 			// Don't log anything if message is empty.

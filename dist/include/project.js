@@ -41,6 +41,27 @@ if (!_lodash2.default.upperSnakeCase) {
 }
 
 /**
+ * The number of characters to use when generating a database prefix.
+ *
+ * @type {Number}
+ */
+var DB_PREFIX_LENGTH = 8;
+
+/**
+ * The number of characters to use when generating a secret key.
+ *
+ * @type {Number}
+ */
+var SECRET_KEY_LENGTH = 64;
+
+/**
+ * The number of characters to use when generating a secret salt.
+ *
+ * @type {Number}
+ */
+var SECRET_SALT_LENGTH = 64;
+
+/**
  * Project config settings and helper methods.
  */
 
@@ -60,8 +81,8 @@ var Project = function () {
    *
    * @since 0.1.0
    *
-   * @param  {string} file The path to the config file.
-   * @return {object}      The resulting config object.
+   * @param  {String} file The path to the config file.
+   * @return {Object}      The resulting config object.
    */
 		value: function loadConfig() {
 			var file = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
@@ -91,8 +112,8 @@ var Project = function () {
    *
    * @since 0.1.0
    *
-   * @param  {object} config The config object to parse.
-   * @return {object}        The parsed config object.
+   * @param  {Object} config The config object to parse.
+   * @return {Object}        The parsed config object.
    */
 
 	}, {
@@ -105,7 +126,44 @@ var Project = function () {
 				return _lodash2.default.has(_this.defaultConfig, key);
 			});
 
-			// Fill in any dynamic config values that aren't set.
+			// Fill in any config values that aren't set.
+			config = this.ensureProjectConfig(config);
+			config = this.ensurePluginConfig(config);
+			config = this.ensureThemeConfig(config);
+			config = this.ensureDatabaseConfig(config);
+			config = this.ensureSecretConfig(config);
+
+			// Set internal config values.
+			config.project.folder = _path2.default.basename(this.paths.project);
+			config.project.namespace = _lodash2.default.upperSnakeCase(config.project.title);
+
+			config.plugin.id = _lodash2.default.snakeCase(config.plugin.name);
+			config.plugin.class = _lodash2.default.upperSnakeCase(config.plugin.name);
+			config.plugin.namespace = config.project.namespace || config.plugin.class;
+			config.plugin.namespace = config.plugin.namespace + '\\Plugin';
+
+			config.theme.id = _lodash2.default.snakeCase(config.theme.name);
+			config.theme.class = _lodash2.default.upperSnakeCase(config.theme.name);
+			config.theme.namespace = config.project.namespace || config.theme.class;
+			config.theme.namespace = config.theme.namespace + '\\Theme';
+
+			// Return the updated config settings.
+			return config;
+		}
+
+		/**
+   * Fills in any missing project settings with their default values.
+   *
+   * @since 0.5.0
+   *
+   * @param  {Object} config The current config object.
+   * @return {Object}        The updated config object.
+   */
+
+	}, {
+		key: 'ensureProjectConfig',
+		value: function ensureProjectConfig(config) {
+
 			if (!config.project.title && config.project.slug) {
 				config.project.title = _lodash2.default.startCase(config.project.slug);
 			}
@@ -117,6 +175,22 @@ var Project = function () {
 			if (!config.project.url) {
 				config.project.url = config.project.slug + '.dev';
 			}
+
+			return config;
+		}
+
+		/**
+   * Fills in any missing plugin settings with their default values.
+   *
+   * @since 0.5.0
+   *
+   * @param  {Object} config The current config object.
+   * @return {Object}        The updated config object.
+   */
+
+	}, {
+		key: 'ensurePluginConfig',
+		value: function ensurePluginConfig(config) {
 
 			if (!config.plugin.name) {
 				if (config.plugin.slug) {
@@ -130,6 +204,22 @@ var Project = function () {
 				config.plugin.slug = _lodash2.default.kebabCase(config.plugin.name);
 			}
 
+			return config;
+		}
+
+		/**
+   * Fills in any missing theme settings with their default values.
+   *
+   * @since 0.5.0
+   *
+   * @param  {Object} config The current config object.
+   * @return {Object}        The updated config object.
+   */
+
+	}, {
+		key: 'ensureThemeConfig',
+		value: function ensureThemeConfig(config) {
+
 			if (!config.theme.name) {
 				if (config.theme.slug) {
 					config.theme.name = _lodash2.default.startCase(config.theme.slug);
@@ -142,37 +232,57 @@ var Project = function () {
 				config.theme.slug = _lodash2.default.kebabCase(config.theme.name);
 			}
 
+			return config;
+		}
+
+		/**
+   * Fills in any missing database settings with their default values.
+   *
+   * @since 0.5.0
+   *
+   * @param  {Object} config The current config object.
+   * @return {Object}        The updated config object.
+   */
+
+	}, {
+		key: 'ensureDatabaseConfig',
+		value: function ensureDatabaseConfig(config) {
+
 			if (!config.db.name) {
 				config.db.name = config.project.slug;
 			}
 
 			if (!config.db.prefix) {
-				config.db.prefix = _helpers2.default.randomString(8) + '_';
+				config.db.prefix = _helpers2.default.randomString(DB_PREFIX_LENGTH) + '_';
 			}
 
-			['auth', 'secure_auth', 'logged_in', 'nonce'].forEach(function (type) {
+			return config;
+		}
+
+		/**
+   * Fills in any missing secret key / salts with their default values.
+   *
+   * @since 0.5.0
+   *
+   * @param  {Object} config The current config object.
+   * @return {Object}        The updated config object.
+   */
+
+	}, {
+		key: 'ensureSecretConfig',
+		value: function ensureSecretConfig(config) {
+
+			var types = ['auth', 'secure_auth', 'logged_in', 'nonce'];
+
+			types.forEach(function (type) {
 				if (!config.secret[type + '_key']) {
-					config.secret[type + '_key'] = _helpers2.default.randomString(64, 'base64');
+					config.secret[type + '_key'] = _helpers2.default.randomString(SECRET_KEY_LENGTH, 'base64');
 				}
 				if (!config.secret[type + '_salt']) {
-					config.secret[type + '_salt'] = _helpers2.default.randomString(64, 'base64');
+					config.secret[type + '_salt'] = _helpers2.default.randomString(SECRET_SALT_LENGTH, 'base64');
 				}
 			});
 
-			// Set internal config values.
-			config.project.folder = _path2.default.basename(this.paths.project);
-
-			config.plugin.id = _lodash2.default.snakeCase(config.plugin.name);
-			config.plugin.class = _lodash2.default.upperSnakeCase(config.plugin.name);
-			config.plugin.package = _lodash2.default.upperSnakeCase(config.project.name) + '\\Plugin';
-			config.plugin.namespace = config.plugin.package;
-
-			config.theme.id = _lodash2.default.snakeCase(config.theme.name);
-			config.theme.class = _lodash2.default.upperSnakeCase(config.theme.name);
-			config.theme.package = _lodash2.default.upperSnakeCase(config.project.name) + '\\Theme';
-			config.theme.namespace = config.theme.package;
-
-			// Return the updated config settings.
 			return config;
 		}
 
@@ -208,20 +318,21 @@ var Project = function () {
    *
    * @since 0.3.0
    *
-   * @return {object}
+   * @return {Object}
    */
 		get: function get() {
 
 			if (!this._paths) {
 
-				var rootPath = _path2.default.join(__appPath, '..');
+				var appPath = global.__appPath;
+				var rootPath = _path2.default.join(appPath, '..');
 
 				this._paths = {
-					app: __appPath,
+					app: appPath,
 					root: rootPath,
 					cwd: process.cwd(),
 					project: process.cwd(),
-					includes: _path2.default.join(__appPath, 'include'),
+					includes: _path2.default.join(appPath, 'include'),
 					assets: _path2.default.join(rootPath, 'project-files', 'assets'),
 					templates: _path2.default.join(rootPath, 'project-files', 'templates'),
 					plugins: _path2.default.join(rootPath, 'project-files', 'plugins'),
@@ -246,7 +357,7 @@ var Project = function () {
    *
    * @since 0.1.0
    *
-   * @return {object}
+   * @return {Object}
    */
 
 	}, {
@@ -265,7 +376,7 @@ var Project = function () {
    *
    * @since 0.1.0
    *
-   * @param {object} config The new config settings.
+   * @param {Object} config The new config settings.
    */
 		,
 		set: function set(config) {
@@ -277,7 +388,7 @@ var Project = function () {
    *
    * @since 0.1.0
    *
-   * @return {object}
+   * @return {Object}
    */
 
 	}, {

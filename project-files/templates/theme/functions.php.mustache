@@ -2,7 +2,7 @@
 /**
  * Theme functions.
  *
- * @package {{ theme.package }}
+ * @package {{ theme.namespace }}
  */
 
 namespace {{ theme.namespace }};
@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 0.1.0
  */
-class {{ theme.class }} {
+class Theme {
 
 	/**
 	 * The theme version.
@@ -80,7 +80,7 @@ class {{ theme.class }} {
 	 * @return string
 	 */
 	public function include_path( $rel_path ) {
-		return self::$includes_path . $rel_path;
+		return self::$includes_path . '/' . $rel_path;
 	}
 
 	/**
@@ -92,7 +92,7 @@ class {{ theme.class }} {
 	 * @return string
 	 */
 	public function asset_url( $rel_path ) {
-		return self::$assets_url . $rel_path;
+		return self::$assets_url . '/' . $rel_path;
 	}
 
 	/**
@@ -113,10 +113,10 @@ class {{ theme.class }} {
 
 		$version = ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? time() : null;
 
-		wp_enqueue_style( '{{ theme.slug }}/main', $this->asset_url( 'css/app.css' ), false, $version );
-		wp_enqueue_script( '{{ theme.slug }}/main', $this->asset_url( 'js/app.js' ), [ 'jquery' ], $version, true );
+		wp_enqueue_style( '{{ theme.slug }}/app', $this->asset_url( 'css/app.css' ), false, $version );
+		wp_enqueue_script( '{{ theme.slug }}/app', $this->asset_url( 'js/app.js' ), [ 'jquery' ], $version, true );
 	}
 }
 
 // Instantiate the main theme class.
-new {{ theme.class }}();
+new Theme();

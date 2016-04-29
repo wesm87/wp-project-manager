@@ -12,5 +12,6 @@ module.exports = {
 	builder: {},
 	handler: function handler() {
 		_scaffold2.default.init();
+		_scaffold2.default.createProject();
 	}
 };

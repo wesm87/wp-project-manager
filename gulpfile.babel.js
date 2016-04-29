@@ -1,21 +1,29 @@
 /**
  * Gulpfile.
- *
- * jshint mocha: false
  */
 
-'use strict';
 
-import path             from 'path';
-import gulp             from 'gulp';
-import nsp              from 'gulp-nsp';
-import babel            from 'gulp-babel';
-import istanbul         from 'gulp-istanbul';
-import mocha            from 'gulp-mocha';
+import 'babel-polyfill';
+
+import path     from 'path';
+import gulp     from 'gulp';
+import nsp      from 'gulp-nsp';
+import babel    from 'gulp-babel';
+import mocha    from 'gulp-mocha';
+import istanbul from 'gulp-istanbul';
+
 import { Instrumenter } from 'isparta';
 
+/**
+ * Gulp tasks.
+ */
 class GulpTasks {
 
+	/**
+	 * Tasks.
+	 *
+	 * @return {Array}
+	 */
 	get tasks() {
 		return [
 			'default',
@@ -27,6 +35,11 @@ class GulpTasks {
 		];
 	}
 
+	/**
+	 * Task config.
+	 *
+	 * @return {Object}
+	 */
 	get config() {
 		return {
 			nsp: {
@@ -50,6 +63,11 @@ class GulpTasks {
 		};
 	}
 
+	/**
+	 * File paths.
+	 *
+	 * @return {Object}
+	 */
 	get files() {
 		return {
 			js: {
@@ -65,6 +83,8 @@ class GulpTasks {
 	}
 
 	/**
+	 * Constructor.
+	 *
 	 * Once ES7 arrives we can just define class methods as arrow functions.
 	 * In the meantime, we need to bind each task method to the class.
 	 */
@@ -74,31 +94,56 @@ class GulpTasks {
 		);
 	}
 
-	default() {
-		return gulp.series( this.test, this.build );
+	/**
+	 * Default task.
+	 *
+	 * @param {Function} done Async callback.
+	 */
+	async default( done ) {
+		await this.test();
+		await this.build();
+
+		done();
 	}
 
+	/**
+	 * Watch task.
+	 */
 	watch() {
 		gulp.watch( this.files.js.watch, this.test );
 	}
 
+	/**
+	 * Build task.
+	 *
+	 * @param  {Function} done Async callback.
+	 * @return {Function}
+	 */
 	build( done ) {
-		return gulp
-			.src(  this.files.js.source )
+		return gulp.src( this.files.js.source )
 			.pipe( babel() )
 			.pipe( gulp.dest( this.files.js.dest ) )
-			.on( 'finish', () => nsp( this.config.nsp, done ) );
+			.on( 'finish', () => this.nsp( done ) );
 	}
 
+	/**
+	 * Unit tests.
+	 *
+	 * @return {Function}
+	 */
 	test() {
-		return gulp
-			.src(  this.files.js.tests )
+		return gulp.src( this.files.js.tests )
 			.pipe( mocha( this.config.mocha ) );
 	}
 
+	/**
+	 * Code coverage.
+	 *
+	 * @param  {Function} done Async callback.
+	 * @return {Function}
+	 */
 	coverage( done ) {
-		return gulp
-			.src(  this.files.js.source )
+		return gulp.src( this.files.js.source )
 			.pipe( istanbul( this.config.istanbul.read ) )
 			.pipe( istanbul.hookRequire() )
 			.on( 'finish', () =>
@@ -110,6 +155,9 @@ class GulpTasks {
 
 	/**
 	 * Checks for any potential security issues (NSP = Node Security Project).
+	 *
+	 * @param  {Function} done Async callback.
+	 * @return {Function}
 	 */
 	nsp( done ) {
 		return nsp( this.config.nsp, done );

@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-shadow
 
 var _fsExtra = require('fs-extra');
 
@@ -25,6 +25,9 @@ var _log2 = _interopRequireDefault(_log);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var BYTES_TO_HEX = 0.5;
+var BYTES_TO_BASE64 = 0.75;
 
 /**
  * Helper functions.
@@ -65,7 +68,7 @@ var Helpers = function () {
 					case 'symlink':
 						return info.isSymbolicLink();
 					default:
-						return info ? true : false;
+						return !!info;
 				}
 			} catch (error) {
 				return false;
@@ -138,6 +141,8 @@ var Helpers = function () {
 				var files = _fsExtra2.default.readdirSync(dir);
 
 				if (!includeHidden) {
+
+					// eslint-disable-next-line no-magic-numbers
 					files = files.filter(function (file) {
 						return 0 !== file.indexOf('.');
 					});
@@ -145,7 +150,7 @@ var Helpers = function () {
 
 				return files;
 			} catch (error) {
-				_log2.default.error(error);
+				return [];
 			}
 		}
 
@@ -162,7 +167,9 @@ var Helpers = function () {
 	}, {
 		key: 'loadYAML',
 		value: function loadYAML(filePath) {
+
 			try {
+
 				// Get file contents as JSON.
 				var json = _jsYaml2.default.safeLoad(_fsExtra2.default.readFileSync(filePath, 'utf8'));
 
@@ -190,9 +197,12 @@ var Helpers = function () {
 	}, {
 		key: 'writeYAML',
 		value: function writeYAML(filePath, json) {
+
 			try {
+
 				// Convert JSON to YAML.
 				var yaml = _jsYaml2.default.safeDump(json, { noCompatMode: true });
+
 				_fsExtra2.default.writeFileSync(filePath, yaml);
 			} catch (error) {
 				_log2.default.error(error);
@@ -204,15 +214,16 @@ var Helpers = function () {
    *
    * @since 0.1.0
    *
-   * @param  {int}    length  The number of characters to include in the string.
+   * @param  {int}    strLen  The number of characters to include in the string.
    * @param  {string} format  The string format to use (hex, base64, etc).
    * @return {string}         The randomly generated string.
    */
 
 	}, {
 		key: 'randomString',
-		value: function randomString(length) {
+		value: function randomString(strLen) {
 			var format = arguments.length <= 1 || arguments[1] === undefined ? 'hex' : arguments[1];
+
 
 			try {
 
@@ -220,16 +231,19 @@ var Helpers = function () {
 
 				// Adjust number of bytes based on desired string format.
 				if ('hex' === format) {
+
 					// 1 byte = 2 hex characters.
-					numBytes = Math.ceil(length / 2);
+					numBytes = Math.ceil(strLen * BYTES_TO_HEX);
 				} else if ('base64' === format) {
+
 					// 1 byte = 4/3 base64 characters.
-					numBytes = Math.ceil(length / (4 / 3));
+					numBytes = Math.ceil(strLen * BYTES_TO_BASE64);
 				}
 
-				return _crypto2.default.randomBytes(numBytes).toString(format).slice(0, length);
+				return _crypto2.default.randomBytes(numBytes).toString(format).slice(0, strLen); // eslint-disable-line no-magic-numbers
 			} catch (error) {
 				_log2.default.error(error);
+
 				return '';
 			}
 		}

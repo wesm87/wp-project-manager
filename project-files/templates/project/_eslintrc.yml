@@ -1,0 +1,382 @@
+---
+  root: true
+
+  env:
+    browser: true
+    node:    true
+    es6:     true
+
+  parser: babel-eslint
+
+  parserOptions:
+    ecmaVersion: 7
+    sourceType: module
+
+  extends:
+    - 'eslint:recommended'
+
+  rules:
+    accessor-pairs:
+      - error
+    array-bracket-spacing:
+      - error
+      - always
+      - singleValue: false
+    array-callback-return:
+      - warn
+    arrow-body-style:
+      - warn
+    arrow-parens:
+      - error
+      - as-needed
+    arrow-spacing:
+      - error
+    block-scoped-var:
+      - warn
+    block-spacing:
+      - error
+    brace-style:
+      - error
+    callback-return:
+      - warn
+    camelcase:
+      - error
+      - properties: never
+    comma-dangle:
+      - warn
+      - always-multiline
+    comma-spacing:
+      - error
+    comma-style:
+      - error
+    complexity:
+      - error
+    constructor-super:
+      - error
+    computed-property-spacing:
+      - error
+      - always
+    consistent-return:
+      - warn
+    consistent-this:
+      - warn
+      - self
+      - $self
+    curly:
+      - error
+    default-case:
+      - warn
+    dot-location:
+      - error
+      - property
+    dot-notation:
+      - warn
+    eol-last:
+      - error
+    eqeqeq:
+      - error
+      - allow-null
+    generator-star-spacing:
+      - error
+      - both
+    global-require:
+      - error
+    guard-for-in:
+      - error
+    id-length:
+      - error
+      - min: 2
+        max: 20
+        exceptions:
+          - i
+          - j
+          - $
+          - _
+    indent:
+      - error
+      - tab
+    key-spacing:
+      - error
+      - align: value
+    keyword-spacing:
+      - error
+    linebreak-style:
+      - error
+      - unix
+    lines-around-comment:
+      - error
+      - beforeLineComment: true
+        beforeBlockComment: true
+    max-depth:
+      - error
+    max-len:
+      - error
+      - code: 100
+        tabWidth: 4
+        ignoreUrls: true
+    max-nested-callbacks:
+      - error
+      - 5
+    max-params:
+      - warn
+      - 5
+    max-statements:
+      - warn
+      - 50
+    max-statements-per-line:
+      - error
+    new-cap:
+      - error
+    new-parens:
+      - error
+    newline-after-var:
+      - error
+    newline-before-return:
+      - error
+    newline-per-chained-call:
+      - error
+    no-array-constructor:
+      - error
+    no-bitwise:
+      - warn
+      - int32Hint: true
+    no-caller:
+      - error
+    no-catch-shadow:
+      - error
+    no-class-assign:
+      - error
+    no-confusing-arrow:
+      - error
+      - allowParens: true
+    no-console:
+      - off
+    no-const-assign:
+      - error
+    no-continue:
+      - warn
+    no-delete-var:
+      - error
+    no-div-regex:
+      - warn
+    no-dupe-class-members:
+      - error
+    no-duplicate-imports:
+      - error
+    no-else-return:
+      - warn
+    no-empty-function:
+      - error
+    no-eval:
+      - error
+    no-extra-bind:
+      - warn
+    no-extra-label:
+      - warn
+    no-floating-decimal:
+      - warn
+    no-implicit-globals:
+      - error
+    no-implied-eval:
+      - error
+    no-invalid-this:
+      - warn
+    no-iterator:
+      - error
+    no-label-var:
+      - error
+    no-lone-blocks:
+      - warn
+    no-lonely-if:
+      - warn
+    no-loop-func:
+      - error
+    no-magic-numbers:
+      - error
+    no-mixed-requires:
+      - warn
+    no-mixed-spaces-and-tabs:
+      - error
+      - smart-tabs
+    # no-multi-spaces:
+    #   - warn
+    #   - exceptions:
+    #       Property: true
+    #       VariableDeclarator: true
+    #       ImportDeclaration: true
+    no-multiple-empty-lines:
+      - warn
+      - max: 2
+        maxBOF: 1
+        maxEOF: 1
+    no-native-reassign:
+      - error
+    no-negated-condition:
+      - warn
+    no-nested-ternary:
+      - warn
+    no-new-func:
+      - error
+    no-new-object:
+      - error
+    no-new-require:
+      - error
+    no-new-symbol:
+      - error
+    no-new-wrappers:
+      - error
+    no-octal:
+      - error
+    no-octal-escape:
+      - error
+    no-path-concat:
+      - error
+    no-plusplus:
+      - error
+      - allowForLoopAfterthoughts: true
+    no-proto:
+      - error
+    no-redeclare:
+      - error
+    no-return-assign:
+      - error
+    no-script-url:
+      - error
+    no-self-assign:
+      - error
+    no-self-compare:
+      - error
+    no-sequences:
+      - error
+    no-shadow:
+      - error
+      - builtinGlobals: true
+        allow:
+          - cb
+          - done
+          - resolve
+          - reject
+    no-shadow-restricted-names:
+      - error
+    no-spaced-func:
+      - error
+    no-this-before-super:
+      - error
+    no-throw-literal:
+      - error
+    no-trailing-spaces:
+      - error
+    no-undef:
+      - error
+    no-undef-init:
+      - error
+    no-undefined:
+      - error
+    no-unmodified-loop-condition:
+      - error
+    no-unneeded-ternary:
+      - error
+    no-unused-expressions:
+      - error
+      - allowShortCircuit: true
+        allowTernary: true
+    no-unused-vars:
+      - error
+    no-use-before-define:
+      - error
+    no-useless-call:
+      - error
+    no-useless-concat:
+      - warn
+    no-useless-constructor:
+      - error
+    no-useless-escape:
+      - warn
+    no-var:
+      - error
+    no-void:
+      - warn
+    no-whitespace-before-property:
+      - error
+    no-with:
+      - error
+    object-curly-spacing:
+      - error
+      - always
+    object-shorthand:
+      - warn
+    operator-assignment:
+      - error
+      - always
+    operator-linebreak:
+      - error
+      - before
+    prefer-arrow-callback:
+      - warn
+    prefer-const:
+      - warn
+    prefer-reflect:
+      - warn
+    prefer-rest-params:
+      - warn
+    prefer-spread:
+      - warn
+    prefer-template:
+      - warn
+    quote-props:
+      - error
+      - as-needed
+    quotes:
+      - error
+      - single
+      - avoidEscape: true
+    radix:
+      - warn
+    require-jsdoc:
+      - error
+      - require:
+          FunctionDeclaration: true
+          MethodDefinition: true
+          ClassDeclaration: true
+    require-yield:
+      - error
+    semi:
+      - error
+    semi-spacing:
+      - error
+    space-before-blocks:
+      - error
+    space-before-function-paren:
+      - error
+      - never
+    space-in-parens:
+      - error
+      - always
+    space-infix-ops:
+      - error
+    space-unary-ops:
+      - error
+    spaced-comment:
+      - error
+    strict:
+      - error
+    template-curly-spacing:
+      - error
+      - always
+    valid-jsdoc:
+      - error
+      - requireReturn: false
+        requireReturnDescription: false
+        prefer:
+          returns: return
+    wrap-iife:
+      - error
+      - inside
+    wrap-regex:
+      - error
+    yield-star-spacing:
+      - error
+      - both
+    yoda:
+      - error
+      - always

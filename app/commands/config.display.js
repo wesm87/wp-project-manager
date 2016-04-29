@@ -1,4 +1,3 @@
-'use strict';
 
 import log     from '../include/log';
 import project from '../include/project';
@@ -9,5 +8,5 @@ module.exports = {
 	builder:  {},
 	handler() {
 		log.message( project.config );
-	}
+	},
 };

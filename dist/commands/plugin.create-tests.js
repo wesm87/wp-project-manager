@@ -11,6 +11,7 @@ module.exports = {
 	describe: 'create plugin unit tests',
 	builder: {},
 	handler: function handler() {
+		_scaffold2.default.init();
 		_scaffold2.default.createPluginTests();
 	}
 };

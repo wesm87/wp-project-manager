@@ -1,9 +1,9 @@
-'use strict';
 
 // Gulp
 import gulp         from 'gulp';
 
 // Files
+import fs           from 'fs-extra';
 import rename       from 'gulp-rename';
 import concat       from 'gulp-concat';
 import sourcemaps   from 'gulp-sourcemaps';
@@ -16,7 +16,6 @@ import autoprefixer from 'gulp-autoprefixer';
 // JS
 import babel        from 'gulp-babel';
 import uglify       from 'gulp-uglify';
-import jshint       from 'gulp-jshint';
 
 class GulpTasks {
 
@@ -46,6 +45,7 @@ class GulpTasks {
 	get files() {
 		return {
 			css: {
+				watch:  'assets/source/css/**/*.scss',
 				source: [
 					'assets/source/css/**/*.scss',
 					'!assets/source/css/**/_*.scss',
@@ -53,6 +53,7 @@ class GulpTasks {
 				dest:   'assets/dist/css/'
 			},
 			js: {
+				watch:  'assets/source/js/**/*.js',
 				source: 'assets/source/js/**/*.js',
 				dest:   'assets/dist/js',
 			},
@@ -121,12 +122,12 @@ class GulpTasks {
 	}
 
 	watch() {
-		gulp.watch( this.files.js.source, this.buildJS() );
-		gulp.watch( this.files.css.source, this.buildCSS() );
+		gulp.watch( this.files.js.watch, this.buildJS );
+		gulp.watch( this.files.css.watch, this.buildCSS );
 	}
 
-	default() {
-		return gulp.series( this.build );
+	default( done ) {
+		return this.build( done );
 	}
 }
 

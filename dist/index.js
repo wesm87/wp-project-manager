@@ -1,3 +1,14 @@
+'use strict';
+
+var _yargs = require('yargs');
+
+var _yargs2 = _interopRequireDefault(_yargs);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+global.__appPath = __dirname;
+
+// eslint-disable-next-line no-unused-expressions
 /**
  * Performs all of the following:
  *   - Create project folder.
@@ -30,15 +41,5 @@
  * @todo Switch to using `async` / `await` and convert all the `*Sync()` methods
  *       we're currently using to their async counterparts.
  */
-
-'use strict';
-
-var _yargs = require('yargs');
-
-var _yargs2 = _interopRequireDefault(_yargs);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-global.__appPath = __dirname;
 
 _yargs2.default.help().completion().command(require('./commands/config.create')).command(require('./commands/project.create')).command(require('./commands/plugin.create')).command(require('./commands/theme.create')).argv;

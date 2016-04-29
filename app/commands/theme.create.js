@@ -1,4 +1,3 @@
-'use strict';
 
 import scaffold from '../include/scaffold';
 
@@ -7,6 +6,7 @@ module.exports = {
 	describe: 'scaffold new child theme',
 	builder:  {},
 	handler() {
+		scaffold.init();
 		scaffold.initTheme();
 	},
 };
