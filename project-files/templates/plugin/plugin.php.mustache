@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 0.1.0
  */
-class Plugin {
+class {{ plugin.class }} {
 
 	/**
 	 * The plugin version.
@@ -140,4 +140,4 @@ class Plugin {
 }
 
 // Instantiate the main plugin class.
-new Plugin();
+new {{ plugin.class }}();

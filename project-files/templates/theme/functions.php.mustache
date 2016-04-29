@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 0.1.0
  */
-class Theme {
+class {{ theme.class }} {
 
 	/**
 	 * The theme version.
@@ -119,4 +119,4 @@ class Theme {
 }
 
 // Instantiate the main theme class.
-new Theme();
+new {{ theme.class }}();
