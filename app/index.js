@@ -27,8 +27,9 @@
  * @todo Add description, usage, example, and copyright messages.
  * @todo Add functions to validate, sanitize, and/or format Git repo URLs.
  * @todo Add the ability to install VVV using WP Project Manager.
- * @todo Switch to using `async` / `await` and convert all the `*Sync()` methods
- *       we're currently using to their async counterparts.
+ * @todo Switch to using `async` / `await` instead of `*Sync()` methods.
+ * @todo Add `deps` module to handle npm / Bower / Composer dependencies.
+ * @todo Add `install-deps` command to install project, plugin, and theme deps.
  */
 
 import yargs from 'yargs';
