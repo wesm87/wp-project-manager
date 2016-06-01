@@ -66,5 +66,10 @@
       "htdocs/web/app/themes/{$name}/": ["type:wordpress-theme"]
     },
     "wordpress-install-dir": "htdocs/web/wp"
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "php ./scripts/composer-post-install.php"
+    ]
   }
 }
