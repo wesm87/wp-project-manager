@@ -1,16 +1,21 @@
 ### WordPress ###
 
 # Application
-**/mu-plugins/*
 **/plugins/*
 **/themes/*
 **/uploads/*
 **/upgrade/*
+!**/plugins/.gitkeep
+!**/themes/.gitkeep
 !**/uploads/.gitkeep
 !**/plugins/.gitkeep
 !**/themes/.gitkeep
+!**/plugins/post-type-*
 !**/plugins/{{ plugin.slug }}*
 !**/themes/{{ theme.slug }}*
+
+# Bundled Plugins
+!**/project-files/plugins/*.zip
 
 # Compiled assets
 **/assets/dist/*
