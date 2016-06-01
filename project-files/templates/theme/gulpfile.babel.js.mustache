@@ -3,11 +3,19 @@
 require.main.require = require;
 process.env.gulpDir  = require( 'path' ).resolve( '../blr-base-theme/gulp' );
 
+// Custom config for each task.
+global.gulpConfig = {
+	js: {
+		libs: [],
+	},
+};
+
 /**
  * Imports all of the default tasks provided by the base theme:
  *
  *   default
  *   watch
+ *   release
  *   build
  *   build/css
  *   build/js
@@ -15,9 +23,15 @@ process.env.gulpDir  = require( 'path' ).resolve( '../blr-base-theme/gulp' );
  *   build/fonts
  *   docs
  *   docs/sass
+ *   docs/js
+ *   docs/php
+ *   qa
+ *   qa/lint
+ *   qa/test
+ *   qa/travis
  */
-require( process.env.gulpDir );
+// eslint-disable-next-line no-unused-expressions
+require( process.env.gulpDir ).tasks;
 
 // Add your custom tasks below:
-
-const gulp = require( 'gulp' );
+// const gulp = require( 'gulp' );
