@@ -36,67 +36,34 @@ class {{ theme.class }} {
 	const THEME_ID = '{{ theme.id }}';
 
 	/**
-	 * Path to the theme includes folder.
-	 *
-	 * @since 0.1.0
-	 * @access public
-	 * @var string
-	 */
-	public static $includes_path;
-
-	/**
-	 * URL to the theme assets folder.
-	 *
-	 * @since 0.1.0
-	 * @access public
-	 * @var string
-	 */
-	public static $assets_url;
-
-	/**
 	 * Theme class constructor.
 	 *
 	 * @since 0.1.0
 	 */
 	public function __construct() {
+		add_action( 'after_setup_theme', [ $this, 'theme_init' ] );
+		add_action( 'widgets_init', [ $this, 'register_sidebars' ] );
+	}
 
-		// Set includes path and assets URL.
-		self::$includes_path = get_stylesheet_directory() . '/includes';
-		self::$assets_url    = get_stylesheet_directory_uri() . '/assets/dist';
+	/**
+	 * Initializes the theme class.
+	 *
+	 * @since 0.1.0
+	 */
+	public function theme_init() {
 
 		// Include our theme class files.
 		$this->includes();
 
-		// Set action handlers.
-		add_action( 'wp_enqueue_scripts', [ $this, 'scripts_and_styles' ] );
+		// Setup theme features.
+		$this->theme_setup();
+
+		// Featured image sizes.
+		$this->register_image_sizes();
 	}
 
 	/**
-	 * Returns the path to an includes file.
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param string $rel_path Relative path to the file.
-	 * @return string
-	 */
-	public function include_path( $rel_path ) {
-		return self::$includes_path . '/' . $rel_path;
-	}
-
-	/**
-	 * Returns the URL to an asset file.
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param string $rel_path Relative path to the asset file.
-	 * @return string
-	 */
-	public function asset_url( $rel_path ) {
-		return self::$assets_url . '/' . $rel_path;
-	}
-
-	/**
-	 * Includes theme class files.
+	 * Includes theme files.
 	 *
 	 * @since 0.1.0
 	 */
@@ -105,16 +72,21 @@ class {{ theme.class }} {
 	}
 
 	/**
-	 * Enqueue theme scripts and styles.
+	 * Calls to `add_theme_support()`, `add_image_size()`, etc. go here.
 	 *
 	 * @since 0.1.0
 	 */
-	public function scripts_and_styles() {
+	public function theme_setup() {
 
-		$version = ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? time() : null;
+	}
 
-		wp_enqueue_style( '{{ theme.slug }}/app', $this->asset_url( 'css/app.css' ), false, $version );
-		wp_enqueue_script( '{{ theme.slug }}/app', $this->asset_url( 'js/app.js' ), [ 'jquery' ], $version, true );
+	/**
+	 * Registers custom sidebars.
+	 *
+	 * @since 0.1.0
+	 */
+	public function register_sidebars() {
+
 	}
 }
 

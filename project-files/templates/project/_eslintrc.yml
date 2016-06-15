@@ -150,7 +150,7 @@
       - error
       - allowParens: true
     no-console:
-      - off
+      - warn
     no-const-assign:
       - error
     no-continue:
