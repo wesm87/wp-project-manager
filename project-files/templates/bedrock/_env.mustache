@@ -8,6 +8,8 @@ WP_ENV={{ env }}
 WP_HOME=http://{{{ project.url }}}
 WP_SITEURL=${WP_HOME}/wp
 
+WP_DEFAULT_THEME={{ theme.slug }}
+
 {{# project.template }}
 WP_PROJECT_TEMPLATE={{ project.template }}
 {{/ project.template }}
