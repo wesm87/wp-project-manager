@@ -23,9 +23,9 @@ check_failed() {
 
 ### Create Database ###
 
-mysql --user={{ db.rootUser }} --password={{ db.rootPass }} <<< \
+mysql --user={{ db.root_user }} --password={{ db.root_pass }} <<< \
 	'CREATE DATABASE IF NOT EXISTS `{{ db.name }}`;'
-mysql --user={{ db.rootUser }} --password={{ db.rootPass }} <<< \
+mysql --user={{ db.root_user }} --password={{ db.root_pass }} <<< \
 	'GRANT ALL PRIVILEGES ON `{{ db.name }}`.* TO "{{ db.user }}"@"{{ db.host }}" \
 	IDENTIFIED BY "{{ db.pass }}";'
 

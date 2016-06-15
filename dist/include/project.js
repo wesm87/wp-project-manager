@@ -335,7 +335,7 @@ var Project = function () {
 					includes: _path2.default.join(appPath, 'include'),
 					assets: _path2.default.join(rootPath, 'project-files', 'assets'),
 					templates: _path2.default.join(rootPath, 'project-files', 'templates'),
-					plugins: _path2.default.join(rootPath, 'project-files', 'plugins'),
+					plugins: _path2.default.join(rootPath, 'project-files', 'plugin-zips'),
 					test: _path2.default.join(rootPath, 'test'),
 					config: _utilsUpsearch2.default.sync('project.yml')
 				};
