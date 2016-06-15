@@ -30,6 +30,8 @@
  * @todo Switch to using `async` / `await` instead of `*Sync()` methods.
  * @todo Add `deps` module to handle npm / Bower / Composer dependencies.
  * @todo Add `install-deps` command to install project, plugin, and theme deps.
+ * @todo Figure out why only the latest sub-command actually registers and hollow
+ *       to fix it.
  */
 
 import yargs from 'yargs';
@@ -39,8 +41,8 @@ global.__appPath = __dirname;
 // eslint-disable-next-line no-unused-expressions
 yargs.help()
 	.completion()
-	.command( require( './commands/config.create' ) )
 	.command( require( './commands/config.display' ) )
+	.command( require( './commands/config.create' ) )
 	.command( require( './commands/deps.install' ) )
 	.command( require( './commands/plugin.create-tests' ) )
 	.command( require( './commands/plugin.create' ) )
