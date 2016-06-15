@@ -8,11 +8,15 @@ WP_ENV={{ env }}
 WP_HOME=http://{{{ project.url }}}
 WP_SITEURL=${WP_HOME}/wp
 
-AUTH_KEY={{{ secret.authKey }}}
-SECURE_AUTH_KEY={{{ secret.secureAuthKey }}}
-LOGGED_IN_KEY={{{ secret.loggedInKey }}}
-NONCE_KEY={{{ secret.nonceKey }}}
-AUTH_SALT={{{ secret.authSalt }}}
-SECURE_AUTH_SALT={{{ secret.secureAuthSalt }}}
-LOGGED_IN_SALT={{{ secret.loggedInSalt }}}
-NONCE_SALT={{{ secret.nonceSalt }}}
+{{# project.template }}
+WP_PROJECT_TEMPLATE={{ project.template }}
+{{/ project.template }}
+
+AUTH_KEY={{{ secret.auth_key }}}
+SECURE_AUTH_KEY={{{ secret.secure_auth_key }}}
+LOGGED_IN_KEY={{{ secret.logged_in_key }}}
+NONCE_KEY={{{ secret.nonce_key }}}
+AUTH_SALT={{{ secret.auth_salt }}}
+SECURE_AUTH_SALT={{{ secret.secure_auth_salt }}}
+LOGGED_IN_SALT={{{ secret.logged_in_salt }}}
+NONCE_SALT={{{ secret.nonce_salt }}}

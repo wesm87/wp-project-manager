@@ -175,7 +175,7 @@ var Scaffold = function (_Project) {
 			_log2.default.message('Copying plugin ZIPs...');
 
 			var source = this.paths.plugins;
-			var dest = _path2.default.join(this.paths.project, 'plugin-zips');
+			var dest = _path2.default.join(this.paths.project, 'project-files/plugin-zips');
 
 			_fsExtra2.default.copySync(source, dest);
 
@@ -191,7 +191,7 @@ var Scaffold = function (_Project) {
 		value: function parseTemplateData() {
 			var _this2 = this;
 
-			var pluginZipsDir = _path2.default.join(this.paths.project, 'plugin-zips');
+			var pluginZipsDir = _path2.default.join(this.paths.project, 'project-files/plugin-zips');
 
 			if (!this.templateData.pluginZips) {
 				this.templateData.pluginZips = [];
@@ -402,7 +402,7 @@ var Scaffold = function (_Project) {
 
 			this.createPlaceholders('theme');
 
-			this.copyAssets('theme', 'css');
+			this.copyAssets('theme');
 
 			_log2.default.ok('Theme created.');
 
@@ -410,6 +410,9 @@ var Scaffold = function (_Project) {
 
 			this.execSync('npm install', 'theme');
 			this.execSync('bower install', 'theme');
+
+			_log2.default.message('Compiling theme assets...');
+			this.execSync('npm run build', 'theme');
 
 			_log2.default.ok('Done');
 

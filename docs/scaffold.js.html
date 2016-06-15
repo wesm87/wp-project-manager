@@ -172,7 +172,7 @@ class Scaffold extends Project {
 		log.message( 'Copying plugin ZIPs...' );
 
 		const source = this.paths.plugins;
-		const dest   = path.join( this.paths.project, 'plugin-zips' );
+		const dest   = path.join( this.paths.project, 'project-files/plugin-zips' );
 
 		fs.copySync( source, dest );
 
@@ -184,7 +184,7 @@ class Scaffold extends Project {
 	 */
 	static parseTemplateData() {
 
-		const pluginZipsDir = path.join( this.paths.project, 'plugin-zips' );
+		const pluginZipsDir = path.join( this.paths.project, 'project-files/plugin-zips' );
 
 		if ( ! this.templateData.pluginZips ) {
 			this.templateData.pluginZips = [];
@@ -389,7 +389,7 @@ class Scaffold extends Project {
 
 		this.createPlaceholders( 'theme' );
 
-		this.copyAssets( 'theme', 'css' );
+		this.copyAssets( 'theme' );
 
 		log.ok( 'Theme created.' );
 
@@ -397,6 +397,9 @@ class Scaffold extends Project {
 
 		this.execSync( 'npm install', 'theme' );
 		this.execSync( 'bower install', 'theme' );
+
+		log.message( 'Compiling theme assets...' );
+		this.execSync( 'npm run build', 'theme' );
 
 		log.ok( 'Done' );
 

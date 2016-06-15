@@ -8,6 +8,7 @@ author:
   website: http://your-website.example.com
 
 project:
+  template:  blr
   multisite: false
   title:
   slug:
@@ -21,11 +22,13 @@ plugin:
   scaffold: true
   name:
   slug:
+  description:
 
 theme:
   scaffold: true
   name:
   slug:
+  description:
 
 admin:
   user:  admin
