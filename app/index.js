@@ -40,7 +40,12 @@ global.__appPath = __dirname;
 yargs.help()
 	.completion()
 	.command( require( './commands/config.create' ) )
-	.command( require( './commands/project.create' ) )
+	.command( require( './commands/config.display' ) )
+	.command( require( './commands/deps.install' ) )
+	.command( require( './commands/plugin.create-tests' ) )
 	.command( require( './commands/plugin.create' ) )
+	.command( require( './commands/project.create' ) )
+	.command( require( './commands/theme.create-tests' ) )
 	.command( require( './commands/theme.create' ) )
+	.command( require( './commands/wp.install' ) )
 	.argv;
