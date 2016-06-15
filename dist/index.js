@@ -38,8 +38,9 @@ global.__appPath = __dirname;
  * @todo Add description, usage, example, and copyright messages.
  * @todo Add functions to validate, sanitize, and/or format Git repo URLs.
  * @todo Add the ability to install VVV using WP Project Manager.
- * @todo Switch to using `async` / `await` and convert all the `*Sync()` methods
- *       we're currently using to their async counterparts.
+ * @todo Switch to using `async` / `await` instead of `*Sync()` methods.
+ * @todo Add `deps` module to handle npm / Bower / Composer dependencies.
+ * @todo Add `install-deps` command to install project, plugin, and theme deps.
  */
 
-_yargs2.default.help().completion().command(require('./commands/config.create')).command(require('./commands/project.create')).command(require('./commands/plugin.create')).command(require('./commands/theme.create')).argv;
+_yargs2.default.help().completion().command(require('./commands/config.create')).command(require('./commands/config.display')).command(require('./commands/deps.install')).command(require('./commands/plugin.create-tests')).command(require('./commands/plugin.create')).command(require('./commands/project.create')).command(require('./commands/theme.create-tests')).command(require('./commands/theme.create')).command(require('./commands/wp.install')).argv;
