@@ -114,9 +114,14 @@ class Project {
 	 */
 	static get defaultConfig() {
 		return {
-			vvv:     true,
-			debug:   false,
-			token:   '',
+			vvv:    true,
+			debug:  false,
+			token:  '',
+			author: {
+				name:    'Your Name',
+				email:   'your-email@example.com',
+				website: 'http://your-website.example.com',
+			},
 			project: {
 				title: '',
 				slug:  '',
