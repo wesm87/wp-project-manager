@@ -1,7 +1,7 @@
 {
   "name": "@decisionary/wp-project-manager",
   "description": "A Node CLI tool that simplifies the process of setting up a new WordPress project and development environment.",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "private": true,
   "license": "SEE LICENSE IN LICENSE.md",
   "homepage": "https://github.com/Decisionary/wp-project-manager",
@@ -38,6 +38,14 @@
   },
   "scripts": {
     "gulp": "gulp",
+    "bump": "gulp bump --major",
+    "bump:major": "gulp bump --major",
+    "bump:minor": "gulp bump --minor",
+    "bump:patch": "gulp bump --patch",
+    "release": "gulp release --major",
+    "release:major": "gulp release --major",
+    "release:minor": "gulp release --minor",
+    "release:patch": "gulp release --patch",
     "build": "npm run build-dev && npm run test",
     "build-dev": "gulp build && npm link && npm run jsdoc",
     "jsdoc": "jsdoc -c jsdoc.conf.json",

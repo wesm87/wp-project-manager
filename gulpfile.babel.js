@@ -5,7 +5,11 @@
 
 import 'babel-polyfill';
 
+import fs       from 'fs-extra';
 import path     from 'path';
+import yargs    from 'yargs';
+import semver   from 'semver';
+
 import gulp     from 'gulp';
 import nsp      from 'gulp-nsp';
 import babel    from 'gulp-babel';
@@ -13,6 +17,8 @@ import mocha    from 'gulp-mocha';
 import istanbul from 'gulp-istanbul';
 
 import { Instrumenter } from 'isparta';
+
+const pkg  = require( './package.json' );
 
 /**
  * Gulp tasks.
@@ -32,6 +38,8 @@ class GulpTasks {
 			'test',
 			'coverage',
 			'nsp',
+			'bump',
+			'release',
 		];
 	}
 
@@ -100,8 +108,8 @@ class GulpTasks {
 	 * @param {Function} done Async callback.
 	 */
 	async default( done ) {
-		await this.test();
-		await this.build();
+		await this.test( done );
+		await this.build( done );
 
 		done();
 	}
@@ -161,6 +169,63 @@ class GulpTasks {
 	 */
 	nsp( done ) {
 		return nsp( this.config.nsp, done );
+	}
+
+	/**
+	 * Automatically bumps the version number for a new release.
+	 *
+	 * @param {Function} done Async callback.
+	 */
+	bump( done ) {
+
+		const argv        = yargs.argv;
+		const increment   = 1;
+		const jsonSpaces  = 2;
+		const versionInfo = {
+			major: semver.major( pkg.version ),
+			minor: semver.minor( pkg.version ),
+			patch: semver.patch( pkg.version ),
+		};
+
+		if ( argv.major ) {
+			versionInfo.major += increment;
+			versionInfo.minor = 0;
+			versionInfo.patch = 0;
+		} else if ( argv.minor ) {
+			versionInfo.minor += increment;
+			versionInfo.patch = 0;
+		} else if ( argv.patch ) {
+			versionInfo.patch += increment;
+		}
+
+		const version = `${ versionInfo.major }.${ versionInfo.minor }.${ versionInfo.patch }`;
+
+		pkg.version = version;
+
+		const pkgJSON = JSON.stringify( pkg, null, jsonSpaces );
+
+		console.log( argv );
+		console.log( versionInfo );
+		console.log( version );
+
+		fs.writeFileSync( './package.json', `${ pkgJSON }\n` );
+
+		done();
+	}
+
+	/**
+	 * Prepares a new release - runs tests, creates a new build, and bumps the
+	 * version number.
+	 *
+	 * @param {Function} done Async callback.
+	 */
+	async release( done ) {
+
+		await this.test( done );
+		await this.build( done );
+		await this.bump( done );
+
+		done();
 	}
 }
 
