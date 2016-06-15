@@ -404,6 +404,8 @@ var Project = function () {
 					website: 'http://your-website.example.com'
 				},
 				project: {
+					template: 'blr',
+					multisite: false,
 					title: '',
 					slug: '',
 					url: ''
@@ -415,12 +417,14 @@ var Project = function () {
 				plugin: {
 					scaffold: true,
 					name: '',
-					slug: ''
+					slug: '',
+					description: ''
 				},
 				theme: {
 					scaffold: true,
 					name: '',
-					slug: ''
+					slug: '',
+					description: ''
 				},
 				admin: {
 					user: 'admin',
