@@ -433,9 +433,9 @@ var Project = function () {
 				},
 				db: {
 					name: '',
-					user: 'wp',
-					pass: 'wp',
-					host: 'localhost',
+					user: 'external',
+					pass: 'external',
+					host: 'vvv.dev:3306',
 					root_user: 'root',
 					root_pass: 'root',
 					prefix: ''
