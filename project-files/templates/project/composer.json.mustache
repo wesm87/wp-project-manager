@@ -10,12 +10,7 @@
       "type": "composer",
       "url": "https://wpackagist.org"
     },
-    {
-      "type": "vcs",
-      "name": "decisionary/blr-base-theme",
-      "url": "https://github.com/Decisionary/blr-base-theme.git"
-    }
-    {{# pluginZips }},
+    {{# pluginZips }}
     {
       "type": "package",
       "package": {
@@ -27,8 +22,13 @@
           "type": "zip"
         }
       }
-    }
+    },
     {{/ pluginZips }}
+    {
+      "type": "vcs",
+      "name": "decisionary/blr-base-theme",
+      "url": "https://github.com/Decisionary/blr-base-theme.git"
+    }
   ],
   "require": {
     "php": ">=5.5",
@@ -39,6 +39,9 @@
     "decisionary/blr-base-theme": "dev-master",
     "roots/soil": "^3.7",
     "roots/wp-stage-switcher": "^2.0",
+    {{# pluginZips }}
+    "wpackagist-plugin/{{ name }}": "*",
+    {{/ pluginZips }}
     "wpackagist-plugin/better-wp-security": "^5.3",
     "wpackagist-plugin/bj-lazy-load": "^1.0",
     "wpackagist-plugin/broken-link-checker": "^1.11",
@@ -55,9 +58,6 @@
     "wpackagist-plugin/wordpress-seo": "^3.1",
     "wpackagist-plugin/wp-optimize": "^1.8",
     "wpackagist-plugin/wp-smushit": "^2.1"
-    {{# pluginZips }},
-    "wpackagist-plugin/{{ name }}": "*"
-    {{/ pluginZips }}
   },
   "extra": {
     "installer-paths": {
