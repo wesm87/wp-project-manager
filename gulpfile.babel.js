@@ -18,7 +18,7 @@ import istanbul from 'gulp-istanbul';
 
 import { Instrumenter } from 'isparta';
 
-const pkg  = require( './package.json' );
+const pkg = require( './package.json' );
 
 /**
  * Gulp tasks.
