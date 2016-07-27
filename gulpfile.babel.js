@@ -204,10 +204,6 @@ class GulpTasks {
 
 		const pkgJSON = JSON.stringify( pkg, null, jsonSpaces );
 
-		console.log( argv );
-		console.log( versionInfo );
-		console.log( version );
-
 		fs.writeFileSync( './package.json', `${ pkgJSON }\n` );
 
 		done();
