@@ -1,13 +1,13 @@
 WP Project Manager
 ==================
 
-[![GitHub release][github-img]][github-url] [![npm Version][npm-img]][npm-url]
-
 <!--
 ADD THESE LATER:
 
 (David-DM needs to fix this: https://github.com/alanshaw/david-www/issues/176)
 
+[![GitHub release][github-img]][github-url]
+[![npm Version][npm-img]][npm-url]
 [![Dependency Status][david-img]][david-url]
 [![Coverage][coveralls-img]][coveralls-url]
 [![Build Status][travis-img]][travis-url]
