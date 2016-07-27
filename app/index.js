@@ -22,16 +22,12 @@
  * You can also specify the path using the `--config` argument. For example:
  *     `node wp-manager --config=/path/to/config.yml`.
  *
- * @todo Finish separating script out into individual command modules.
  * @todo Add argument validation and sanitization.
  * @todo Add description, usage, example, and copyright messages.
- * @todo Add functions to validate, sanitize, and/or format Git repo URLs.
- * @todo Add the ability to install VVV using WP Project Manager.
  * @todo Switch to using `async` / `await` instead of `*Sync()` methods.
  * @todo Add `deps` module to handle npm / Bower / Composer dependencies.
  * @todo Add `install-deps` command to install project, plugin, and theme deps.
- * @todo Figure out why only the latest sub-command actually registers and hollow
- *       to fix it.
+ * @todo Replace `yargs` with a CLI framework that supports sub-commands.
  */
 
 import yargs from 'yargs';

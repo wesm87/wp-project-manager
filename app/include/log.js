@@ -1,6 +1,6 @@
 
-import _ from 'lodash';
-import colors  from 'colors';
+import _      from 'lodash';
+import colors from 'colors';
 
 import project from './project';
 
