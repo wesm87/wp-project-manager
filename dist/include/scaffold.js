@@ -62,7 +62,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  *       - Move WordPress / database setup into separate class.
  *       - Move git commands into separate class?
  */
-
 var Scaffold = function (_Project) {
 	_inherits(Scaffold, _Project);
 
