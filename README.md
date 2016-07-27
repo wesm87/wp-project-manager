@@ -97,17 +97,15 @@ It will make your life much easier.
 Open up your preferred command line application and enter the following:
 
 ```sh
-npm i -g https://github.com/Decisionary/wp-project-manager.git
+npm i -g https://github.com/wesm87/wp-project-manager.git
 ```
 
 If you are installing on a server that is not aware of your GitHub credentials,
 but can use ssh for GitHub, use the following command:
 
 ```sh
-npm i -g git://git@github.com:Decisionary/wp-project-manager.git
+npm i -g git://git@github.com:wesm87/wp-project-manager.git
 ```
-
-If you need access to the repo contact [JC][jc-email].
 
 
 ## Usage
@@ -129,24 +127,6 @@ The command arguments use dot notation and match the structure of the
 `project.yml` file. For example, if you wanted to set a custom theme name, you'd
 use `--theme.name="My Theme Name"`.
 
-It's also a good idea to specify a GitHub API token in your project config
-if you don't already have a `~/.composer/auth.json` file. First you'll need to
-[create a new token](https://github.com/settings/tokens/new?scopes=repo). Once
-you've done that, copy the new token and add it to your `project.yml` like so:
-
-```sh
-token: _YOUR_TOKEN_HERE_
-```
-
-...or pass the token as an argument: `--token=_YOUR_TOKEN_HERE_`
-
-If you'd rather just create the `auth.json` file, you can do so using the
-following command:
-
-```sh
-echo '{ "github-oauth": { "github.com": "_YOUR_TOKEN_HERE_" } }' > \
-  "$HOME/.composer/auth.json"
-```
 
 ### Creating a new project with VVV and Vagrant
 
@@ -272,35 +252,24 @@ Note that if `WP_ENV` is set to `staging`, the config file would be
 define environment-specific settings (such as enabling `WP_DEBUG` for
 `development` but not `production`).
 
-**Do not** edit `htdocs/config/application.php`; this is the global
-configuration and it applies to all environments. If you feel that any changes
-need to be made in the global configuration, contact [JC][jc-email] or
-[create a new issue][issues-url] on GitHub and let us know what you think
-should be changed and why.
 
 
-## License
 
-© [Decisionary Tech](http://decisionarytech.com/)
-
-
-[jc-email]:      mailto:jc@decisionarytech.com
-
-[issues-url]:    https://github.com/Decisionary/wp-project-manager/issues
+[issues-url]:    https://github.com/wesm87/wp-project-manager/issues
 
 [brew]:          http://brew.sh
 [cask]:          https://caskroom.github.io
 [npm-guide]:     http://www.johnpapa.net/how-to-use-npm-global-without-sudo-on-osx
 
-[github-img]:    https://img.shields.io/github/release/Decisionary/wp-project-manager.svg
-[github-url]:    https://github.com/Decisionary/wp-project-manager
-[npm-img]:       https://img.shields.io/npm/v/@decisionary/wp-project-manager.svg
-[npm-url]:       https://www.npmjs.com/package/@decisionary/wp-project-manager
-[coveralls-img]: https://img.shields.io/coveralls/Decisionary/wp-project-manager.svg
-[coveralls-url]: https://coveralls.io/r/Decisionary/wp-project-manager
-[travis-img]:    https://img.shields.io/travis/Decisionary/wp-project-manager.svg
-[travis-url]:    https://travis-ci.org/Decisionary/wp-project-manager
-[appveyor-img]:  https://img.shields.io/appveyor/ci/Decisionary/wp-project-manager.svg
-[appveyor-url]:  https://ci.appveyor.com/project/Decisionary/wp-project-manager
-[david-img]:     https://img.shields.io/david/Decisionary/wp-project-manager.svg
-[david-url]:     https://david-dm.org/Decisionary/wp-project-manager
+[github-img]:    https://img.shields.io/github/release/wesm87/wp-project-manager.svg
+[github-url]:    https://github.com/wesm87/wp-project-manager
+[npm-img]:       https://img.shields.io/npm/v/@wesm87/wp-project-manager.svg
+[npm-url]:       https://www.npmjs.com/package/@wesm87/wp-project-manager
+[coveralls-img]: https://img.shields.io/coveralls/wesm87/wp-project-manager.svg
+[coveralls-url]: https://coveralls.io/r/wesm87/wp-project-manager
+[travis-img]:    https://img.shields.io/travis/wesm87/wp-project-manager.svg
+[travis-url]:    https://travis-ci.org/wesm87/wp-project-manager
+[appveyor-img]:  https://img.shields.io/appveyor/ci/wesm87/wp-project-manager.svg
+[appveyor-url]:  https://ci.appveyor.com/project/wesm87/wp-project-manager
+[david-img]:     https://img.shields.io/david/wesm87/wp-project-manager.svg
+[david-url]:     https://david-dm.org/wesm87/wp-project-manager
