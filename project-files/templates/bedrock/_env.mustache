@@ -7,12 +7,7 @@ DB_PREFIX={{ db.prefix }}
 WP_ENV=development
 WP_HOME=http://{{{ project.url }}}
 WP_SITEURL=${WP_HOME}/wp
-
 WP_DEFAULT_THEME={{ theme.slug }}
-
-{{# project.template }}
-WP_PROJECT_TEMPLATE={{ project.template }}
-{{/ project.template }}
 
 AUTH_KEY={{{ secret.auth_key }}}
 SECURE_AUTH_KEY={{{ secret.secure_auth_key }}}
