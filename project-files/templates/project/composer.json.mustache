@@ -6,10 +6,6 @@
     "vendor-dir": "htdocs/vendor"
   },
   "repositories": [
-    {
-      "type": "composer",
-      "url": "https://wpackagist.org"
-    },
     {{# pluginZips }}
     {
       "type": "package",
@@ -25,9 +21,8 @@
     },
     {{/ pluginZips }}
     {
-      "type": "vcs",
-      "name": "decisionary/blr-base-theme",
-      "url": "https://github.com/Decisionary/blr-base-theme.git"
+      "type": "composer",
+      "url": "https://wpackagist.org"
     }
   ],
   "require": {
@@ -36,7 +31,6 @@
     "johnpbloch/wordpress": "^4.5",
     "oscarotero/env": "^1.0",
     "vlucas/phpdotenv": "^2.0.1",
-    "decisionary/blr-base-theme": "dev-master",
     "roots/soil": "^3.7",
     "roots/wp-stage-switcher": "^2.0",
     {{# pluginZips }}
@@ -46,12 +40,10 @@
     "wpackagist-plugin/bj-lazy-load": "^1.0",
     "wpackagist-plugin/broken-link-checker": "^1.11",
     "wpackagist-plugin/customize-posts": "^0.5",
-    "wpackagist-plugin/google-sitemap-generator": "^4.0",
     "wpackagist-plugin/jetpack": "^4.0",
     "wpackagist-plugin/ml-slider": "^3.3",
     "wpackagist-plugin/redirection": "^2.4",
     "wpackagist-plugin/regenerate-thumbnails": "^2.2",
-    "wpackagist-plugin/regenerate-thumbnails-advanced": "^1.0",
     "wpackagist-plugin/shortcode-ui": "^0.6",
     "wpackagist-plugin/tinymce-advanced": "^4.2",
     "wpackagist-plugin/w3-total-cache": "^0.9",
@@ -66,10 +58,5 @@
       "htdocs/web/app/themes/{$name}/": ["type:wordpress-theme"]
     },
     "wordpress-install-dir": "htdocs/web/wp"
-  },
-  "scripts": {
-    "post-autoload-dump": [
-      "php ./scripts/composer-post-install.php"
-    ]
   }
 }
