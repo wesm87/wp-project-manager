@@ -32,7 +32,7 @@ mysql --user={{ db.root_user }} --password={{ db.root_pass }} <<< \
 
 ### Install WordPress ###
 
-echo '{{ plugin.slug }} :: Checking for WordPress database tables...'
+echo '{{ project.slug }} :: Checking for WordPress database tables...'
 
 if $(wp core is-installed --allow-root); then
 	check_passed 'Tables exist'
