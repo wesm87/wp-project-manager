@@ -1,5 +1,5 @@
 {
-  "name": "@decisionary/wp-project-manager",
+  "name": "wp-project-manager",
   "description": "A Node CLI tool that simplifies the process of setting up a new WordPress project and development environment.",
   "version": "0.7.3",
   "private": true,
@@ -13,7 +13,7 @@
     "url": "https://github.com/Decisionary/wp-project-manager/issues"
   },
   "contributors": [
-    "Wes Moberly <wes.moberly@decisionarytech.com> (http://decisionarytech.com)"
+    "Wes Moberly <wes@wesmoberly.me> (http://wesmoberly.me)"
   ],
   "keywords": [
     "WordPress",
