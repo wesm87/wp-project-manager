@@ -13,7 +13,7 @@ global.__appPath = __dirname;
  * Performs all of the following:
  *   - Create project folder.
  *   - Create vvv-hosts, vvv-nginx.conf, and vvv-init.sh.
- *   - When vvv-init.sh runs: update Node to 5.x, install Gulp & Bower.
+ *   - When vvv-init.sh runs: update Node to 6.x, install Gulp & Bower globally.
  *   - Initialize the Git repo.
  *   - Scaffold out a new project and install dependencies.
  *   - Install and configure wp-dev-lib.

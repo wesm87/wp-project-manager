@@ -4,16 +4,15 @@ WP Project Manager
 <!--
 ADD THESE LATER:
 
-(David-DM needs to fix this: https://github.com/alanshaw/david-www/issues/176)
-
 [![npm Version][npm-img]][npm-url]
 [![Coverage][coveralls-img]][coveralls-url]
 [![Windows Tests][appveyor-img]][appveyor-url]
 -->
 
 [![GitHub release][github-img]][github-url]
-[![Dependency Status][david-img]][david-url]
 [![Build Status][travis-img]][travis-url]
+[![dependencies Status][david-img]][david-url]
+[![devDependencies Status][david-dev-img]][david-dev-url]
 
 A Node CLI tool that simplifies the process of setting up a new WordPress
 project and development environment.
@@ -274,21 +273,23 @@ define environment-specific settings (such as enabling `WP_DEBUG` for
 [php-versions]:    http://php.net/supported-versions.php
 [keys-and-salts]:  https://roots.io/salts.html
 
-[github-img]:      https://img.shields.io/github/tag/wesm87/wp-project-manager.svg?style=flat-square
-[github-url]:      https://github.com/wesm87/wp-project-manager
-
 [npm-img]:         https://img.shields.io/npm/v/wp-project-manager.svg?style=flat-square
 [npm-url]:         https://www.npmjs.com/package/wp-project-manager
 
-[coveralls-img]:   https://img.shields.io/coveralls/wesm87/wp-project-manager.svg?style=flat-square
-[coveralls-url]:   https://coveralls.io/r/wesm87/wp-project-manager
+[github-img]:      https://img.shields.io/github/tag/wesm87/wp-project-manager.svg?style=flat-square
+[github-url]:      https://github.com/wesm87/wp-project-manager
 
 [travis-img]:      https://img.shields.io/travis/wesm87/wp-project-manager.svg?style=flat-square
 [travis-url]:      https://travis-ci.org/wesm87/wp-project-manager
 
-[appveyor-img]:    https://img.shields.io/appveyor/ci/wesm87/wp-project-manager.svg?style=flat-square
-[appveyor-url]:    https://ci.appveyor.com/project/wesm87/wp-project-manager
-
 [david-img]:       https://img.shields.io/david/wesm87/wp-project-manager.svg?style=flat-square
 [david-url]:       https://david-dm.org/wesm87/wp-project-manager
-œ
+
+[david-dev-img]:   https://img.shields.io/david/dev/wesm87/wp-project-manager.svg?style=flat-square
+[david-dev-url]:   https://david-dm.org/wesm87/wp-project-manager?type=dev
+
+[coveralls-img]:   https://img.shields.io/coveralls/wesm87/wp-project-manager.svg?style=flat-square
+[coveralls-url]:   https://coveralls.io/r/wesm87/wp-project-manager
+
+[appveyor-img]:    https://img.shields.io/appveyor/ci/wesm87/wp-project-manager.svg?style=flat-square
+[appveyor-url]:    https://ci.appveyor.com/project/wesm87/wp-project-manager
