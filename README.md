@@ -9,10 +9,11 @@ ADD THESE LATER:
 [![Windows Tests][appveyor-img]][appveyor-url]
 -->
 
-[![GitHub release][github-img]][github-url]
+[![GitHub Release][github-img]][github-url]
 [![Build Status][travis-img]][travis-url]
 [![dependencies Status][david-img]][david-url]
 [![devDependencies Status][david-dev-img]][david-dev-url]
+[![Documentation Coverage][inch-ci-img]][inch-ci-url]
 
 A Node CLI tool that simplifies the process of setting up a new WordPress
 project and development environment.
@@ -287,6 +288,9 @@ define environment-specific settings (such as enabling `WP_DEBUG` for
 
 [david-dev-img]:   https://img.shields.io/david/dev/wesm87/wp-project-manager.svg?style=flat-square
 [david-dev-url]:   https://david-dm.org/wesm87/wp-project-manager?type=dev
+
+[inch-ci-img]:     http://inch-ci.org/github/wesm87/wp-project-manager.svg?branch=master&style=flat-square
+[inch-ci-url]:     https://inch-ci.org/github/wesm87/wp-project-manager?branch=master
 
 [coveralls-img]:   https://img.shields.io/coveralls/wesm87/wp-project-manager.svg?style=flat-square
 [coveralls-url]:   https://coveralls.io/r/wesm87/wp-project-manager
