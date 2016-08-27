@@ -62,16 +62,12 @@ wp theme activate "{{ theme.slug }}" --allow-root
 ### Activate plugins ###
 
 wp plugin activate --allow-root \
-	acf-pro \
+	{{# pluginZips }}
+		{{ name }} \
+	{{/ pluginZips }}
 	bj-lazy-load \
 	broken-link-checker \
-	google-sitemap-generator \
-	gravity-forms \
-	jetpack \
 	ml-slider \
-	ml-slider-pro \
-	monarch \
 	soil \
-	tinymce-advanced \
 	wordpress-seo \
 	wp-optimize
