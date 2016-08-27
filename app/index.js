@@ -34,8 +34,7 @@ import yargs from 'yargs';
 
 global.__appPath = __dirname;
 
-// eslint-disable-next-line no-unused-expressions
-yargs.help()
+export default yargs.help()
 	.completion()
 	.command( require( './commands/config.display' ) )
 	.command( require( './commands/config.create' ) )
