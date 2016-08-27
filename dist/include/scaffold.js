@@ -68,7 +68,7 @@ var Scaffold = function (_Project) {
 	function Scaffold() {
 		_classCallCheck(this, Scaffold);
 
-		return _possibleConstructorReturn(this, Object.getPrototypeOf(Scaffold).apply(this, arguments));
+		return _possibleConstructorReturn(this, (Scaffold.__proto__ || Object.getPrototypeOf(Scaffold)).apply(this, arguments));
 	}
 
 	_createClass(Scaffold, null, [{
