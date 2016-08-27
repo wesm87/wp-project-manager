@@ -78,8 +78,6 @@
     generator-star-spacing:
       - 2
       - both
-    global-require:
-      - 2
     guard-for-in:
       - 2
     id-length:
