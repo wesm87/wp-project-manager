@@ -1,7 +1,7 @@
 {
   "name": "wp-project-manager",
   "description": "A Node CLI tool that simplifies the process of setting up a new WordPress project and development environment.",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "private": true,
   "license": "SEE LICENSE IN LICENSE.md",
   "homepage": "https://github.com/Decisionary/wp-project-manager",
@@ -58,7 +58,7 @@
     "lodash": "^4.11.1",
     "mustache": "^2.2.1",
     "utils-upsearch": "^1.0.0",
-    "yargs": "^4.6.0"
+    "yargs": "^5.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.7.7",
@@ -67,18 +67,19 @@
     "babel-preset-es2015": "^6.6.0",
     "babel-preset-stage-3": "^6.5.0",
     "chai": "^3.5.0",
-    "eslint": "^2.8.0",
+    "eslint": "^3.4.0",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
     "gulp-babel": "^6.1.2",
     "gulp-composer": "^0.4.0",
     "gulp-git": "^1.7.1",
-    "gulp-istanbul": "^0.10.4",
-    "gulp-mocha": "^2.2.0",
+    "gulp-istanbul": "^1.1.1",
+    "gulp-mocha": "^3.0.1",
     "gulp-nsp": "^2.4.0",
     "gulp-shell": "^0.5.2",
-    "isparta": "^3.5.3",
+    "isparta": "^4.0.0",
     "jsdoc": "^3.4.0",
-    "mocha": "^2.4.5",
+    "mocha": "^3.0.2",
+    "semver": "^5.3.0",
     "shelljs": "^0.7.0"
   }
 }
