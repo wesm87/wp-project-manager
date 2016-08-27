@@ -6,13 +6,14 @@ ADD THESE LATER:
 
 (David-DM needs to fix this: https://github.com/alanshaw/david-www/issues/176)
 
-[![GitHub release][github-img]][github-url]
 [![npm Version][npm-img]][npm-url]
-[![Dependency Status][david-img]][david-url]
 [![Coverage][coveralls-img]][coveralls-url]
-[![Build Status][travis-img]][travis-url]
 [![Windows Tests][appveyor-img]][appveyor-url]
 -->
+
+[![GitHub release][github-img]][github-url]
+[![Dependency Status][david-img]][david-url]
+[![Build Status][travis-img]][travis-url]
 
 A Node CLI tool that simplifies the process of setting up a new WordPress
 project and development environment.
@@ -23,15 +24,15 @@ project and development environment.
 WP Project Manager depends on the following tools / programs. You'll need to
 have all of these installed in order for everything to work properly:
 
-[Git](https://git-scm.com/)  
-[Node.js](https://nodejs.org)  
-[Composer](https://getcomposer.org/)  
-[Bower](http://bower.io/)
+- [Git][git]
+- [Node.js][node]
+- [Composer][composer]
+- [Bower][bower]
 
 We also strongly recommend installing:
 
-[Vagrant](https://www.vagrantup.com)  
-[VVV](https://github.com/Varying-Vagrant-Vagrants/VVV)
+- [Vagrant][vagrant]
+- [VVV][vvv]
 
 WP Project Manager uses Vagrant and VVV to create and configure a development
 environment automatically when you create a new project. If you'd prefer to
@@ -43,8 +44,8 @@ prior to creating your new project. More info on this can be found in the
 
 ### Mac OS X Users
 
-We recommend using [Homebrew][brew] and [Cask](https://caskroom.github.io/)
-to install and manage dependencies:
+We recommend using [Homebrew][brew] and [Cask][cask] to install and manage
+dependencies:
 
 ```sh
 # Install Homebrew
@@ -73,20 +74,20 @@ And that's a Very Bad Thing™.
 
 ### Windows Users
 
-We recommend installing [Git for Windows](https://git-for-windows.github.io/).
+We recommend installing [Git for Windows][git-for-win].
 It will make your life much easier.
 
 ### GUI Applications
 
 #### Git
 
-[SourceTree](https://www.sourcetreeapp.com/) (Mac, Windows)  
-[GitHub Desktop](https://desktop.github.com/) (Mac, Windows)  
-[GitKraken](https://www.gitkraken.com/) (Mac, Windows, Linux)
+- [SourceTree][sourcetree] (Mac, Windows)
+- [GitHub Desktop][github-desktop] (Mac, Windows)
+- [GitKraken][gitkraken] (Mac, Windows, Linux)
 
 #### Vagrant
 
-[Vagrant Manager](http://vagrantmanager.com/) (Mac, Windows)
+[Vagrant Manager][vagrant-manager] (Mac, Windows)
 
 
 
@@ -156,11 +157,9 @@ the theme folder would be located at `htdocs/web/app/themes/my-new-project`.
 
 ### Creating a new project on your own server
 
-WP Project Manager requires at least PHP 5.5; we do not support any version of
-PHP that has reached "end of life" status. Since 5.5 is nearing "end of life",
-it will only be supported for a short while, after which 5.6 will be the new
-minimum required version. You can see which versions of PHP are still officially
-supported [on this page](http://php.net/supported-versions.php).
+WP Project Manager requires at least PHP 5.6; we do not support any version of
+PHP that has reached "end of life" status. You can see which versions of PHP are
+still officially supported [on this page][php-versions].
 
 If you need to install the dependencies for WP Project Manager on your server,
 you can use the following commands:
@@ -218,20 +217,20 @@ bash ./scripts/wp-init.sh
 
 - When you create a new project, the various authentication keys and salts used
   by WordPress internally are automatically generated for you. If you'd prefer
-  to generate these yourself, just [visit this URL](https://roots.io/salts.html)
-  and copy the the block under "Yaml Format", then paste it into your
-  `project.yml` in the `secret` section. For example:
+  to generate these yourself, just [visit this URL][keys-and-salts] and copy the
+  block under "Yaml Format", then paste it into your `project.yml` in the
+  `secret` section. For example:
 
   ```yml
   secret:
-    auth_key: "rt$^QrOSkvKmUNO17db5CoQ2^H=,Fs#{YDD7rSVL!O%{FBXWRCl@@k)BbHuNH}O2"
-    secure_auth_key: "m_LZ0HW2>fBcrB&+JS]Ol<@ld&vK*vQ*c=2N5mp`x_<9B2-{j8*8s0gYzpzj=*Hw"
-    logged_in_key: "QB`Wcfp%iF<$qEkXfl;i,R76H_|;VpgOx$b5*_o?@iyw/W)K$h)j_{]).3x6G,>*"
-    nonce_key: "3`+TRW&s<r{BwD}Df3+r]icoQUvP*Z)|{N,1A3g>c%fT/<Q#o_po|xYR3+.Hah,z"
-    auth_salt: "qzgA5Q7H*;d8P9(N5R*PL-BQN^_J5,8c<&%C4]l_WL<6):e-3u*^g.+V[e30b:=x"
-    secure_auth_salt: "yUw!e;6W:7_3EJEv@rGF)V7T5Y:&x@i=R8Rq2ZSk|M{q/0Vy^^2qekf0xC?zDBX9"
-    logged_in_salt: "fBd[CBI:]DLr6yn85=9S4OWkTx6p]:WZg%T*2+]DUz]O]ZaHU:|,6l;EOGs!kn[H"
-    nonce_salt: "n(K=-uWc.lY5i^Fgc+X*U@nZL-lF<imt8o+etZ1-<t{RN7m|Bu^HvuMszQaA{7_+"
+    auth_key: "..."
+    secure_auth_key: "..."
+    logged_in_key: "..."
+    nonce_key: "..."
+    auth_salt: "..."
+    secure_auth_salt: "..."
+    logged_in_salt: "..."
+    nonce_salt: "..."
   ```
 
 
@@ -255,21 +254,41 @@ define environment-specific settings (such as enabling `WP_DEBUG` for
 
 
 
-[issues-url]:    https://github.com/wesm87/wp-project-manager/issues
+[issues-url]:      https://github.com/wesm87/wp-project-manager/issues
 
-[brew]:          http://brew.sh
-[cask]:          https://caskroom.github.io
-[npm-guide]:     http://www.johnpapa.net/how-to-use-npm-global-without-sudo-on-osx
+[git]:             https://git-scm.com
+[git-for-win]:     https://git-for-windows.github.io
+[sourcetree]:      https://www.sourcetreeapp.com
+[github-desktop]:  https://desktop.github.com
+[gitkraken]:       https://www.gitkraken.com
+[node]:            https://nodejs.org
+[composer]:        https://getcomposer.org
+[bower]:           http://bower.io
+[vagrant]:         https://www.vagrantup.com
+[vagrant-manager]: http://vagrantmanager.com
+[vvv]:             https://github.com/Varying-Vagrant-Vagrants/VVV
+[brew]:            http://brew.sh
+[cask]:            https://caskroom.github.io
 
-[github-img]:    https://img.shields.io/github/release/wesm87/wp-project-manager.svg
-[github-url]:    https://github.com/wesm87/wp-project-manager
-[npm-img]:       https://img.shields.io/npm/v/@wesm87/wp-project-manager.svg
-[npm-url]:       https://www.npmjs.com/package/@wesm87/wp-project-manager
-[coveralls-img]: https://img.shields.io/coveralls/wesm87/wp-project-manager.svg
-[coveralls-url]: https://coveralls.io/r/wesm87/wp-project-manager
-[travis-img]:    https://img.shields.io/travis/wesm87/wp-project-manager.svg
-[travis-url]:    https://travis-ci.org/wesm87/wp-project-manager
-[appveyor-img]:  https://img.shields.io/appveyor/ci/wesm87/wp-project-manager.svg
-[appveyor-url]:  https://ci.appveyor.com/project/wesm87/wp-project-manager
-[david-img]:     https://img.shields.io/david/wesm87/wp-project-manager.svg
-[david-url]:     https://david-dm.org/wesm87/wp-project-manager
+[npm-guide]:       http://www.johnpapa.net/how-to-use-npm-global-without-sudo-on-osx
+[php-versions]:    http://php.net/supported-versions.php
+[keys-and-salts]:  https://roots.io/salts.html
+
+[github-img]:      https://img.shields.io/github/tag/wesm87/wp-project-manager.svg?style=flat-square
+[github-url]:      https://github.com/wesm87/wp-project-manager
+
+[npm-img]:         https://img.shields.io/npm/v/wp-project-manager.svg?style=flat-square
+[npm-url]:         https://www.npmjs.com/package/wp-project-manager
+
+[coveralls-img]:   https://img.shields.io/coveralls/wesm87/wp-project-manager.svg?style=flat-square
+[coveralls-url]:   https://coveralls.io/r/wesm87/wp-project-manager
+
+[travis-img]:      https://img.shields.io/travis/wesm87/wp-project-manager.svg?style=flat-square
+[travis-url]:      https://travis-ci.org/wesm87/wp-project-manager
+
+[appveyor-img]:    https://img.shields.io/appveyor/ci/wesm87/wp-project-manager.svg?style=flat-square
+[appveyor-url]:    https://ci.appveyor.com/project/wesm87/wp-project-manager
+
+[david-img]:       https://img.shields.io/david/wesm87/wp-project-manager.svg?style=flat-square
+[david-url]:       https://david-dm.org/wesm87/wp-project-manager
+œ
