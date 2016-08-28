@@ -1,19 +1,14 @@
 WP Project Manager
 ==================
 
-<!--
-ADD THESE LATER:
-
 [![npm Version][npm-img]][npm-url]
-[![Coverage][coveralls-img]][coveralls-url]
-[![Windows Tests][appveyor-img]][appveyor-url]
--->
-
 [![GitHub Release][github-img]][github-url]
 [![Build Status][travis-img]][travis-url]
+[![Code Climate Score][cc-gpa-img]][cc-gpa-url]
+[![Test Coverage][cc-coverage-img]][cc-coverage-url]
+[![Documentation Coverage][inch-ci-img]][inch-ci-url]
 [![dependencies Status][david-img]][david-url]
 [![devDependencies Status][david-dev-img]][david-dev-url]
-[![Documentation Coverage][inch-ci-img]][inch-ci-url]
 
 A Node CLI tool that simplifies the process of setting up a new WordPress
 project and development environment.
@@ -274,26 +269,26 @@ define environment-specific settings (such as enabling `WP_DEBUG` for
 [php-versions]:    http://php.net/supported-versions.php
 [keys-and-salts]:  https://roots.io/salts.html
 
-[npm-img]:         https://img.shields.io/npm/v/wp-project-manager.svg?style=flat-square
+[npm-img]:         https://img.shields.io/npm/v/wp-project-manager.svg
 [npm-url]:         https://www.npmjs.com/package/wp-project-manager
 
-[github-img]:      https://img.shields.io/github/tag/wesm87/wp-project-manager.svg?style=flat-square
+[github-img]:      https://img.shields.io/github/tag/wesm87/wp-project-manager.svg
 [github-url]:      https://github.com/wesm87/wp-project-manager
 
-[travis-img]:      https://img.shields.io/travis/wesm87/wp-project-manager.svg?style=flat-square
+[travis-img]:      https://img.shields.io/travis/wesm87/wp-project-manager.svg
 [travis-url]:      https://travis-ci.org/wesm87/wp-project-manager
 
-[david-img]:       https://img.shields.io/david/wesm87/wp-project-manager.svg?style=flat-square
-[david-url]:       https://david-dm.org/wesm87/wp-project-manager
+[cc-gpa-img]:      https://codeclimate.com/github/wesm87/wp-project-manager/badges/gpa.svg
+[cc-gpa-url]:      https://codeclimate.com/github/wesm87/wp-project-manager
 
-[david-dev-img]:   https://img.shields.io/david/dev/wesm87/wp-project-manager.svg?style=flat-square
-[david-dev-url]:   https://david-dm.org/wesm87/wp-project-manager?type=dev
+[cc-coverage-img]: https://codeclimate.com/github/wesm87/wp-project-manager/badges/coverage.svg
+[cc-coverage-url]: https://codeclimate.com/github/wesm87/wp-project-manager/coverage
 
-[inch-ci-img]:     http://inch-ci.org/github/wesm87/wp-project-manager.svg?branch=master&style=flat-square
+[inch-ci-img]:     http://inch-ci.org/github/wesm87/wp-project-manager.svg?branch=master
 [inch-ci-url]:     https://inch-ci.org/github/wesm87/wp-project-manager?branch=master
 
-[coveralls-img]:   https://img.shields.io/coveralls/wesm87/wp-project-manager.svg?style=flat-square
-[coveralls-url]:   https://coveralls.io/r/wesm87/wp-project-manager
+[david-img]:       https://img.shields.io/david/wesm87/wp-project-manager.svg
+[david-url]:       https://david-dm.org/wesm87/wp-project-manager
 
-[appveyor-img]:    https://img.shields.io/appveyor/ci/wesm87/wp-project-manager.svg?style=flat-square
-[appveyor-url]:    https://ci.appveyor.com/project/wesm87/wp-project-manager
+[david-dev-img]:   https://img.shields.io/david/dev/wesm87/wp-project-manager.svg
+[david-dev-url]:   https://david-dm.org/wesm87/wp-project-manager?type=dev
