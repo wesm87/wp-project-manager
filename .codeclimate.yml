@@ -1,0 +1,15 @@
+engines:
+  eslint:
+    enabled: false
+  csslint:
+    enabled: false
+  duplication:
+    enabled: false
+  nodesecurity:
+    enabled: true
+ratings:
+  paths:
+  - app/**/*
+exclude_paths:
+  - dist/**/*
+  - test/**/*
