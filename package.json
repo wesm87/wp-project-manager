@@ -50,8 +50,8 @@
     "build-dev": "gulp build && npm link && npm run jsdoc",
     "jsdoc": "jsdoc -c jsdoc.conf.json",
     "lint": "eslint app test",
-    "test": "mocha",
-    "coverage": "babel-node ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha",
+    "test": "gulp test",
+    "coverage": "gulp coverage",
     "coverage-report": "npm run coveralls && npm run codeclimate",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "codeclimate": "codeclimate < coverage/lcov.info"
