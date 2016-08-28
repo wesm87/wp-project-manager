@@ -59,7 +59,7 @@ class GulpTasks {
 					instrumenter:    Instrumenter,
 				},
 				write: {
-					reporters: [ 'lcov', 'text', 'text-summary', 'json', 'html' ],
+					reporters: [ 'lcov', 'text-summary' ],
 				},
 			},
 			mocha: {
@@ -210,15 +210,15 @@ class GulpTasks {
 	}
 
 	/**
-	 * Prepares a new release - runs tests, creates a new build, and bumps the
-	 * version number.
+	 * Prepares a new release - creates a new build, runs tests, updates code
+	 * coverage info, and bumps the version number.
 	 *
 	 * @param {Function} done Async callback.
 	 */
 	async release( done ) {
 
-		await this.test( done );
 		await this.build( done );
+		await this.coverage( done );
 		await this.bump( done );
 
 		done();

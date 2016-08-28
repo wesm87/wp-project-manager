@@ -5,8 +5,17 @@ import crypto from 'crypto'; // eslint-disable-line no-shadow
 
 import log    from './log';
 
-const BYTES_TO_HEX    = 0.5;
-const BYTES_TO_BASE64 = 0.75;
+/**
+ * Ratios used when converting numbers from one format to another.
+ *
+ * @since 0.7.7
+ *
+ * @type {Object}
+ */
+const RATIOS = {
+	BYTES_TO_HEX:    0.5,
+	BYTES_TO_BASE64: 0.75,
+};
 
 /**
  * Helper functions.
@@ -175,13 +184,9 @@ class Helpers {
 
 			// Adjust number of bytes based on desired string format.
 			if ( 'hex' === format ) {
-
-				// 1 byte = 2 hex characters.
-				numBytes = Math.ceil( strLen * BYTES_TO_HEX );
+				numBytes = Math.ceil( strLen * RATIOS.BYTES_TO_HEX );
 			} else if ( 'base64' === format ) {
-
-				// 1 byte = 4/3 base64 characters.
-				numBytes = Math.ceil( strLen * BYTES_TO_BASE64 );
+				numBytes = Math.ceil( strLen * RATIOS.BYTES_TO_BASE64 );
 			}
 
 			return crypto

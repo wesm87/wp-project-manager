@@ -17,73 +17,71 @@
 
   rules:
     accessor-pairs:
-      - error
+      - 2
     array-bracket-spacing:
-      - error
+      - 2
       - always
     array-callback-return:
-      - warn
+      - 1
     arrow-body-style:
-      - warn
+      - 1
     arrow-parens:
-      - error
+      - 2
       - as-needed
     arrow-spacing:
-      - error
+      - 2
     block-scoped-var:
-      - warn
+      - 1
     block-spacing:
-      - error
+      - 2
     brace-style:
-      - error
+      - 2
     callback-return:
-      - warn
+      - 1
     camelcase:
-      - error
+      - 2
       - properties: never
     comma-dangle:
-      - warn
+      - 1
       - always-multiline
     comma-spacing:
-      - error
+      - 2
     comma-style:
-      - error
+      - 2
     complexity:
-      - error
+      - 2
     constructor-super:
-      - error
+      - 2
     computed-property-spacing:
-      - error
+      - 2
       - always
     consistent-return:
-      - warn
+      - 1
     consistent-this:
-      - warn
+      - 1
       - self
       - $self
     curly:
-      - error
+      - 2
     default-case:
-      - warn
+      - 1
     dot-location:
-      - error
+      - 2
       - property
     dot-notation:
-      - warn
+      - 1
     eol-last:
-      - error
+      - 2
     eqeqeq:
-      - error
+      - 2
       - allow-null
     generator-star-spacing:
-      - error
+      - 2
       - both
-    global-require:
-      - error
     guard-for-in:
-      - error
+      - 2
     id-length:
-      - error
+      - 2
       - min: 2
         max: 20
         exceptions:
@@ -92,163 +90,163 @@
           - $
           - _
     indent:
-      - error
+      - 2
       - tab
     key-spacing:
-      - error
+      - 2
       - align: value
     keyword-spacing:
-      - error
+      - 2
     linebreak-style:
-      - error
+      - 2
       - unix
     lines-around-comment:
-      - error
+      - 2
       - beforeLineComment: true
         beforeBlockComment: true
     max-depth:
-      - error
+      - 2
     max-len:
-      - error
+      - 2
       - code: 100
         tabWidth: 4
         ignoreUrls: true
     max-nested-callbacks:
-      - error
+      - 2
       - 5
     max-params:
-      - warn
+      - 1
       - 5
     max-statements:
-      - warn
+      - 1
       - 50
     max-statements-per-line:
-      - error
+      - 2
     new-cap:
-      - error
+      - 2
     new-parens:
-      - error
+      - 2
     newline-after-var:
-      - error
+      - 2
     newline-before-return:
-      - error
+      - 2
     newline-per-chained-call:
-      - error
+      - 2
     no-array-constructor:
-      - error
+      - 2
     no-bitwise:
-      - warn
+      - 1
       - int32Hint: true
     no-caller:
-      - error
+      - 2
     no-catch-shadow:
-      - error
+      - 2
     no-class-assign:
-      - error
+      - 2
     no-confusing-arrow:
-      - error
+      - 2
       - allowParens: true
     no-console:
-      - off
+      - 0
     no-const-assign:
-      - error
+      - 2
     no-continue:
-      - warn
+      - 1
     no-delete-var:
-      - error
+      - 2
     no-div-regex:
-      - warn
+      - 1
     no-dupe-class-members:
-      - error
+      - 2
     no-duplicate-imports:
-      - error
+      - 2
     no-else-return:
-      - warn
+      - 1
     no-empty-function:
-      - error
+      - 2
     no-eval:
-      - error
+      - 2
     no-extra-bind:
-      - warn
+      - 1
     no-extra-label:
-      - warn
+      - 1
     no-floating-decimal:
-      - warn
+      - 1
     no-implicit-globals:
-      - error
+      - 2
     no-implied-eval:
-      - error
+      - 2
     no-invalid-this:
-      - warn
+      - 1
     no-iterator:
-      - error
+      - 2
     no-label-var:
-      - error
+      - 2
     no-lone-blocks:
-      - warn
+      - 1
     no-lonely-if:
-      - warn
+      - 1
     no-loop-func:
-      - error
+      - 2
     no-magic-numbers:
-      - error
+      - 2
     no-mixed-requires:
-      - warn
+      - 1
     no-mixed-spaces-and-tabs:
-      - error
+      - 2
       - smart-tabs
     # no-multi-spaces:
-    #   - warn
+    #   - 1
     #   - exceptions:
     #       Property: true
     #       VariableDeclarator: true
     #       ImportDeclaration: true
     no-multiple-empty-lines:
-      - warn
+      - 1
       - max: 2
         maxBOF: 1
         maxEOF: 1
     no-native-reassign:
-      - error
+      - 2
     no-negated-condition:
-      - warn
+      - 1
     no-nested-ternary:
-      - warn
+      - 1
     no-new-func:
-      - error
+      - 2
     no-new-object:
-      - error
+      - 2
     no-new-require:
-      - error
+      - 2
     no-new-symbol:
-      - error
+      - 2
     no-new-wrappers:
-      - error
+      - 2
     no-octal:
-      - error
+      - 2
     no-octal-escape:
-      - error
+      - 2
     no-path-concat:
-      - error
+      - 2
     no-plusplus:
-      - error
+      - 2
       - allowForLoopAfterthoughts: true
     no-proto:
-      - error
+      - 2
     no-redeclare:
-      - error
+      - 2
     no-return-assign:
-      - error
+      - 2
     no-script-url:
-      - error
+      - 2
     no-self-assign:
-      - error
+      - 2
     no-self-compare:
-      - error
+      - 2
     no-sequences:
-      - error
+      - 2
     no-shadow:
-      - error
+      - 2
       - builtinGlobals: true
         allow:
           - cb
@@ -256,129 +254,129 @@
           - resolve
           - reject
     no-shadow-restricted-names:
-      - error
+      - 2
     no-spaced-func:
-      - error
+      - 2
     no-this-before-super:
-      - error
+      - 2
     no-throw-literal:
-      - error
+      - 2
     no-trailing-spaces:
-      - error
+      - 2
     no-undef:
-      - error
+      - 2
     no-undef-init:
-      - error
+      - 2
     no-undefined:
-      - error
+      - 2
     no-unmodified-loop-condition:
-      - error
+      - 2
     no-unneeded-ternary:
-      - error
+      - 2
     no-unused-expressions:
-      - error
+      - 2
       - allowShortCircuit: true
         allowTernary: true
     no-unused-vars:
-      - error
+      - 2
     no-use-before-define:
-      - error
+      - 2
     no-useless-call:
-      - error
+      - 2
     no-useless-concat:
-      - warn
+      - 1
     no-useless-constructor:
-      - error
+      - 2
     no-useless-escape:
-      - warn
+      - 1
     no-var:
-      - error
+      - 2
     no-void:
-      - warn
+      - 1
     no-whitespace-before-property:
-      - error
+      - 2
     no-with:
-      - error
+      - 2
     object-curly-spacing:
-      - error
+      - 2
       - always
     object-shorthand:
-      - warn
+      - 1
     operator-assignment:
-      - error
+      - 2
       - always
     operator-linebreak:
-      - error
+      - 2
       - before
     prefer-arrow-callback:
-      - warn
+      - 1
     prefer-const:
-      - warn
+      - 1
     prefer-reflect:
-      - warn
+      - 1
     prefer-rest-params:
-      - warn
+      - 1
     prefer-spread:
-      - warn
+      - 1
     prefer-template:
-      - warn
+      - 1
     quote-props:
-      - error
+      - 2
       - as-needed
     quotes:
-      - error
+      - 2
       - single
       - avoidEscape: true
     radix:
-      - warn
+      - 1
     require-jsdoc:
-      - error
+      - 2
       - require:
           FunctionDeclaration: true
           MethodDefinition: true
           ClassDeclaration: true
     require-yield:
-      - error
+      - 2
     semi:
-      - error
+      - 2
     semi-spacing:
-      - error
+      - 2
     space-before-blocks:
-      - error
+      - 2
     space-before-function-paren:
-      - error
+      - 2
       - never
     space-in-parens:
-      - error
+      - 2
       - always
     space-infix-ops:
-      - error
+      - 2
     space-unary-ops:
-      - error
+      - 2
       - overrides:
           '!': true
           '!!': true
     spaced-comment:
-      - error
+      - 2
     strict:
-      - error
+      - 2
     template-curly-spacing:
-      - error
+      - 2
       - always
     valid-jsdoc:
-      - error
+      - 2
       - requireReturn: false
         requireReturnDescription: false
         prefer:
           returns: return
     wrap-iife:
-      - error
+      - 2
       - inside
     wrap-regex:
-      - error
+      - 2
     yield-star-spacing:
-      - error
+      - 2
       - both
     yoda:
-      - error
+      - 2
       - always
