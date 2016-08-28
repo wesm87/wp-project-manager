@@ -26,8 +26,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var BYTES_TO_HEX = 0.5;
-var BYTES_TO_BASE64 = 0.75;
+/**
+ * Ratios used when converting numbers from one format to another.
+ *
+ * @since 0.7.7
+ *
+ * @type {Object}
+ */
+var RATIOS = {
+	BYTES_TO_HEX: 0.5,
+	BYTES_TO_BASE64: 0.75
+};
 
 /**
  * Helper functions.
@@ -231,13 +240,9 @@ var Helpers = function () {
 
 				// Adjust number of bytes based on desired string format.
 				if ('hex' === format) {
-
-					// 1 byte = 2 hex characters.
-					numBytes = Math.ceil(strLen * BYTES_TO_HEX);
+					numBytes = Math.ceil(strLen * RATIOS.BYTES_TO_HEX);
 				} else if ('base64' === format) {
-
-					// 1 byte = 4/3 base64 characters.
-					numBytes = Math.ceil(strLen * BYTES_TO_BASE64);
+					numBytes = Math.ceil(strLen * RATIOS.BYTES_TO_BASE64);
 				}
 
 				return _crypto2.default.randomBytes(numBytes).toString(format).slice(0, strLen); // eslint-disable-line no-magic-numbers

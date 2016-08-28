@@ -1,3 +1,7 @@
+import yargs from 'yargs';
+
+global.__appPath = __dirname;
+
 /**
  * Performs all of the following:
  *   - Create project folder.
@@ -29,11 +33,6 @@
  * @todo Add `install-deps` command to install project, plugin, and theme deps.
  * @todo Replace `yargs` with a CLI framework that supports sub-commands.
  */
-
-import yargs from 'yargs';
-
-global.__appPath = __dirname;
-
 export default yargs.help()
 	.completion()
 	.command( require( './commands/config.display' ) )
