@@ -17,3 +17,7 @@ script:
   - npm run build
   - npm run lint
   - npm run coverage
+
+addons:
+  code_climate:
+    repo_token: 880fba2220123f5927f30af7906e236a617c9af9548d66db565b83c52a69a21b
