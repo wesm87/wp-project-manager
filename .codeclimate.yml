@@ -5,8 +5,6 @@ engines:
     enabled: false
   duplication:
     enabled: false
-  nodesecurity:
-    enabled: true
 ratings:
   paths:
   - app/**/*
