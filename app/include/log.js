@@ -136,7 +136,7 @@ class Log {
 
 			// If the style has an associated icon, prepend it to the message.
 			if ( this.icons[ style ] ) {
-				message =  `${ this.icons[ style ] } ${ message }`;
+				message = `${ this.icons[ style ] } ${ message }`;
 			}
 
 			// Apply the style to the message.
