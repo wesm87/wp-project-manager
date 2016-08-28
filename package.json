@@ -2,15 +2,14 @@
   "name": "wp-project-manager",
   "description": "A Node CLI tool that simplifies the process of setting up a new WordPress project and development environment.",
   "version": "0.7.7",
-  "private": true,
-  "license": "SEE LICENSE IN LICENSE.md",
-  "homepage": "https://github.com/Decisionary/wp-project-manager",
+  "license": "MIT",
+  "homepage": "https://github.com/wesm87/wp-project-manager",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Decisionary/wp-project-manager.git"
+    "url": "https://github.com/wesm87/wp-project-manager.git"
   },
   "bugs": {
-    "url": "https://github.com/Decisionary/wp-project-manager/issues"
+    "url": "https://github.com/wesm87/wp-project-manager/issues"
   },
   "contributors": [
     "Wes Moberly <wes@wesmoberly.me> (http://wesmoberly.me)"
