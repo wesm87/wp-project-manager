@@ -8,6 +8,9 @@ engines:
 ratings:
   paths:
   - app/**/*
+  - bin/**/*
 exclude_paths:
-  - dist/**/*
-  - test/**/*
+  - dist/*
+  - test/*
+  - docs/*
+  - project-files/*
