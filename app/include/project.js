@@ -125,7 +125,6 @@ class Project {
 				website: 'http://your-website.example.com',
 			},
 			project: {
-				template:  'blr',
 				multisite: false,
 				title:     '',
 				slug:      '',
