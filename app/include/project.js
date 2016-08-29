@@ -10,7 +10,7 @@ import { mock } from 'mocktail';
 import helpers  from './helpers';
 
 if ( ! _.upperSnakeCase ) {
-	_.upperSnakeCase = string => (
+	_.upperSnakeCase = ( string ) => (
 		_.startCase( string ).replace( / /g, '_' )
 	);
 }
@@ -353,7 +353,7 @@ class Project {
 
 		const types = [ 'auth', 'secure_auth', 'logged_in', 'nonce' ];
 
-		types.forEach( type => {
+		types.forEach( ( type ) => {
 			if ( ! config.secret[ `${ type }_key` ] ) {
 				config.secret[ `${ type }_key` ] = helpers.randomString(
 					SECRET_KEY_LENGTH,
