@@ -26,6 +26,8 @@ var _utilsUpsearch = require('utils-upsearch');
 
 var _utilsUpsearch2 = _interopRequireDefault(_utilsUpsearch);
 
+var _mocktail = require('mocktail');
+
 var _helpers = require('./helpers');
 
 var _helpers2 = _interopRequireDefault(_helpers);
@@ -457,4 +459,4 @@ var Project = function () {
 	return Project;
 }();
 
-exports.default = Project;
+exports.default = (0, _mocktail.mock)(Project);
