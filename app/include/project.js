@@ -5,6 +5,8 @@ import path     from 'path';
 import yargs    from 'yargs';
 import upsearch from 'utils-upsearch';
 
+import { mock } from 'mocktail';
+
 import helpers  from './helpers';
 
 if ( ! _.upperSnakeCase ) {
@@ -390,4 +392,4 @@ class Project {
 	}
 }
 
-export default Project;
+export default mock( Project );

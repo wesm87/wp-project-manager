@@ -4,7 +4,7 @@ import chai from 'chai';
 
 const should = chai.should();
 
-const basePath = '../app/include';
+const basePath = `${ __appPath }/include`;
 
 describe( 'include', () => {
 

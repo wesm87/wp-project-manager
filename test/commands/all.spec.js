@@ -1,10 +1,9 @@
-/* eslint-env mocha */
+
+import '../setup';
 
 import chai from 'chai';
 
 const should = chai.should();
-
-const basePath = '../app/commands';
 
 describe( 'commands', () => {
 
@@ -24,7 +23,7 @@ describe( 'commands', () => {
 
 		describe( command, () => {
 
-			const commandModule = require( `${ basePath }/${ command }` );
+			const commandModule = require( `${ __appPath }/commands/${ command }` );
 
 			it( 'should export a non-empty object', () => {
 				should.exist( commandModule );

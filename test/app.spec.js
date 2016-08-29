@@ -1,6 +1,8 @@
-/* eslint-env mocha */
+
+import './setup';
 
 import chai from 'chai';
+
 import app from '../app/';
 
 const should = chai.should();
