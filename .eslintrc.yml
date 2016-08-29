@@ -6,6 +6,9 @@
     node:    true
     es6:     true
 
+  globals:
+    __appPath: false
+
   parser: babel-eslint
 
   parserOptions:
