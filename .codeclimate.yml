@@ -1,16 +1,22 @@
 engines:
   eslint:
-    enabled: false
+    enabled: true
   csslint:
     enabled: false
   duplication:
-    enabled: false
+    enabled: true
+    config:
+      languages:
+        - javascript
+
 ratings:
   paths:
   - app/**/*
-  - bin/**/*
+
 exclude_paths:
+  - bin/*
+  - coverage/*
   - dist/*
-  - test/*
   - docs/*
   - project-files/*
+  - test/*
