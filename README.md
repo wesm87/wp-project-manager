@@ -165,25 +165,52 @@ npm install -g gulp bower
 sudo apt-get install php5-fpm php5-cli php5-common php5-dev
 
 # Install Composer
-curl -sS "https://getcomposer.org/installer" | php
-chmod +x "composer.phar"
-mv "composer.phar" "/usr/local/bin/composer"
+curl -sS https://getcomposer.org/installer | php
+chmod +x composer.phar
+mv composer.phar /usr/local/bin/composer
+
+# Install WP-CLI
+curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+chmod +x wp-cli.phar
+mv wp-cli.phar /usr/local/bin/wp
 ```
 
 Once you've verified your server meets the minimum requirements and has all of
 the listed dependencies installed, the next step would be to create a new
 project folder on your server and create a `project.yml` file inside that
-folder. Edit your `project.yml` file and set `vvv` to false, set `db.rootUser`
-to your MySQL root user, and set `db.rootPass` to the password for your MySQL
-root user. Set `project.title` and any other values you want to specify in your
-project config, then create your new project:
+folder:
 
 ```sh
 mkdir /path/to/project/folder
 
 cd /path/to/project/folder
 
-wppm
+wppm config create
+```
+
+You'll then want to edit your `project.yml` file and set `vvv` to false, set a
+project title, and configure your database info:
+
+```
+vvv: false
+
+project:
+  title: Your Project Name
+
+db:
+  name:      database-name
+  user:      database-user
+  pass:      database-password
+  host:      host:port
+  root_user: root-user
+  root_pass: root-password
+  prefix:    db_prefix_
+```
+
+Lastly, create your new project and run the WordPress init script:
+
+```sh
+wppm project create
 
 bash ./scripts/wp-init.sh
 ```
