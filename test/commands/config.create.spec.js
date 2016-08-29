@@ -1,9 +1,11 @@
 
 import '../setup';
 
-import chai from 'chai';
+import chai      from 'chai';
+import sinonChai from 'sinon-chai';
 
 chai.should();
+chai.use( sinonChai );
 
 const commandModule = require( `${ __appPath }/commands/config.create` );
 const projectMock   = require( `${ __appPath }/include/project` ).default;
@@ -13,11 +15,13 @@ describe( 'commands', () => {
 	describe( 'config.create.js', () => {
 
 		it( 'should call `project.createConfigFile()`', () => {
-			projectMock.createConfigFile.callCount.should.equal( 0 );
+			const stub = projectMock.createConfigFile;
+
+			stub.should.have.callCount( 0 );
 
 			commandModule.handler( {} );
 
-			projectMock.createConfigFile.callCount.should.equal( 1 );
+			stub.should.have.callCount( 1 );
 		} );
 
 	} );
