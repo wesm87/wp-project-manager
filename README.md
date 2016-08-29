@@ -93,14 +93,7 @@ It will make your life much easier.
 Open up your preferred command line application and enter the following:
 
 ```sh
-npm i -g https://github.com/wesm87/wp-project-manager.git
-```
-
-If you are installing on a server that is not aware of your GitHub credentials,
-but can use ssh for GitHub, use the following command:
-
-```sh
-npm i -g git://git@github.com:wesm87/wp-project-manager.git
+npm i -g wp-project-manager
 ```
 
 
@@ -161,7 +154,7 @@ you can use the following commands:
 
 ```sh
 # Update (or install) Node.js
-curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 sudo apt-get update
 sudo apt-get install -y nodejs
 
