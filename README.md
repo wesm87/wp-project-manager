@@ -191,7 +191,7 @@ wppm config create
 You'll then want to edit your `project.yml` file and set `vvv` to false, set a
 project title, and configure your database info:
 
-```
+```yml
 vvv: false
 
 project:
