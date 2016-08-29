@@ -13,14 +13,12 @@ class ProjectMock {
 		};
 	}
 
-	// eslint-disable-next-line no-empty-function
-	static createConfigFile() {
-
+	static createConfigFile( force = false ) {
+		return force;
 	}
 
 }
 
-// eslint-disable-next-line no-magic-numbers
-sinon.stub( ProjectMock, 'createConfigFile' ).returnsArg( 0 );
+sinon.stub( ProjectMock, 'createConfigFile' );
 
 inject( 'Project', ProjectMock );
