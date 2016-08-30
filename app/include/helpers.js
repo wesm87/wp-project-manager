@@ -1,7 +1,12 @@
+/**
+ * @module
+ */
 
 import fs     from 'fs-extra';
 import YAML   from 'js-yaml';
 import crypto from 'crypto'; // eslint-disable-line no-shadow
+
+import { mock } from 'mocktail';
 
 import log    from './log';
 
@@ -202,4 +207,4 @@ class Helpers {
 	}
 }
 
-export default Helpers;
+export default mock( Helpers );

@@ -1,3 +1,6 @@
+/**
+ * @module
+ */
 
 import _        from 'lodash';
 import os       from 'os';
@@ -5,6 +8,8 @@ import fs       from 'fs-extra';
 import cp       from 'child_process';
 import path     from 'path';
 import mustache from 'mustache';
+
+import { mock } from 'mocktail';
 
 import log      from './log';
 import helpers  from './helpers';
@@ -720,4 +725,4 @@ class Scaffold extends Project {
 	}
 }
 
-export default Scaffold;
+export default mock( Scaffold );

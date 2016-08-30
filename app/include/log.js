@@ -1,6 +1,11 @@
+/**
+ * @module
+ */
 
 import _      from 'lodash';
 import colors from 'colors';
+
+import { mock } from 'mocktail';
 
 import project from './project';
 
@@ -148,4 +153,4 @@ class Log {
 	}
 }
 
-export default new Log();
+export default mock( new Log() );
