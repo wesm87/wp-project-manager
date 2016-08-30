@@ -1,7 +1,7 @@
 {
   "name": "wp-project-manager",
   "description": "A Node CLI tool that simplifies the process of setting up a new WordPress project and development environment.",
-  "version": "0.7.9",
+  "version": "0.7.12",
   "license": "MIT",
   "homepage": "https://github.com/wesm87/wp-project-manager",
   "repository": {
@@ -53,7 +53,10 @@
     "coverage": "gulp coverage",
     "coverage-report": "npm run coveralls && npm run codeclimate",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "codeclimate": "codeclimate-test-reporter < coverage/lcov.info"
+    "codeclimate": "codeclimate-test-reporter < coverage/lcov.info",
+    "preversion": "npm test",
+    "version": "npm build",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "babel-runtime": "^6.11.6",
@@ -61,6 +64,7 @@
     "fs-extra": "^0.30.0",
     "js-yaml": "^3.6.0",
     "lodash": "^4.11.1",
+    "mocktail": "^0.3.8",
     "mustache": "^2.2.1",
     "utils-upsearch": "^1.0.0",
     "yargs": "^5.0.0"
@@ -92,7 +96,6 @@
     "istanbul": "^0.4.5",
     "jsdoc": "^3.4.0",
     "mocha": "^3.0.2",
-    "mocktail": "^0.3.8",
     "rollup": "^0.34.10",
     "rollup-plugin-babel": "^2.6.1",
     "semver": "^5.3.0",

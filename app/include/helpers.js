@@ -109,7 +109,7 @@ class Helpers {
 			if ( ! includeHidden ) {
 
 				// eslint-disable-next-line no-magic-numbers
-				files = files.filter( file => 0 !== file.indexOf( '.' ) );
+				files = files.filter( ( file ) => 0 !== file.indexOf( '.' ) );
 			}
 
 			return files;

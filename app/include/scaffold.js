@@ -162,7 +162,7 @@ class Scaffold extends Project {
 			this.templateData.pluginZips = [];
 		}
 
-		helpers.readDir( pluginZipsDir ).forEach( val => {
+		helpers.readDir( pluginZipsDir ).forEach( ( val ) => {
 			this.templateData.pluginZips.push( {
 				name: path.basename( val, '.zip' ),
 				file: val,
@@ -528,7 +528,7 @@ class Scaffold extends Project {
 			'assets/dist/fonts/.gitkeep',
 		];
 
-		dirs.forEach( dir => {
+		dirs.forEach( ( dir ) => {
 			try {
 				fs.mkdirpSync( path.join( base, dir ) );
 			} catch ( error ) {
@@ -536,7 +536,7 @@ class Scaffold extends Project {
 			}
 		} );
 
-		files.forEach( file => {
+		files.forEach( ( file ) => {
 			try {
 				fs.ensureFileSync( path.join( base, file ) );
 			} catch ( error ) {
@@ -662,7 +662,7 @@ class Scaffold extends Project {
 		const dirs = helpers.readDir( source );
 
 		if ( ! _.isEmpty( dirs ) ) {
-			dirs.forEach( file => {
+			dirs.forEach( ( file ) => {
 				this.scaffoldFile( path.join( source, file ), type );
 			} );
 		}
