@@ -33,9 +33,9 @@ class Helpers {
 	 * @since 0.1.0
 	 * @since 0.2.0 Added 'symlink' type.
 	 *
-	 * @param  {string} path The path to check.
-	 * @param  {string} type Optional. A type to check the path against.
-	 * @return {bool}        True if path exists and is `type`; false if not.
+	 * @param  {String} path The path to check.
+	 * @param  {String} type Optional. A type to check the path against.
+	 * @return {Boolean}     True if path exists and is `type`; false if not.
 	 */
 	static pathExists( path, type = 'any' ) {
 		try {
@@ -63,8 +63,8 @@ class Helpers {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param  {string} path The path to the file to check.
-	 * @return {bool}        True the file exists; false if not.
+	 * @param  {String} path The path to the file to check.
+	 * @return {Boolean}     True the file exists; false if not.
 	 */
 	static fileExists( path ) {
 		return this.pathExists( path, 'file' );
@@ -75,8 +75,8 @@ class Helpers {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param  {string} path The path to the directory to check.
-	 * @return {bool}        True the directory exists; false if not.
+	 * @param  {String} path The path to the directory to check.
+	 * @return {Boolean}     True the directory exists; false if not.
 	 */
 	static directoryExists( path ) {
 		return this.pathExists( path, 'directory' );
@@ -87,8 +87,8 @@ class Helpers {
 	 *
 	 * @since 0.2.0
 	 *
-	 * @param  {string} path The path to the symbolic link to check.
-	 * @return {bool}        True the symbolic link exists; false if not.
+	 * @param  {String} path The path to the symbolic link to check.
+	 * @return {Boolean}     True the symbolic link exists; false if not.
 	 */
 	static symlinkExists( path ) {
 		return this.pathExists( path, 'symlink' );
@@ -100,13 +100,11 @@ class Helpers {
 	 *
 	 * @since 0.4.0
 	 *
-	 * @param  {string} dir             The directory path.
-	 * @param  {bool}   [includeHidden] If true, hidden files are included.
-	 *                                  Default is false.
-	 *
-	 * @return {array}  The directory contents.
+	 * @param  {String}  dir                   The directory path.
+	 * @param  {Boolean} [includeHidden=false] If true, hidden files are included.
+	 * @return {Array}  The directory contents.
 	 */
-	static readDir( dir, includeHidden ) {
+	static readDir( dir, includeHidden = false ) {
 
 		try {
 			let files = fs.readdirSync( dir );
@@ -128,8 +126,8 @@ class Helpers {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param  {string} filePath The path to the YAML file.
-	 * @return {object}          The parsed results. If the file is blank or
+	 * @param  {String} filePath The path to the YAML file.
+	 * @return {Object}          The parsed results. If the file is blank or
 	 *                           doesn't exist, we return an empty object.
 	 */
 	static loadYAML( filePath ) {
@@ -156,8 +154,8 @@ class Helpers {
 	 *
 	 * @since 0.3.0
 	 *
-	 * @param  {string} filePath The path to the file to write to.
-	 * @param  {object} json     The JSON object to parse into YAML.
+	 * @param {String} filePath The path to the file to write to.
+	 * @param {Object} json     The JSON object to parse into YAML.
 	 */
 	static writeYAML( filePath, json ) {
 
@@ -177,9 +175,9 @@ class Helpers {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param  {int}    strLen  The number of characters to include in the string.
-	 * @param  {string} format  The string format to use (hex, base64, etc).
-	 * @return {string}         The randomly generated string.
+	 * @param  {Number} strLen         The number of characters to include in the string.
+	 * @param  {String} [format='hex'] The string format to use (hex, base64, etc).
+	 * @return {String}                The randomly generated string.
 	 */
 	static randomString( strLen, format = 'hex' ) {
 

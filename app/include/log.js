@@ -27,7 +27,7 @@ class Log {
 	 *
 	 * @since 0.4.0
 	 *
-	 * @member {object}
+	 * @member {Object}
 	 */
 	get styles() {
 		return {
@@ -48,7 +48,7 @@ class Log {
 	 *
 	 * @see https://github.com/sindresorhus/log-symbols
 	 *
-	 * @member {object}
+	 * @member {Object}
 	 */
 	get icons() {
 
@@ -113,8 +113,8 @@ class Log {
 	 *
 	 * @access private
 	 *
-	 * @param {mixed}  message The message to log.
-	 * @param {string} [style] A style to apply to the message.
+	 * @param {*}      message The message to log.
+	 * @param {String} [style] A style to apply to the message.
 	 */
 	_log( message, style ) {
 

@@ -379,8 +379,9 @@ class Project {
 	 *
 	 * @since 0.3.0
 	 *
-	 * @param {bool} [force] If true and a config file already exists, it will
-	 *                       be deleted and a new file will be created.
+	 * @param {Boolean} [force=false] If true and a config file already exists,
+	 *                                it will be deleted and a new file will be
+	 *                                created.
 	 */
 	static createConfigFile( force = false ) {
 
