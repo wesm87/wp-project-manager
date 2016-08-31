@@ -8,6 +8,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       * @module
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       */
 
+// import { mock } from 'mocktail';
+
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
@@ -15,8 +17,6 @@ var _lodash2 = _interopRequireDefault(_lodash);
 var _colors = require('colors');
 
 var _colors2 = _interopRequireDefault(_colors);
-
-var _mocktail = require('mocktail');
 
 var _project = require('./project');
 
@@ -218,4 +218,4 @@ var Log = function () {
 	return Log;
 }();
 
-exports.default = (0, _mocktail.mock)(new Log());
+exports.default = new Log();
