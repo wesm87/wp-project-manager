@@ -37,7 +37,7 @@ prior to creating your new project. More info on this can be found in the
 "Usage" section.
 
 
-### Mac OS X Users
+### macOS / OS X
 
 We recommend using [Homebrew][brew] and [Cask][cask] to install and manage
 dependencies:
@@ -82,7 +82,7 @@ It will make your life much easier.
 
 #### Vagrant
 
-[Vagrant Manager][vagrant-manager] (Mac, Windows)
+- [Vagrant Manager][vagrant-manager] (Mac, Windows)
 
 
 
