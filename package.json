@@ -55,7 +55,7 @@
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "codeclimate": "codeclimate-test-reporter < coverage/lcov.info",
     "preversion": "npm test",
-    "version": "npm build",
+    "version": "npm run build",
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
