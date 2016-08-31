@@ -4,7 +4,11 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // eslint-disable-line no-shadow
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * @module
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
+
+// eslint-disable-line no-shadow
 
 var _fsExtra = require('fs-extra');
 
@@ -17,6 +21,8 @@ var _jsYaml2 = _interopRequireDefault(_jsYaml);
 var _crypto = require('crypto');
 
 var _crypto2 = _interopRequireDefault(_crypto);
+
+var _mocktail = require('mocktail');
 
 var _log = require('./log');
 
@@ -57,9 +63,9 @@ var Helpers = function () {
    * @since 0.1.0
    * @since 0.2.0 Added 'symlink' type.
    *
-   * @param  {string} path The path to check.
-   * @param  {string} type Optional. A type to check the path against.
-   * @return {bool}        True if path exists and is `type`; false if not.
+   * @param  {String} path The path to check.
+   * @param  {String} type Optional. A type to check the path against.
+   * @return {Boolean}     True if path exists and is `type`; false if not.
    */
 		value: function pathExists(path) {
 			var type = arguments.length <= 1 || arguments[1] === undefined ? 'any' : arguments[1];
@@ -89,8 +95,8 @@ var Helpers = function () {
    *
    * @since 0.1.0
    *
-   * @param  {string} path The path to the file to check.
-   * @return {bool}        True the file exists; false if not.
+   * @param  {String} path The path to the file to check.
+   * @return {Boolean}     True the file exists; false if not.
    */
 
 	}, {
@@ -104,8 +110,8 @@ var Helpers = function () {
    *
    * @since 0.1.0
    *
-   * @param  {string} path The path to the directory to check.
-   * @return {bool}        True the directory exists; false if not.
+   * @param  {String} path The path to the directory to check.
+   * @return {Boolean}     True the directory exists; false if not.
    */
 
 	}, {
@@ -119,8 +125,8 @@ var Helpers = function () {
    *
    * @since 0.2.0
    *
-   * @param  {string} path The path to the symbolic link to check.
-   * @return {bool}        True the symbolic link exists; false if not.
+   * @param  {String} path The path to the symbolic link to check.
+   * @return {Boolean}     True the symbolic link exists; false if not.
    */
 
 	}, {
@@ -135,16 +141,16 @@ var Helpers = function () {
    *
    * @since 0.4.0
    *
-   * @param  {string} dir             The directory path.
-   * @param  {bool}   [includeHidden] If true, hidden files are included.
-   *                                  Default is false.
-   *
-   * @return {array}  The directory contents.
+   * @param  {String}  dir                   The directory path.
+   * @param  {Boolean} [includeHidden=false] If true, hidden files are included.
+   * @return {Array}  The directory contents.
    */
 
 	}, {
 		key: 'readDir',
-		value: function readDir(dir, includeHidden) {
+		value: function readDir(dir) {
+			var includeHidden = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
 
 			try {
 				var files = _fsExtra2.default.readdirSync(dir);
@@ -168,8 +174,8 @@ var Helpers = function () {
    *
    * @since 0.1.0
    *
-   * @param  {string} filePath The path to the YAML file.
-   * @return {object}          The parsed results. If the file is blank or
+   * @param  {String} filePath The path to the YAML file.
+   * @return {Object}          The parsed results. If the file is blank or
    *                           doesn't exist, we return an empty object.
    */
 
@@ -199,8 +205,8 @@ var Helpers = function () {
    *
    * @since 0.3.0
    *
-   * @param  {string} filePath The path to the file to write to.
-   * @param  {object} json     The JSON object to parse into YAML.
+   * @param {String} filePath The path to the file to write to.
+   * @param {Object} json     The JSON object to parse into YAML.
    */
 
 	}, {
@@ -223,9 +229,9 @@ var Helpers = function () {
    *
    * @since 0.1.0
    *
-   * @param  {int}    strLen  The number of characters to include in the string.
-   * @param  {string} format  The string format to use (hex, base64, etc).
-   * @return {string}         The randomly generated string.
+   * @param  {Number} strLen         The number of characters to include in the string.
+   * @param  {String} [format='hex'] The string format to use (hex, base64, etc).
+   * @return {String}                The randomly generated string.
    */
 
 	}, {
@@ -257,4 +263,4 @@ var Helpers = function () {
 	return Helpers;
 }();
 
-exports.default = Helpers;
+exports.default = (0, _mocktail.mock)(Helpers);

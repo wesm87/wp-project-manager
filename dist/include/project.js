@@ -4,7 +4,9 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * @module
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
 
 var _lodash = require('lodash');
 
@@ -276,14 +278,35 @@ var Project = function () {
 
 			var types = ['auth', 'secure_auth', 'logged_in', 'nonce'];
 
-			types.forEach(function (type) {
-				if (!config.secret[type + '_key']) {
-					config.secret[type + '_key'] = _helpers2.default.randomString(SECRET_KEY_LENGTH, 'base64');
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
+
+			try {
+				for (var _iterator = types[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var type = _step.value;
+
+					if (!config.secret[type + '_key']) {
+						config.secret[type + '_key'] = _helpers2.default.randomString(SECRET_KEY_LENGTH, 'base64');
+					}
+					if (!config.secret[type + '_salt']) {
+						config.secret[type + '_salt'] = _helpers2.default.randomString(SECRET_SALT_LENGTH, 'base64');
+					}
 				}
-				if (!config.secret[type + '_salt']) {
-					config.secret[type + '_salt'] = _helpers2.default.randomString(SECRET_SALT_LENGTH, 'base64');
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
 				}
-			});
+			}
 
 			return config;
 		}
@@ -293,8 +316,9 @@ var Project = function () {
    *
    * @since 0.3.0
    *
-   * @param {bool} [force] If true and a config file already exists, it will
-   *                       be deleted and a new file will be created.
+   * @param {Boolean} [force=false] If true and a config file already exists,
+   *                                it will be deleted and a new file will be
+   *                                created.
    */
 
 	}, {

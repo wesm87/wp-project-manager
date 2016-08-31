@@ -32,6 +32,8 @@ var _mustache = require('mustache');
 
 var _mustache2 = _interopRequireDefault(_mustache);
 
+var _mocktail = require('mocktail');
+
 var _log = require('./log');
 
 var _log2 = _interopRequireDefault(_log);
@@ -50,7 +52,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @module
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
 
 /**
  * Scaffolds out project files, plugins, themes, etc.
@@ -188,7 +192,6 @@ var Scaffold = function (_Project) {
 	}, {
 		key: 'parseTemplateData',
 		value: function parseTemplateData() {
-			var _this2 = this;
 
 			var pluginZipsDir = _path2.default.join(this.paths.project, 'project-files/plugin-zips');
 
@@ -196,12 +199,33 @@ var Scaffold = function (_Project) {
 				this.templateData.pluginZips = [];
 			}
 
-			_helpers2.default.readDir(pluginZipsDir).forEach(function (val) {
-				_this2.templateData.pluginZips.push({
-					name: _path2.default.basename(val, '.zip'),
-					file: val
-				});
-			});
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
+
+			try {
+				for (var _iterator = _helpers2.default.readDir(pluginZipsDir)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var val = _step.value;
+
+					this.templateData.pluginZips.push({
+						name: _path2.default.basename(val, '.zip'),
+						file: val
+					});
+				}
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
+				}
+			}
 		}
 
 		/**
@@ -582,22 +606,64 @@ var Scaffold = function (_Project) {
 
 			var files = ['assets/dist/css/.gitkeep', 'assets/dist/js/.gitkeep', 'assets/dist/images/.gitkeep', 'assets/dist/fonts/.gitkeep'];
 
-			dirs.forEach(function (dir) {
-				try {
-					_fsExtra2.default.mkdirpSync(_path2.default.join(base, dir));
-				} catch (error) {
-					_log2.default.error(error);
-				}
-			});
+			var _iteratorNormalCompletion2 = true;
+			var _didIteratorError2 = false;
+			var _iteratorError2 = undefined;
 
-			files.forEach(function (file) {
-				try {
-					_fsExtra2.default.ensureFileSync(_path2.default.join(base, file));
-				} catch (error) {
+			try {
+				for (var _iterator2 = dirs[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+					var dir = _step2.value;
 
-					// Do nothing.
+					try {
+						_fsExtra2.default.mkdirpSync(_path2.default.join(base, dir));
+					} catch (error) {
+						_log2.default.error(error);
+					}
 				}
-			});
+			} catch (err) {
+				_didIteratorError2 = true;
+				_iteratorError2 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion2 && _iterator2.return) {
+						_iterator2.return();
+					}
+				} finally {
+					if (_didIteratorError2) {
+						throw _iteratorError2;
+					}
+				}
+			}
+
+			var _iteratorNormalCompletion3 = true;
+			var _didIteratorError3 = false;
+			var _iteratorError3 = undefined;
+
+			try {
+				for (var _iterator3 = files[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+					var file = _step3.value;
+
+					try {
+						_fsExtra2.default.ensureFileSync(_path2.default.join(base, file));
+					} catch (error) {
+
+						// Do nothing.
+					}
+				}
+			} catch (err) {
+				_didIteratorError3 = true;
+				_iteratorError3 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion3 && _iterator3.return) {
+						_iterator3.return();
+					}
+				} finally {
+					if (_didIteratorError3) {
+						throw _iteratorError3;
+					}
+				}
+			}
 		}
 
 		/**
@@ -657,16 +723,16 @@ var Scaffold = function (_Project) {
 				return;
 			}
 
-			var _iteratorNormalCompletion = true;
-			var _didIteratorError = false;
-			var _iteratorError = undefined;
+			var _iteratorNormalCompletion4 = true;
+			var _didIteratorError4 = false;
+			var _iteratorError4 = undefined;
 
 			try {
-				for (var _iterator = files[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-					var _step$value = _slicedToArray(_step.value, 2);
+				for (var _iterator4 = files[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+					var _step4$value = _slicedToArray(_step4.value, 2);
 
-					var source = _step$value[0];
-					var dest = _step$value[1];
+					var source = _step4$value[0];
+					var dest = _step4$value[1];
 
 
 					var destBase = _path2.default.join(dest, _path2.default.basename(source));
@@ -690,16 +756,16 @@ var Scaffold = function (_Project) {
 					}
 				}
 			} catch (err) {
-				_didIteratorError = true;
-				_iteratorError = err;
+				_didIteratorError4 = true;
+				_iteratorError4 = err;
 			} finally {
 				try {
-					if (!_iteratorNormalCompletion && _iterator.return) {
-						_iterator.return();
+					if (!_iteratorNormalCompletion4 && _iterator4.return) {
+						_iterator4.return();
 					}
 				} finally {
-					if (_didIteratorError) {
-						throw _iteratorError;
+					if (_didIteratorError4) {
+						throw _iteratorError4;
 					}
 				}
 			}
@@ -724,13 +790,13 @@ var Scaffold = function (_Project) {
 				return;
 			}
 
-			var _iteratorNormalCompletion2 = true;
-			var _didIteratorError2 = false;
-			var _iteratorError2 = undefined;
+			var _iteratorNormalCompletion5 = true;
+			var _didIteratorError5 = false;
+			var _iteratorError5 = undefined;
 
 			try {
-				for (var _iterator2 = files[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-					var file = _step2.value;
+				for (var _iterator5 = files[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+					var file = _step5.value;
 
 					file = _path2.default.join(base, file);
 
@@ -743,16 +809,16 @@ var Scaffold = function (_Project) {
 					}
 				}
 			} catch (err) {
-				_didIteratorError2 = true;
-				_iteratorError2 = err;
+				_didIteratorError5 = true;
+				_iteratorError5 = err;
 			} finally {
 				try {
-					if (!_iteratorNormalCompletion2 && _iterator2.return) {
-						_iterator2.return();
+					if (!_iteratorNormalCompletion5 && _iterator5.return) {
+						_iterator5.return();
 					}
 				} finally {
-					if (_didIteratorError2) {
-						throw _iteratorError2;
+					if (_didIteratorError5) {
+						throw _iteratorError5;
 					}
 				}
 			}
@@ -768,8 +834,6 @@ var Scaffold = function (_Project) {
 	}, {
 		key: 'scaffoldFiles',
 		value: function scaffoldFiles() {
-			var _this3 = this;
-
 			var type = arguments.length <= 0 || arguments[0] === undefined ? 'project' : arguments[0];
 
 
@@ -784,9 +848,30 @@ var Scaffold = function (_Project) {
 			var dirs = _helpers2.default.readDir(source);
 
 			if (!_lodash2.default.isEmpty(dirs)) {
-				dirs.forEach(function (file) {
-					_this3.scaffoldFile(_path2.default.join(source, file), type);
-				});
+				var _iteratorNormalCompletion6 = true;
+				var _didIteratorError6 = false;
+				var _iteratorError6 = undefined;
+
+				try {
+					for (var _iterator6 = dirs[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+						var file = _step6.value;
+
+						this.scaffoldFile(_path2.default.join(source, file), type);
+					}
+				} catch (err) {
+					_didIteratorError6 = true;
+					_iteratorError6 = err;
+				} finally {
+					try {
+						if (!_iteratorNormalCompletion6 && _iterator6.return) {
+							_iterator6.return();
+						}
+					} finally {
+						if (_didIteratorError6) {
+							throw _iteratorError6;
+						}
+					}
+				}
 			}
 
 			return true;
@@ -872,4 +957,4 @@ var Scaffold = function (_Project) {
 	return Scaffold;
 }(_project2.default);
 
-exports.default = Scaffold;
+exports.default = (0, _mocktail.mock)(Scaffold);
