@@ -356,7 +356,7 @@ class Project {
 
 		const types = [ 'auth', 'secure_auth', 'logged_in', 'nonce' ];
 
-		types.forEach( ( type ) => {
+		for ( const type of types ) {
 			if ( ! config.secret[ `${ type }_key` ] ) {
 				config.secret[ `${ type }_key` ] = helpers.randomString(
 					SECRET_KEY_LENGTH,
@@ -369,7 +369,7 @@ class Project {
 					'base64'
 				);
 			}
-		} );
+		}
 
 		return config;
 	}

@@ -96,9 +96,9 @@ class Log {
 		colors.setTheme( this.styles );
 
 		// Automatically create methods for each style.
-		_.keys( this.styles ).forEach( ( style ) => {
+		for ( const style of _.keys( this.styles ) ) {
 			this[ style ] = ( message ) => this._log( message, style );
-		} );
+		}
 
 		this.instance = this;
 	}
