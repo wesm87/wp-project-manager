@@ -1,6 +1,11 @@
+/**
+ * @module
+ */
 
 import _      from 'lodash';
 import colors from 'colors';
+
+// import { mock } from 'mocktail';
 
 import project from './project';
 
@@ -22,7 +27,7 @@ class Log {
 	 *
 	 * @since 0.4.0
 	 *
-	 * @member {object}
+	 * @member {Object}
 	 */
 	get styles() {
 		return {
@@ -43,7 +48,7 @@ class Log {
 	 *
 	 * @see https://github.com/sindresorhus/log-symbols
 	 *
-	 * @member {object}
+	 * @member {Object}
 	 */
 	get icons() {
 
@@ -91,9 +96,9 @@ class Log {
 		colors.setTheme( this.styles );
 
 		// Automatically create methods for each style.
-		_.keys( this.styles ).forEach( ( style ) => {
+		for ( const style of _.keys( this.styles ) ) {
 			this[ style ] = ( message ) => this._log( message, style );
-		} );
+		}
 
 		this.instance = this;
 	}
@@ -108,8 +113,8 @@ class Log {
 	 *
 	 * @access private
 	 *
-	 * @param {mixed}  message The message to log.
-	 * @param {string} [style] A style to apply to the message.
+	 * @param {*}      message The message to log.
+	 * @param {String} [style] A style to apply to the message.
 	 */
 	_log( message, style ) {
 

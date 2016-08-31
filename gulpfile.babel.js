@@ -97,9 +97,9 @@ class GulpTasks {
 	 * In the meantime, we need to bind each task method to the class.
 	 */
 	constructor() {
-		this.tasks.forEach( task =>
-			gulp.task( task, this[ task ].bind( this ) )
-		);
+		for ( const task of this.tasks ) {
+			gulp.task( task, this[ task ].bind( this ) );
+		}
 	}
 
 	/**

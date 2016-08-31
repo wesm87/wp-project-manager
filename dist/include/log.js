@@ -4,7 +4,11 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * @module
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
+
+// import { mock } from 'mocktail';
 
 var _lodash = require('lodash');
 
@@ -43,7 +47,7 @@ var Log = function () {
    *
    * @since 0.4.0
    *
-   * @member {object}
+   * @member {Object}
    */
 		get: function get() {
 			return {
@@ -64,7 +68,7 @@ var Log = function () {
    *
    * @see https://github.com/sindresorhus/log-symbols
    *
-   * @member {object}
+   * @member {Object}
    */
 
 	}, {
@@ -124,11 +128,36 @@ var Log = function () {
 			_colors2.default.setTheme(this.styles);
 
 			// Automatically create methods for each style.
-			_lodash2.default.keys(this.styles).forEach(function (style) {
-				_this[style] = function (message) {
-					return _this._log(message, style);
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
+
+			try {
+				var _loop = function _loop() {
+					var style = _step.value;
+
+					_this[style] = function (message) {
+						return _this._log(message, style);
+					};
 				};
-			});
+
+				for (var _iterator = _lodash2.default.keys(this.styles)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					_loop();
+				}
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
+				}
+			}
 
 			this.instance = this;
 		}
@@ -143,8 +172,8 @@ var Log = function () {
    *
    * @access private
    *
-   * @param {mixed}  message The message to log.
-   * @param {string} [style] A style to apply to the message.
+   * @param {*}      message The message to log.
+   * @param {String} [style] A style to apply to the message.
    */
 
 	}, {

@@ -26,9 +26,14 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module
+ */
+
 import _      from 'lodash';
 import colors from 'colors';
+
+// import { mock } from 'mocktail';
 
 import project from './project';
 
@@ -50,7 +55,7 @@ class Log {
 	 *
 	 * @since 0.4.0
 	 *
-	 * @member {object}
+	 * @member {Object}
 	 */
 	get styles() {
 		return {
@@ -71,7 +76,7 @@ class Log {
 	 *
 	 * @see https://github.com/sindresorhus/log-symbols
 	 *
-	 * @member {object}
+	 * @member {Object}
 	 */
 	get icons() {
 
@@ -119,9 +124,9 @@ class Log {
 		colors.setTheme( this.styles );
 
 		// Automatically create methods for each style.
-		_.keys( this.styles ).forEach( ( style ) => {
+		for ( const style of _.keys( this.styles ) ) {
 			this[ style ] = ( message ) => this._log( message, style );
-		} );
+		}
 
 		this.instance = this;
 	}
@@ -136,8 +141,8 @@ class Log {
 	 *
 	 * @access private
 	 *
-	 * @param {mixed}  message The message to log.
-	 * @param {string} [style] A style to apply to the message.
+	 * @param {*}      message The message to log.
+	 * @param {String} [style] A style to apply to the message.
 	 */
 	_log( message, style ) {
 
@@ -187,7 +192,7 @@ export default new Log();
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Deps.html">Deps</a></li><li><a href="Helpers.html">Helpers</a></li><li><a href="Log.html">Log</a></li><li><a href="Project.html">Project</a></li><li><a href="Scaffold.html">Scaffold</a></li></ul><h3>Global</h3><ul><li><a href="global.html#DB_PREFIX_LENGTH">DB_PREFIX_LENGTH</a></li><li><a href="global.html#JSON_TAB_WIDTH">JSON_TAB_WIDTH</a></li><li><a href="global.html#RATIOS">RATIOS</a></li><li><a href="global.html#SECRET_KEY_LENGTH">SECRET_KEY_LENGTH</a></li><li><a href="global.html#SECRET_SALT_LENGTH">SECRET_SALT_LENGTH</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-include_deps.html">include/deps</a></li><li><a href="module-include_helpers.html">include/helpers</a></li><li><a href="module-include_log.html">include/log</a></li><li><a href="module-include_project.html">include/project</a></li><li><a href="module-include_scaffold.html">include/scaffold</a></li></ul><h3>Classes</h3><ul><li><a href="module-include_deps-Deps.html">Deps</a></li><li><a href="module-include_helpers-Helpers.html">Helpers</a></li><li><a href="module-include_log-Log.html">Log</a></li><li><a href="module-include_project-Project.html">Project</a></li><li><a href="module-include_scaffold-Scaffold.html">Scaffold</a></li></ul>
 </nav>
 
 <br class="clear">
