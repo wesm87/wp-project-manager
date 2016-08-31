@@ -384,7 +384,7 @@ class Project {
 
 		const types = [ 'auth', 'secure_auth', 'logged_in', 'nonce' ];
 
-		types.forEach( ( type ) => {
+		for ( const type of types ) {
 			if ( ! config.secret[ `${ type }_key` ] ) {
 				config.secret[ `${ type }_key` ] = helpers.randomString(
 					SECRET_KEY_LENGTH,
@@ -397,7 +397,7 @@ class Project {
 					'base64'
 				);
 			}
-		} );
+		}
 
 		return config;
 	}
@@ -407,8 +407,9 @@ class Project {
 	 *
 	 * @since 0.3.0
 	 *
-	 * @param {bool} [force] If true and a config file already exists, it will
-	 *                       be deleted and a new file will be created.
+	 * @param {Boolean} [force=false] If true and a config file already exists,
+	 *                                it will be deleted and a new file will be
+	 *                                created.
 	 */
 	static createConfigFile( force = false ) {
 

@@ -141,7 +141,7 @@
 
     
 
-    <h4 class="name" id=".directoryExists"><span class="type-signature">(static) </span>directoryExists<span class="signature">(path)</span><span class="type-signature"> &rarr; {bool}</span></h4>
+    <h4 class="name" id=".directoryExists"><span class="type-signature">(static) </span>directoryExists<span class="signature">(path)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
 
     
 
@@ -190,7 +190,7 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
             
@@ -282,7 +282,7 @@
     </dt>
     <dd>
         
-<span class="param-type">bool</span>
+<span class="param-type">Boolean</span>
 
 
     </dd>
@@ -297,7 +297,7 @@
 
     
 
-    <h4 class="name" id=".fileExists"><span class="type-signature">(static) </span>fileExists<span class="signature">(path)</span><span class="type-signature"> &rarr; {bool}</span></h4>
+    <h4 class="name" id=".fileExists"><span class="type-signature">(static) </span>fileExists<span class="signature">(path)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
 
     
 
@@ -346,7 +346,7 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
             
@@ -438,7 +438,7 @@
     </dt>
     <dd>
         
-<span class="param-type">bool</span>
+<span class="param-type">Boolean</span>
 
 
     </dd>
@@ -453,7 +453,7 @@
 
     
 
-    <h4 class="name" id=".loadYAML"><span class="type-signature">(static) </span>loadYAML<span class="signature">(filePath)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    <h4 class="name" id=".loadYAML"><span class="type-signature">(static) </span>loadYAML<span class="signature">(filePath)</span><span class="type-signature"> &rarr; {Object}</span></h4>
 
     
 
@@ -502,7 +502,7 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
             
@@ -556,7 +556,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="include_helpers.js.html">include/helpers.js</a>, <a href="include_helpers.js.html#line135">line 135</a>
+        <a href="include_helpers.js.html">include/helpers.js</a>, <a href="include_helpers.js.html#line133">line 133</a>
     </li></ul></dd>
     
 
@@ -595,7 +595,7 @@
     </dt>
     <dd>
         
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
 
 
     </dd>
@@ -610,7 +610,7 @@
 
     
 
-    <h4 class="name" id=".pathExists"><span class="type-signature">(static) </span>pathExists<span class="signature">(path, type)</span><span class="type-signature"> &rarr; {bool}</span></h4>
+    <h4 class="name" id=".pathExists"><span class="type-signature">(static) </span>pathExists<span class="signature">(path, type)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
 
     
 
@@ -659,7 +659,7 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
             
@@ -682,7 +682,7 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
             
@@ -774,7 +774,7 @@
     </dt>
     <dd>
         
-<span class="param-type">bool</span>
+<span class="param-type">Boolean</span>
 
 
     </dd>
@@ -789,7 +789,7 @@
 
     
 
-    <h4 class="name" id=".randomString"><span class="type-signature">(static) </span>randomString<span class="signature">(strLen, format)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id=".randomString"><span class="type-signature">(static) </span>randomString<span class="signature">(strLen, format<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {String}</span></h4>
 
     
 
@@ -820,7 +820,11 @@
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -838,14 +842,26 @@
             <td class="type">
             
                 
-<span class="param-type">int</span>
+<span class="param-type">Number</span>
 
 
             
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last"><p>The number of characters to include in the string.</p></td>
@@ -861,14 +877,30 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
             
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    'hex'
+                
+                </td>
             
 
             <td class="description last"><p>The string format to use (hex, base64, etc).</p></td>
@@ -915,7 +947,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="include_helpers.js.html">include/helpers.js</a>, <a href="include_helpers.js.html#line184">line 184</a>
+        <a href="include_helpers.js.html">include/helpers.js</a>, <a href="include_helpers.js.html#line182">line 182</a>
     </li></ul></dd>
     
 
@@ -953,7 +985,7 @@
     </dt>
     <dd>
         
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
     </dd>
@@ -968,7 +1000,7 @@
 
     
 
-    <h4 class="name" id=".readDir"><span class="type-signature">(static) </span>readDir<span class="signature">(dir, includeHidden<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {array}</span></h4>
+    <h4 class="name" id=".readDir"><span class="type-signature">(static) </span>readDir<span class="signature">(dir, includeHidden<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array}</span></h4>
 
     
 
@@ -1004,6 +1036,8 @@ the directory.</p>
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -1020,7 +1054,7 @@ the directory.</p>
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
             
@@ -1037,6 +1071,10 @@ the directory.</p>
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last"><p>The directory path.</p></td>
         </tr>
@@ -1051,7 +1089,7 @@ the directory.</p>
             <td class="type">
             
                 
-<span class="param-type">bool</span>
+<span class="param-type">Boolean</span>
 
 
             
@@ -1070,9 +1108,14 @@ the directory.</p>
             
 
             
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
 
-            <td class="description last"><p>If true, hidden files are included.
-                                 Default is false.</p></td>
+            <td class="description last"><p>If true, hidden files are included.</p></td>
         </tr>
 
     
@@ -1116,7 +1159,7 @@ the directory.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="include_helpers.js.html">include/helpers.js</a>, <a href="include_helpers.js.html#line109">line 109</a>
+        <a href="include_helpers.js.html">include/helpers.js</a>, <a href="include_helpers.js.html#line107">line 107</a>
     </li></ul></dd>
     
 
@@ -1154,7 +1197,7 @@ the directory.</p>
     </dt>
     <dd>
         
-<span class="param-type">array</span>
+<span class="param-type">Array</span>
 
 
     </dd>
@@ -1169,7 +1212,7 @@ the directory.</p>
 
     
 
-    <h4 class="name" id=".symlinkExists"><span class="type-signature">(static) </span>symlinkExists<span class="signature">(path)</span><span class="type-signature"> &rarr; {bool}</span></h4>
+    <h4 class="name" id=".symlinkExists"><span class="type-signature">(static) </span>symlinkExists<span class="signature">(path)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
 
     
 
@@ -1218,7 +1261,7 @@ the directory.</p>
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
             
@@ -1310,7 +1353,7 @@ the directory.</p>
     </dt>
     <dd>
         
-<span class="param-type">bool</span>
+<span class="param-type">Boolean</span>
 
 
     </dd>
@@ -1374,7 +1417,7 @@ the directory.</p>
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
             
@@ -1397,7 +1440,7 @@ the directory.</p>
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
 
 
             
@@ -1451,7 +1494,7 @@ the directory.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="include_helpers.js.html">include/helpers.js</a>, <a href="include_helpers.js.html#line162">line 162</a>
+        <a href="include_helpers.js.html">include/helpers.js</a>, <a href="include_helpers.js.html#line160">line 160</a>
     </li></ul></dd>
     
 
