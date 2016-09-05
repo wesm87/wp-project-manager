@@ -38,14 +38,13 @@
   "scripts": {
     "gulp": "gulp",
     "build": "gulp build",
-    "build-dev": "gulp build && npm link && npm run jsdoc",
-    "jsdoc": "jsdoc -c jsdoc.conf.json",
+    "docs": "npm run docs:jsdoc",
+    "docs:jsdoc": "jsdoc -c jsdoc.conf.json",
     "lint": "eslint app test",
     "test": "gulp test",
     "coverage": "gulp coverage",
-    "coverage-report": "npm run coveralls && npm run codeclimate",
-    "coveralls": "cat ./coverage/lcov.info | coveralls",
     "codeclimate": "codeclimate-test-reporter < coverage/lcov.info",
+    "travis": "npm run build && npm run lint && npm run coverage && npm run codeclimate",
     "preversion": "npm test",
     "version": "npm run build",
     "postversion": "git push && git push --tags && npm publish"
