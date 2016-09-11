@@ -1,7 +1,7 @@
 
 import log from '../include/log';
 
-module.exports = {
+export default {
 	command:  'wp install',
 	describe: 'install WordPress',
 	builder:  {},

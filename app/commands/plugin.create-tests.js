@@ -1,7 +1,7 @@
 
 import scaffold from '../include/scaffold';
 
-module.exports = {
+export default {
 	command:  'plugin create-tests',
 	describe: 'create plugin unit tests',
 	builder:  {},

@@ -1,7 +1,7 @@
 
 import scaffold from '../include/scaffold';
 
-module.exports = {
+export default {
 	command:  'theme create-tests',
 	describe: 'create theme unit tests',
 	builder:  {},

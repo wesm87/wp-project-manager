@@ -2,7 +2,7 @@
 import log     from '../include/log';
 import project from '../include/project';
 
-module.exports = {
+export default {
 	command:  'config display',
 	describe: 'parse and display project settings',
 	builder:  {},

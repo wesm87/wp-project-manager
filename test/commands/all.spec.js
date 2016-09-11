@@ -23,7 +23,7 @@ describe( 'commands', () => {
 
 		describe( command, () => {
 
-			const commandModule = require( `${ __appPath }/commands/${ command }` );
+			const commandModule = require( `../../app/commands/${ command }` ).default;
 
 			it( 'should export a non-empty object', () => {
 				should.exist( commandModule );

@@ -10,12 +10,14 @@ import path     from 'path';
 import yargs    from 'yargs';
 import semver   from 'semver';
 
+import babel    from 'rollup-plugin-babel';
+
 import gulp     from 'gulp';
 import nsp      from 'gulp-nsp';
-import babel    from 'gulp-babel';
 import mocha    from 'gulp-mocha';
 import istanbul from 'gulp-istanbul';
 
+import { rollup }       from 'rollup';
 import { Instrumenter } from 'isparta';
 
 const pkg = require( './package.json' );
@@ -79,7 +81,7 @@ class GulpTasks {
 	get files() {
 		return {
 			js: {
-				source: 'app/**/*.js',
+				source: 'app/index.js',
 				dest:   'dist',
 				tests:  'test/**/*.js',
 				watch:  [ 'app/**/*.js', 'test/**/*.js' ],
@@ -122,16 +124,50 @@ class GulpTasks {
 	}
 
 	/**
+	 * Creates a new bundle via Rollup.
+	 *
+	 * @param  {Object} format The bundle format.
+	 * @return {Promise}
+	 */
+	rollup( format ) {
+
+		const rollupConfig = {
+			entry:   'app/index.js',
+			plugins: [
+				babel(),
+			],
+		};
+
+		const bundleConfig = {
+			format,
+			dest: `dist/bundle.${ format }.js`,
+		};
+
+		return rollup( rollupConfig ).then(
+			( bundle ) => bundle.write( bundleConfig )
+		);
+	}
+
+	/**
 	 * Build task.
 	 *
 	 * @param  {Function} done Async callback.
-	 * @return {Function}
+	 * @return {Promise}
 	 */
 	build( done ) {
-		return gulp.src( this.files.js.source )
-			.pipe( babel() )
-			.pipe( gulp.dest( this.files.js.dest ) )
-			.on( 'finish', () => this.nsp( done ) );
+
+		process.env.BABEL_ENV = 'production';
+
+		const promises = ( [ 'es', 'cjs' ] ).map( this.rollup );
+
+		return Promise
+			.all( promises )
+			.then( () => {
+				this.nsp( done );
+			} )
+			.catch( ( err ) => {
+				console.error( err.stack );
+			} );
 	}
 
 	/**

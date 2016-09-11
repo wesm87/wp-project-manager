@@ -1,7 +1,7 @@
 
 import scaffold from '../include/scaffold';
 
-module.exports = {
+export default {
 	command:  'theme create',
 	describe: 'scaffold new child theme',
 	builder:  {},
