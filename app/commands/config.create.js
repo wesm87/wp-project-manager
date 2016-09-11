@@ -1,7 +1,7 @@
 
 import project from '../include/project';
 
-module.exports = {
+export default {
 	command:  'config create',
 	describe: 'create a new project.yml file with the default settings',
 	builder:  {},

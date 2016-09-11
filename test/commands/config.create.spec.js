@@ -4,10 +4,10 @@ import '../setup';
 import chai      from 'chai';
 import sinonChai from 'sinon-chai';
 
-chai.use( sinonChai ).should();
+import commandModule from '../../app/commands/config.create';
+import projectMock   from '../../app/include/project';
 
-const commandModule = require( `${ __appPath }/commands/config.create` );
-const projectMock   = require( `${ __appPath }/include/project` ).default;
+chai.use( sinonChai ).should();
 
 describe( 'commands', () => {
 

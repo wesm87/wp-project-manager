@@ -14,9 +14,7 @@ install:
   - npm install
 
 script:
-  - npm run build
-  - npm run lint
-  - npm run coverage
+  - npm run travis
 
 notifications:
   email: false

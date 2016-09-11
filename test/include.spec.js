@@ -2,53 +2,47 @@
 
 import chai from 'chai';
 
-const should = chai.should();
+import projectModule  from '../app/include/project';
+import scaffoldModule from '../app/include/scaffold';
+import helpersModule  from '../app/include/helpers';
+import depsModule     from '../app/include/deps';
+import logModule      from '../app/include/log';
 
-const basePath = `${ __appPath }/include`;
+const should = chai.should();
 
 describe( 'include', () => {
 
 	describe( 'project.js', () => {
-		const currentModule = require( `${ basePath }/project` ).default;
-
 		it( 'should export a non-empty object', () => {
-			should.exist( currentModule );
+			should.exist( projectModule );
 		} );
 
 		it( 'should export a `config` property', () => {
-			currentModule.should.have.property( 'config' );
+			projectModule.should.have.property( 'config' );
 		} );
 	} );
 
 	describe( 'scaffold.js', () => {
-		const currentModule = require( `${ basePath }/scaffold` ).default;
-
 		it( 'should export a non-empty object', () => {
-			should.exist( currentModule );
+			should.exist( scaffoldModule );
 		} );
 	} );
 
 	describe( 'helpers.js', () => {
-		const currentModule = require( `${ basePath }/helpers` ).default;
-
 		it( 'should export a non-empty object', () => {
-			should.exist( currentModule );
+			should.exist( helpersModule );
 		} );
 	} );
 
 	describe( 'deps.js', () => {
-		const currentModule = require( `${ basePath }/deps` ).default;
-
 		it( 'should export a non-empty object', () => {
-			should.exist( currentModule );
+			should.exist( depsModule );
 		} );
 	} );
 
 	describe( 'log.js', () => {
-		const currentModule = require( `${ basePath }/log` ).default;
-
 		it( 'should export a non-empty object', () => {
-			should.exist( currentModule );
+			should.exist( logModule );
 		} );
 	} );
 
