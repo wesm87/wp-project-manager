@@ -134,7 +134,7 @@ class GulpTasks {
 		const rollupConfig = {
 			entry:   'app/index.js',
 			plugins: [
-				babel(),
+				babel( { runtimeHelpers: true } ),
 			],
 		};
 

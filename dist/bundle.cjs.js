@@ -3,6 +3,10 @@
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var yargs = _interopDefault(require('yargs'));
+var _JSON$stringify = _interopDefault(require('babel-runtime/core-js/json/stringify'));
+var _getIterator = _interopDefault(require('babel-runtime/core-js/get-iterator'));
+var _classCallCheck = _interopDefault(require('babel-runtime/helpers/classCallCheck'));
+var _createClass = _interopDefault(require('babel-runtime/helpers/createClass'));
 var _ = _interopDefault(require('lodash'));
 var colors = _interopDefault(require('colors'));
 var fs = _interopDefault(require('fs-extra'));
@@ -11,95 +15,15 @@ var upsearch = _interopDefault(require('utils-upsearch'));
 var mocktail = require('mocktail');
 var YAML = _interopDefault(require('js-yaml'));
 var crypto = _interopDefault(require('crypto'));
+var _Set = _interopDefault(require('babel-runtime/core-js/set'));
+var _Map = _interopDefault(require('babel-runtime/core-js/map'));
+var _slicedToArray = _interopDefault(require('babel-runtime/helpers/slicedToArray'));
+var _Object$getPrototypeOf = _interopDefault(require('babel-runtime/core-js/object/get-prototype-of'));
+var _possibleConstructorReturn = _interopDefault(require('babel-runtime/helpers/possibleConstructorReturn'));
+var _inherits = _interopDefault(require('babel-runtime/helpers/inherits'));
 var os = _interopDefault(require('os'));
 var cp = _interopDefault(require('child_process'));
 var mustache = _interopDefault(require('mustache'));
-
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
-
-var createClass = function () {
-  function defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-
-  return function (Constructor, protoProps, staticProps) {
-    if (protoProps) defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) defineProperties(Constructor, staticProps);
-    return Constructor;
-  };
-}();
-
-var inherits = function (subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-  }
-
-  subClass.prototype = Object.create(superClass && superClass.prototype, {
-    constructor: {
-      value: subClass,
-      enumerable: false,
-      writable: true,
-      configurable: true
-    }
-  });
-  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-};
-
-var possibleConstructorReturn = function (self, call) {
-  if (!self) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-
-  return call && (typeof call === "object" || typeof call === "function") ? call : self;
-};
-
-var slicedToArray = function () {
-  function sliceIterator(arr, i) {
-    var _arr = [];
-    var _n = true;
-    var _d = false;
-    var _e = undefined;
-
-    try {
-      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-        _arr.push(_s.value);
-
-        if (i && _arr.length === i) break;
-      }
-    } catch (err) {
-      _d = true;
-      _e = err;
-    } finally {
-      try {
-        if (!_n && _i["return"]) _i["return"]();
-      } finally {
-        if (_d) throw _e;
-      }
-    }
-
-    return _arr;
-  }
-
-  return function (arr, i) {
-    if (Array.isArray(arr)) {
-      return arr;
-    } else if (Symbol.iterator in Object(arr)) {
-      return sliceIterator(arr, i);
-    } else {
-      throw new TypeError("Invalid attempt to destructure non-iterable instance");
-    }
-  };
-}();
 
 /**
  * @module
@@ -125,10 +49,10 @@ var RATIOS = {
 
 var Helpers = function () {
 	function Helpers() {
-		classCallCheck(this, Helpers);
+		_classCallCheck(this, Helpers);
 	}
 
-	createClass(Helpers, null, [{
+	_createClass(Helpers, null, [{
 		key: 'pathExists',
 
 
@@ -334,6 +258,7 @@ var Helpers = function () {
 			}
 		}
 	}]);
+
 	return Helpers;
 }();
 
@@ -376,10 +301,10 @@ var SECRET_SALT_LENGTH = 64;
 
 var Project = function () {
 	function Project() {
-		classCallCheck(this, Project);
+		_classCallCheck(this, Project);
 	}
 
-	createClass(Project, null, [{
+	_createClass(Project, null, [{
 		key: 'loadConfig',
 
 
@@ -588,7 +513,7 @@ var Project = function () {
 			var _iteratorError = undefined;
 
 			try {
-				for (var _iterator = types[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+				for (var _iterator = _getIterator(types), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 					var type = _step.value;
 
 					if (!config.secret[type + '_key']) {
@@ -780,6 +705,7 @@ var Project = function () {
 			};
 		}
 	}]);
+
 	return Project;
 }();
 
@@ -803,7 +729,7 @@ var JSON_TAB_WIDTH = 2;
  */
 
 var Log = function () {
-	createClass(Log, [{
+	_createClass(Log, [{
 		key: 'styles',
 
 
@@ -868,8 +794,7 @@ var Log = function () {
 	}]);
 
 	function Log() {
-		classCallCheck(this, Log);
-
+		_classCallCheck(this, Log);
 
 		if (!this.instance) {
 			this.init();
@@ -885,7 +810,7 @@ var Log = function () {
   */
 
 
-	createClass(Log, [{
+	_createClass(Log, [{
 		key: 'init',
 		value: function init() {
 			var _this = this;
@@ -907,7 +832,7 @@ var Log = function () {
 					};
 				};
 
-				for (var _iterator = _.keys(this.styles)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+				for (var _iterator = _getIterator(_.keys(this.styles)), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 					_loop();
 				}
 			} catch (err) {
@@ -948,7 +873,7 @@ var Log = function () {
 
 			// Convert object-like messages to string.
 			if (_.isObjectLike(message)) {
-				message = JSON.stringify(message, null, JSON_TAB_WIDTH);
+				message = _JSON$stringify(message, null, JSON_TAB_WIDTH);
 			}
 
 			// Don't log anything if message is empty.
@@ -980,6 +905,7 @@ var Log = function () {
 			console.log(message);
 		}
 	}]);
+
 	return Log;
 }();
 
@@ -1012,7 +938,7 @@ var configCreateCommand = {
  */
 
 var Deps = function Deps() {
-  classCallCheck(this, Deps);
+  _classCallCheck(this, Deps);
 };
 
 var deps = mocktail.mock(Deps);
@@ -1042,14 +968,15 @@ var depsInstallCommand = {
  */
 
 var Scaffold = function (_Project) {
-	inherits(Scaffold, _Project);
+	_inherits(Scaffold, _Project);
 
 	function Scaffold() {
-		classCallCheck(this, Scaffold);
-		return possibleConstructorReturn(this, (Scaffold.__proto__ || Object.getPrototypeOf(Scaffold)).apply(this, arguments));
+		_classCallCheck(this, Scaffold);
+
+		return _possibleConstructorReturn(this, (Scaffold.__proto__ || _Object$getPrototypeOf(Scaffold)).apply(this, arguments));
 	}
 
-	createClass(Scaffold, null, [{
+	_createClass(Scaffold, null, [{
 		key: 'init',
 
 
@@ -1126,7 +1053,7 @@ var Scaffold = function (_Project) {
 			}
 
 			var filePath = path.join(os.homedir(), '.composer/auth.json');
-			var contents = JSON.stringify({
+			var contents = _JSON$stringify({
 				'github-oauth': {
 					'github.com': '' + this.config.token
 				}
@@ -1178,7 +1105,7 @@ var Scaffold = function (_Project) {
 			var _iteratorError = undefined;
 
 			try {
-				for (var _iterator = helpers.readDir(pluginZipsDir)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+				for (var _iterator = _getIterator(helpers.readDir(pluginZipsDir)), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 					var val = _step.value;
 
 					this.templateData.pluginZips.push({
@@ -1585,7 +1512,7 @@ var Scaffold = function (_Project) {
 			var _iteratorError2 = undefined;
 
 			try {
-				for (var _iterator2 = dirs[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+				for (var _iterator2 = _getIterator(dirs), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
 					var dir = _step2.value;
 
 					try {
@@ -1614,7 +1541,7 @@ var Scaffold = function (_Project) {
 			var _iteratorError3 = undefined;
 
 			try {
-				for (var _iterator3 = files[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+				for (var _iterator3 = _getIterator(files), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
 					var file = _step3.value;
 
 					try {
@@ -1702,8 +1629,8 @@ var Scaffold = function (_Project) {
 			var _iteratorError4 = undefined;
 
 			try {
-				for (var _iterator4 = files[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-					var _step4$value = slicedToArray(_step4.value, 2);
+				for (var _iterator4 = _getIterator(files), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+					var _step4$value = _slicedToArray(_step4.value, 2);
 
 					var source = _step4$value[0];
 					var dest = _step4$value[1];
@@ -1769,7 +1696,7 @@ var Scaffold = function (_Project) {
 			var _iteratorError5 = undefined;
 
 			try {
-				for (var _iterator5 = files[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+				for (var _iterator5 = _getIterator(files), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
 					var file = _step5.value;
 
 					file = path.join(base, file);
@@ -1827,7 +1754,7 @@ var Scaffold = function (_Project) {
 				var _iteratorError6 = undefined;
 
 				try {
-					for (var _iterator6 = dirs[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+					for (var _iterator6 = _getIterator(dirs), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
 						var file = _step6.value;
 
 						this.scaffoldFile(path.join(source, file), type);
@@ -1918,15 +1845,16 @@ var Scaffold = function (_Project) {
 		get: function get() {
 			return {
 				project: {
-					link: new Map([['dev-lib/pre-commit', '.git/hooks'], ['dev-lib/.jshintrc', '.'], ['dev-lib/.jscsrc', '.']])
+					link: new _Map([['dev-lib/pre-commit', '.git/hooks'], ['dev-lib/.jshintrc', '.'], ['dev-lib/.jscsrc', '.']])
 				},
 
 				bedrock: {
-					remove: new Set(['composer.*', '*.md', 'phpcs.xml', 'wp-cli.yml', '.gitignore', '.travis.yml', '.env.example', '.editorconfig'])
+					remove: new _Set(['composer.*', '*.md', 'phpcs.xml', 'wp-cli.yml', '.gitignore', '.travis.yml', '.env.example', '.editorconfig'])
 				}
 			};
 		}
 	}]);
+
 	return Scaffold;
 }(Project$1);
 
