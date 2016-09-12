@@ -1,6 +1,8 @@
 WP Project Manager
 ==================
 
+[![Join the chat at https://gitter.im/wp-project-manager/Lobby](https://badges.gitter.im/wp-project-manager/Lobby.svg)](https://gitter.im/wp-project-manager/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![npm Version][npm-img]][npm-url]
 [![GitHub Release][github-img]][github-url]
 [![Build Status][travis-img]][travis-url]
