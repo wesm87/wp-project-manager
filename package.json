@@ -45,7 +45,7 @@
     "test": "gulp test",
     "coverage": "gulp coverage",
     "codeclimate": "codeclimate-test-reporter < coverage/lcov.info",
-    "travis": "npm run build && npm run lint && npm run coverage && npm run codeclimate",
+    "travis": "npm run build && npm run lint && npm run coverage",
     "preversion": "npm test",
     "version": "npm run build",
     "postversion": "git push && git push --tags && npm publish"
