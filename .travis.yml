@@ -18,6 +18,12 @@ script:
 
 notifications:
   email: false
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/03714729ba7967ebf124
+    on_success: change
+    on_failure: always
+    on_start: never
 
 addons:
   code_climate:

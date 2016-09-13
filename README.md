@@ -1,6 +1,7 @@
 WP Project Manager
 ==================
 
+[![Chat on Gitter][gitter-img]][gitter-url]
 [![npm Version][npm-img]][npm-url]
 [![GitHub Release][github-img]][github-url]
 [![Build Status][travis-img]][travis-url]
@@ -288,6 +289,9 @@ define environment-specific settings (such as enabling `WP_DEBUG` for
 [npm-guide]:       http://www.johnpapa.net/how-to-use-npm-global-without-sudo-on-osx
 [php-versions]:    http://php.net/supported-versions.php
 [keys-and-salts]:  https://roots.io/salts.html
+
+[gitter-img]:      https://img.shields.io/gitter/room/wp-project-manager/wp-project-manager.svg
+[gitter-url]:      https://gitter.im/wp-project-manager/Lobby
 
 [npm-img]:         https://img.shields.io/npm/v/wp-project-manager.svg
 [npm-url]:         https://www.npmjs.com/package/wp-project-manager
