@@ -9,21 +9,278 @@ var _classCallCheck = _interopDefault(require('babel-runtime/helpers/classCallCh
 var _createClass = _interopDefault(require('babel-runtime/helpers/createClass'));
 var _ = _interopDefault(require('lodash'));
 var colors = _interopDefault(require('colors'));
-var fs = _interopDefault(require('fs-extra'));
+var _regeneratorRuntime = _interopDefault(require('babel-runtime/regenerator'));
+var _asyncToGenerator = _interopDefault(require('babel-runtime/helpers/asyncToGenerator'));
 var path = _interopDefault(require('path'));
 var upsearch = _interopDefault(require('utils-upsearch'));
 var mocktail = require('mocktail');
+var _Object$keys = _interopDefault(require('babel-runtime/core-js/object/keys'));
+var fs = _interopDefault(require('fs-extra'));
 var YAML = _interopDefault(require('js-yaml'));
-var crypto = _interopDefault(require('crypto'));
+var thenifyAll = _interopDefault(require('thenify-all'));
+var crypto = _interopDefault(require('mz/crypto'));
 var _Set = _interopDefault(require('babel-runtime/core-js/set'));
-var _Map = _interopDefault(require('babel-runtime/core-js/map'));
 var _slicedToArray = _interopDefault(require('babel-runtime/helpers/slicedToArray'));
 var _Object$getPrototypeOf = _interopDefault(require('babel-runtime/core-js/object/get-prototype-of'));
 var _possibleConstructorReturn = _interopDefault(require('babel-runtime/helpers/possibleConstructorReturn'));
 var _inherits = _interopDefault(require('babel-runtime/helpers/inherits'));
-var os = _interopDefault(require('os'));
-var cp = _interopDefault(require('child_process'));
+var cp = _interopDefault(require('mz/child_process'));
 var mustache = _interopDefault(require('mustache'));
+
+/**
+ * @module
+ */
+
+/**
+ * Filesystem helper methods, plus everything from the `fs-extra` module (which
+ * itself includes everything from the core `fs` module). All the `fs-extra`
+ * methods have been modified to return a Promise so `async/await` can be used.
+ */
+
+var FSHelpers = function () {
+	function FSHelpers() {
+		_classCallCheck(this, FSHelpers);
+	}
+
+	_createClass(FSHelpers, null, [{
+		key: '_inheritMethods',
+
+
+		/**
+   * Takes an object and copies any methods it has into this class.
+   *
+   * @since 0.7.17
+   *
+   * @param {Object} source The source object.
+   */
+		value: function _inheritMethods(source) {
+			var methods = _Object$keys(source).filter(function (key) {
+				return 'function' === typeof source[key];
+			});
+
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
+
+			try {
+				for (var _iterator = _getIterator(methods), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var method = _step.value;
+
+					this[method] = source[method].bind(this);
+				}
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
+				}
+			}
+		}
+
+		/**
+   * Checks whether the specified file is a hidden file.
+   *
+   * @param  {String} file The file name to check.
+   * @return {Boolean}     True if the file name begins with a dot;
+   *                       false if not.
+   */
+
+	}, {
+		key: 'isHiddenFile',
+		value: function isHiddenFile(file) {
+			var firstCharIndex = 0;
+
+			return firstCharIndex !== file.indexOf('.');
+		}
+
+		/**
+   * Checks if the specified file or directory exists.
+   *
+   * @since 0.1.0
+   * @since 0.2.0  Added 'symlink' type.
+   * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
+   *
+   * @param  {String} path The path to check.
+   * @param  {String} type Optional. A type to check the path against.
+   * @return {Promise}     Resolves to true if path exists and matches `type`;
+   *                       false if not.
+   */
+
+	}, {
+		key: 'pathExists',
+		value: function pathExists(path) {
+			var type = arguments.length <= 1 || arguments[1] === undefined ? 'any' : arguments[1];
+
+			return this.lstat(path).then(function (info) {
+				switch (type) {
+					case 'file':
+						return info.isFile();
+					case 'folder':
+					case 'directory':
+						return info.isDirectory();
+					case 'link':
+					case 'symlink':
+						return info.isSymbolicLink();
+					default:
+						return !!info;
+				}
+			}).catch(function () {
+				return false;
+			});
+		}
+
+		/**
+   * Checks if the specified file exists.
+   *
+   * @since 0.1.0
+   * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
+   *
+   * @param  {String} path The path to the file to check.
+   * @return {Boolean}     Resolves to true if file exists; false if not.
+   */
+
+	}, {
+		key: 'fileExists',
+		value: function fileExists(path) {
+			return this.pathExists(path, 'file');
+		}
+
+		/**
+   * Checks if the specified directory exists.
+   *
+   * @since 0.1.0
+   * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
+   *
+   * @param  {String} path The path to the directory to check.
+   * @return {Promise}     Resolves to true if directory exists; false if not.
+   */
+
+	}, {
+		key: 'directoryExists',
+		value: function directoryExists(path) {
+			return this.pathExists(path, 'directory');
+		}
+
+		/**
+   * Alias for `directoryExists`.
+   *
+   * @since 0.7.17
+   *
+   * @param  {String} path The path to the directory to check.
+   * @return {Promise}     Resolves to true if directory exists; false if not.
+   */
+
+	}, {
+		key: 'dirExists',
+		value: function dirExists(path) {
+			return this.directoryExists(path);
+		}
+
+		/**
+   * Checks if the specified symbolic link exists.
+   *
+   * @since 0.2.0
+   * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
+   *
+   * @param  {String} path The path to the link to check.
+   * @return {Promise}     Resolves to true if link exists; false if not.
+   */
+
+	}, {
+		key: 'symlinkExists',
+		value: function symlinkExists(path) {
+			return this.pathExists(path, 'symlink');
+		}
+
+		/**
+   * Takes a directory path and returns Promise that resolves to an array,
+   * which contains the contents of the directory.
+   *
+   * @since 0.4.0
+   * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
+   *
+   * @param  {String}  dir                   The directory path.
+   * @param  {Boolean} [includeHidden=false] If true, include hidden files.
+   * @return {Promise}                       Resolves to an array of the
+   *                                         directory's contents.
+   */
+
+	}, {
+		key: 'readDir',
+		value: function readDir(dir) {
+			var _this = this;
+
+			var includeHidden = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+			return this.readdir(dir).then(function (files) {
+				if (!includeHidden) {
+					files = files.filter(_this.isHiddenFile);
+				}
+
+				return files;
+			}).catch(function () {
+				return [];
+			});
+		}
+
+		/**
+   * Tries to load a YAML config file and parse it into JSON.
+   *
+   * @since 0.1.0
+   * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
+   *
+   * @param  {String} filePath The path to the YAML file.
+   * @return {Promise}          Resolves to the parsed results on success;
+   *                            an empty object on failure.
+   */
+
+	}, {
+		key: 'loadYAML',
+		value: function loadYAML(filePath) {
+			var defaults = {};
+
+			return fs.readFile(filePath, 'utf8').then(function (contents) {
+				var json = YAML.safeLoad(contents);
+
+				return json || defaults;
+			}).catch(function () {
+				return defaults;
+			});
+		}
+
+		/**
+   * Takes a JSON string or object, parses it into YAML, and writes to a file.
+   *
+   * @since 0.3.0
+   * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
+   *
+   * @param  {String} filePath The path to the file to write to.
+   * @param  {Object} json     The JSON object to parse into YAML.
+   * @return {Promise}         Resolves to true on success; false on failure.
+   */
+
+	}, {
+		key: 'writeYAML',
+		value: function writeYAML(filePath, json) {
+			var yaml = YAML.safeDump(json, { noCompatMode: true });
+
+			return fs.writeFile(filePath, yaml);
+		}
+	}]);
+
+	return FSHelpers;
+}();
+
+FSHelpers._inheritMethods(thenifyAll(fs));
+
+var fs$1 = mocktail.mock(FSHelpers);
 
 /**
  * @module
@@ -53,175 +310,8 @@ var Helpers = function () {
 	}
 
 	_createClass(Helpers, null, [{
-		key: 'pathExists',
+		key: 'randomString',
 
-
-		/**
-   * Checks if the specified file or directory exists.
-   *
-   * @since 0.1.0
-   * @since 0.2.0 Added 'symlink' type.
-   *
-   * @param  {String} path The path to check.
-   * @param  {String} type Optional. A type to check the path against.
-   * @return {Boolean}     True if path exists and is `type`; false if not.
-   */
-		value: function pathExists(path) {
-			var type = arguments.length <= 1 || arguments[1] === undefined ? 'any' : arguments[1];
-
-			try {
-				var info = fs.lstatSync(path);
-
-				switch (type) {
-					case 'file':
-						return info.isFile();
-					case 'folder':
-					case 'directory':
-						return info.isDirectory();
-					case 'link':
-					case 'symlink':
-						return info.isSymbolicLink();
-					default:
-						return !!info;
-				}
-			} catch (error) {
-				return false;
-			}
-		}
-
-		/**
-   * Checks if the specified file exists.
-   *
-   * @since 0.1.0
-   *
-   * @param  {String} path The path to the file to check.
-   * @return {Boolean}     True the file exists; false if not.
-   */
-
-	}, {
-		key: 'fileExists',
-		value: function fileExists(path) {
-			return this.pathExists(path, 'file');
-		}
-
-		/**
-   * Checks if the specified directory exists.
-   *
-   * @since 0.1.0
-   *
-   * @param  {String} path The path to the directory to check.
-   * @return {Boolean}     True the directory exists; false if not.
-   */
-
-	}, {
-		key: 'directoryExists',
-		value: function directoryExists(path) {
-			return this.pathExists(path, 'directory');
-		}
-
-		/**
-   * Checks if the specified symbolic link exists.
-   *
-   * @since 0.2.0
-   *
-   * @param  {String} path The path to the symbolic link to check.
-   * @return {Boolean}     True the symbolic link exists; false if not.
-   */
-
-	}, {
-		key: 'symlinkExists',
-		value: function symlinkExists(path) {
-			return this.pathExists(path, 'symlink');
-		}
-
-		/**
-   * Takes a directory path and returns an array containing the contents of
-   * the directory.
-   *
-   * @since 0.4.0
-   *
-   * @param  {String}  dir                   The directory path.
-   * @param  {Boolean} [includeHidden=false] If true, hidden files are included.
-   * @return {Array}  The directory contents.
-   */
-
-	}, {
-		key: 'readDir',
-		value: function readDir(dir) {
-			var includeHidden = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-
-
-			try {
-				var files = fs.readdirSync(dir);
-
-				if (!includeHidden) {
-
-					// eslint-disable-next-line no-magic-numbers
-					files = files.filter(function (file) {
-						return 0 !== file.indexOf('.');
-					});
-				}
-
-				return files;
-			} catch (error) {
-				return [];
-			}
-		}
-
-		/**
-   * Tries to load a YAML config file and parse it into JSON.
-   *
-   * @since 0.1.0
-   *
-   * @param  {String} filePath The path to the YAML file.
-   * @return {Object}          The parsed results. If the file is blank or
-   *                           doesn't exist, we return an empty object.
-   */
-
-	}, {
-		key: 'loadYAML',
-		value: function loadYAML(filePath) {
-
-			try {
-
-				// Get file contents as JSON.
-				var json = YAML.safeLoad(fs.readFileSync(filePath, 'utf8'));
-
-				// Make sure the config isn't empty.
-				if (json) {
-					return json;
-				}
-			} catch (error) {
-				log.error(error);
-			}
-
-			// If the file doesn't exist or is empty, return an empty object.
-			return {};
-		}
-
-		/**
-   * Takes a JSON string or object, parses it into YAML, and writes to a file.
-   *
-   * @since 0.3.0
-   *
-   * @param {String} filePath The path to the file to write to.
-   * @param {Object} json     The JSON object to parse into YAML.
-   */
-
-	}, {
-		key: 'writeYAML',
-		value: function writeYAML(filePath, json) {
-
-			try {
-
-				// Convert JSON to YAML.
-				var yaml = YAML.safeDump(json, { noCompatMode: true });
-
-				fs.writeFileSync(filePath, yaml);
-			} catch (error) {
-				log.error(error);
-			}
-		}
 
 		/**
    * Generates a random string in hexadecimal format.
@@ -232,30 +322,27 @@ var Helpers = function () {
    * @param  {String} [format='hex'] The string format to use (hex, base64, etc).
    * @return {String}                The randomly generated string.
    */
-
-	}, {
-		key: 'randomString',
 		value: function randomString(strLen) {
 			var format = arguments.length <= 1 || arguments[1] === undefined ? 'hex' : arguments[1];
 
 
-			try {
+			var strStart = 0;
+			var numBytes = void 0;
 
-				var numBytes = void 0;
+			// Adjust number of bytes based on desired string format.
+			if ('hex' === format) {
+				numBytes = Math.ceil(strLen * RATIOS.BYTES_TO_HEX);
+			} else if ('base64' === format) {
+				numBytes = Math.ceil(strLen * RATIOS.BYTES_TO_BASE64);
+			}
 
-				// Adjust number of bytes based on desired string format.
-				if ('hex' === format) {
-					numBytes = Math.ceil(strLen * RATIOS.BYTES_TO_HEX);
-				} else if ('base64' === format) {
-					numBytes = Math.ceil(strLen * RATIOS.BYTES_TO_BASE64);
-				}
-
-				return crypto.randomBytes(numBytes).toString(format).slice(0, strLen); // eslint-disable-line no-magic-numbers
-			} catch (error) {
-				log.error(error);
+			return crypto.randomBytes(numBytes).then(function (value) {
+				return value.toString(format).slice(strStart, strLen);
+			}).catch(function (reason) {
+				log.error(reason);
 
 				return '';
-			}
+			});
 		}
 	}]);
 
@@ -553,18 +640,41 @@ var Project = function () {
 
 	}, {
 		key: 'createConfigFile',
-		value: function createConfigFile() {
-			var force = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+		value: function () {
+			var _ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee() {
+				var force = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+				return _regeneratorRuntime.wrap(function _callee$(_context) {
+					while (1) {
+						switch (_context.prev = _context.next) {
+							case 0:
+								if (!(force && helpers.fileExists(this.paths.config))) {
+									_context.next = 3;
+									break;
+								}
 
+								_context.next = 3;
+								return fs$1.remove(this.paths.config);
 
-			if (force && helpers.fileExists(this.paths.config)) {
-				fs.removeSync(this.paths.config);
+							case 3:
+
+								if (!helpers.fileExists(this.paths.config)) {
+									helpers.writeYAML(this.paths.config, this.defaultConfig);
+								}
+
+							case 4:
+							case 'end':
+								return _context.stop();
+						}
+					}
+				}, _callee, this);
+			}));
+
+			function createConfigFile(_x2) {
+				return _ref.apply(this, arguments);
 			}
 
-			if (!helpers.fileExists(this.paths.config)) {
-				helpers.writeYAML(this.paths.config, this.defaultConfig);
-			}
-		}
+			return createConfigFile;
+		}()
 	}, {
 		key: 'paths',
 
@@ -983,17 +1093,41 @@ var Scaffold = function (_Project) {
 		/**
    * Sets initial values required for other class methods.
    */
-		value: function init() {
+		value: function () {
+			var _ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee() {
+				return _regeneratorRuntime.wrap(function _callee$(_context) {
+					while (1) {
+						switch (_context.prev = _context.next) {
+							case 0:
 
-			this.templateData = this.config;
+								this.templateData = this.config;
 
-			fs.mkdirpSync(this.paths.project);
+								if (!('node-test' === this.config.env)) {
+									_context.next = 4;
+									break;
+								}
 
-			if ('node-test' === this.config.env) {
-				fs.removeSync(this.paths.project);
-				fs.mkdirpSync(this.paths.project);
+								_context.next = 4;
+								return fs$1.remove(this.paths.project);
+
+							case 4:
+								_context.next = 6;
+								return fs$1.mkdirp(this.paths.project);
+
+							case 6:
+							case 'end':
+								return _context.stop();
+						}
+					}
+				}, _callee, this);
+			}));
+
+			function init() {
+				return _ref.apply(this, arguments);
 			}
-		}
+
+			return init;
+		}()
 
 		/**
    * Creates a new project.
@@ -1006,14 +1140,14 @@ var Scaffold = function (_Project) {
 		value: function createProject() {
 
 			if (!this.config.project.title) {
-				log.error('You must specify a project title.' + ' Check the README for usage information.');
+				log.error('You must specify a project title.');
+				log.error('Check the README for usage information.');
 
 				return false;
 			}
 
 			this.initProjectFiles();
 			this.initRepo();
-			this.initDevLib();
 			this.initProject();
 			this.initPlugin();
 			this.initTheme();
@@ -1029,7 +1163,6 @@ var Scaffold = function (_Project) {
 		key: 'initProjectFiles',
 		value: function initProjectFiles() {
 
-			this.maybeCreateAuthFiles();
 			this.maybeCopyPluginZips();
 			this.parseTemplateData();
 
@@ -1037,30 +1170,6 @@ var Scaffold = function (_Project) {
 
 			if (this.config.vvv) {
 				this.scaffoldFiles('vvv');
-			}
-		}
-
-		/**
-   * Creates a Composer `auth.json` file if enabled in project config.
-   */
-
-	}, {
-		key: 'maybeCreateAuthFiles',
-		value: function maybeCreateAuthFiles() {
-
-			if (!this.config.token) {
-				return;
-			}
-
-			var filePath = path.join(os.homedir(), '.composer/auth.json');
-			var contents = _JSON$stringify({
-				'github-oauth': {
-					'github.com': '' + this.config.token
-				}
-			});
-
-			if (!helpers.fileExists(filePath)) {
-				fs.writeFileSync(filePath, contents);
 			}
 		}
 
@@ -1081,7 +1190,7 @@ var Scaffold = function (_Project) {
 			var source = this.paths.plugins;
 			var dest = path.join(this.paths.project, 'project-files/plugin-zips');
 
-			fs.copySync(source, dest);
+			fs$1.copySync(source, dest);
 
 			log.ok('Plugin ZIPs copied.');
 		}
@@ -1138,6 +1247,7 @@ var Scaffold = function (_Project) {
 	}, {
 		key: 'initRepo',
 		value: function initRepo() {
+			var _this2 = this;
 
 			if (!this.config.repo.create) {
 				return false;
@@ -1154,48 +1264,20 @@ var Scaffold = function (_Project) {
 			}
 
 			// Initialize repo.
-			if (this.execSync('git init', 'project', false)) {
-				log.ok('Repo initialized.');
-			}
+			cp.exec('git init').then(function () {
+				log.ok('Repo initialized');
 
-			// If the repo URL is set, add it as a remote.
-			if (this.config.repo.url) {
-				var command = 'git remote add origin ' + this.config.repo.url;
-
-				if (this.execSync(command, 'project', false)) {
-					log.ok('Remote URL added.');
+				// If the repo URL is set, add it as a remote.
+				if (_this2.config.repo.url) {
+					cp.exec('git remote add origin ' + _this2.config.repo.url).then(function () {
+						log.ok('Remote URL added.');
+					}).catch(function (reason) {
+						log.error('Failed to add remote URL: ' + reason);
+					});
 				}
-			}
-
-			return true;
-		}
-
-		/**
-   * Adds the `wp-dev-lib` git submodule.
-   *
-   * @return {Boolean}
-   */
-
-	}, {
-		key: 'initDevLib',
-		value: function initDevLib() {
-
-			log.message('Checking for wp-dev-lib submodule...');
-
-			var dirExists = helpers.directoryExists(path.join(this.paths.project, 'dev-lib'));
-
-			if (dirExists) {
-				log.ok('Submodule exists.');
-
-				return false;
-			}
-
-			// Add the sub-module.
-			var command = 'git submodule add -f -b master https://github.com/xwp/wp-dev-lib.git dev-lib';
-
-			if (this.execSync(command, 'project')) {
-				log.ok('Submodule added.');
-			}
+			}).catch(function (reason) {
+				log.error('Could not initialize repo: ' + reason + '.');
+			});
 
 			return true;
 		}
@@ -1516,7 +1598,7 @@ var Scaffold = function (_Project) {
 					var dir = _step2.value;
 
 					try {
-						fs.mkdirpSync(path.join(base, dir));
+						fs$1.mkdirpSync(path.join(base, dir));
 					} catch (error) {
 						log.error(error);
 					}
@@ -1545,7 +1627,7 @@ var Scaffold = function (_Project) {
 					var file = _step3.value;
 
 					try {
-						fs.ensureFileSync(path.join(base, file));
+						fs$1.ensureFileSync(path.join(base, file));
 					} catch (error) {
 
 						// Do nothing.
@@ -1592,8 +1674,8 @@ var Scaffold = function (_Project) {
 			}
 
 			try {
-				fs.mkdirpSync(dest);
-				fs.copySync(source, dest);
+				fs$1.mkdirpSync(dest);
+				fs$1.copySync(source, dest);
 
 				log.ok(_.startCase(type) + ' assets created.');
 			} catch (error) {
@@ -1647,7 +1729,7 @@ var Scaffold = function (_Project) {
 						log.ok(dest + ' exists.');
 					} else {
 						try {
-							fs.ensureSymlinkSync(dest, source);
+							fs$1.ensureSymlinkSync(dest, source);
 							log.ok(dest + ' created.');
 						} catch (error) {
 							if (!_.isEmpty(error)) {
@@ -1702,7 +1784,7 @@ var Scaffold = function (_Project) {
 					file = path.join(base, file);
 
 					try {
-						fs.removeSync(file);
+						fs$1.removeSync(file);
 					} catch (error) {
 						if (!_.isEmpty(error)) {
 							log.error(error);
@@ -1811,13 +1893,13 @@ var Scaffold = function (_Project) {
 				return true;
 			}
 
-			fs.mkdirpSync(base);
+			fs$1.mkdirpSync(base);
 
 			try {
-				var templateContent = fs.readFileSync(source).toString();
+				var templateContent = fs$1.readFileSync(source).toString();
 				var renderedContent = mustache.render(templateContent, this.templateData);
 
-				fs.writeFileSync(dest, renderedContent);
+				fs$1.writeFileSync(dest, renderedContent);
 
 				log.ok(file + ' created.');
 			} catch (error) {
@@ -1844,10 +1926,6 @@ var Scaffold = function (_Project) {
    */
 		get: function get() {
 			return {
-				project: {
-					link: new _Map([['dev-lib/pre-commit', '.git/hooks'], ['dev-lib/.jshintrc', '.'], ['dev-lib/.jscsrc', '.']])
-				},
-
 				bedrock: {
 					remove: new _Set(['composer.*', '*.md', 'phpcs.xml', 'wp-cli.yml', '.gitignore', '.travis.yml', '.env.example', '.editorconfig'])
 				}

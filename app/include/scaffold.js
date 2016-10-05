@@ -3,14 +3,13 @@
  */
 
 import _        from 'lodash';
-import os       from 'os';
-import fs       from 'fs-extra';
-import cp       from 'child_process';
+import cp       from 'mz/child_process';
 import path     from 'path';
 import mustache from 'mustache';
 
 import { mock } from 'mocktail';
 
+import fs       from './fs-helpers';
 import log      from './log';
 import helpers  from './helpers';
 import Project  from './project';
@@ -36,14 +35,6 @@ class Scaffold extends Project {
 	 */
 	static get files() {
 		return {
-			project: {
-				link: new Map( [
-					[ 'dev-lib/pre-commit', '.git/hooks' ],
-					[ 'dev-lib/.jshintrc',  '.'          ],
-					[ 'dev-lib/.jscsrc',    '.'          ],
-				] ),
-			},
-
 			bedrock: {
 				remove: new Set( [
 					'composer.*',
@@ -62,16 +53,15 @@ class Scaffold extends Project {
 	/**
 	 * Sets initial values required for other class methods.
 	 */
-	static init() {
+	static async init() {
 
 		this.templateData = this.config;
 
-		fs.mkdirpSync( this.paths.project );
-
 		if ( 'node-test' === this.config.env ) {
-			fs.removeSync( this.paths.project );
-			fs.mkdirpSync( this.paths.project );
+			await fs.remove( this.paths.project );
 		}
+
+		await fs.mkdirp( this.paths.project );
 	}
 
 	/**
@@ -82,17 +72,14 @@ class Scaffold extends Project {
 	static createProject() {
 
 		if ( ! this.config.project.title ) {
-			log.error(
-				'You must specify a project title.'
-				+ ' Check the README for usage information.'
-			);
+			log.error( 'You must specify a project title.' );
+			log.error( 'Check the README for usage information.' );
 
 			return false;
 		}
 
 		this.initProjectFiles();
 		this.initRepo();
-		this.initDevLib();
 		this.initProject();
 		this.initPlugin();
 		this.initTheme();
@@ -105,7 +92,6 @@ class Scaffold extends Project {
 	 */
 	static initProjectFiles() {
 
-		this.maybeCreateAuthFiles();
 		this.maybeCopyPluginZips();
 		this.parseTemplateData();
 
@@ -113,27 +99,6 @@ class Scaffold extends Project {
 
 		if ( this.config.vvv ) {
 			this.scaffoldFiles( 'vvv' );
-		}
-	}
-
-	/**
-	 * Creates a Composer `auth.json` file if enabled in project config.
-	 */
-	static maybeCreateAuthFiles() {
-
-		if ( ! this.config.token ) {
-			return;
-		}
-
-		const filePath = path.join( os.homedir(), '.composer/auth.json' );
-		const contents = JSON.stringify( {
-			'github-oauth': {
-				'github.com': `${ this.config.token }`,
-			},
-		} );
-
-		if ( ! helpers.fileExists( filePath ) ) {
-			fs.writeFileSync( filePath, contents );
 		}
 	}
 
@@ -199,47 +164,24 @@ class Scaffold extends Project {
 		}
 
 		// Initialize repo.
-		if ( this.execSync( 'git init', 'project', false ) ) {
-			log.ok( 'Repo initialized.' );
-		}
+		cp.exec( 'git init' )
+			.then( () => {
+				log.ok( 'Repo initialized' );
 
-		// If the repo URL is set, add it as a remote.
-		if ( this.config.repo.url ) {
-			const command = `git remote add origin ${ this.config.repo.url }`;
-
-			if ( this.execSync( command, 'project', false ) ) {
-				log.ok( 'Remote URL added.' );
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Adds the `wp-dev-lib` git submodule.
-	 *
-	 * @return {Boolean}
-	 */
-	static initDevLib() {
-
-		log.message( 'Checking for wp-dev-lib submodule...' );
-
-		const dirExists = helpers.directoryExists(
-			path.join( this.paths.project, 'dev-lib' )
-		);
-
-		if ( dirExists ) {
-			log.ok( 'Submodule exists.' );
-
-			return false;
-		}
-
-		// Add the sub-module.
-		const command = 'git submodule add -f -b master https://github.com/xwp/wp-dev-lib.git dev-lib';
-
-		if ( this.execSync( command, 'project' ) ) {
-			log.ok( 'Submodule added.' );
-		}
+				// If the repo URL is set, add it as a remote.
+				if ( this.config.repo.url ) {
+					cp.exec( `git remote add origin ${ this.config.repo.url }` )
+						.then( () => {
+							log.ok( 'Remote URL added.' );
+						} )
+						.catch( ( reason ) => {
+							log.error( `Failed to add remote URL: ${ reason }` );
+						} );
+				}
+			} )
+			.catch( ( reason ) => {
+				log.error( `Could not initialize repo: ${ reason }.` );
+			} );
 
 		return true;
 	}

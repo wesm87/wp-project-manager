@@ -3,14 +3,14 @@
  */
 
 import _        from 'lodash';
-import fs       from 'fs-extra';
 import path     from 'path';
 import yargs    from 'yargs';
 import upsearch from 'utils-upsearch';
 
 import { mock } from 'mocktail';
 
-import helpers  from './helpers';
+import fs      from './fs-helpers';
+import helpers from './helpers';
 
 if ( ! _.upperSnakeCase ) {
 	_.upperSnakeCase = ( string ) => (
@@ -380,10 +380,10 @@ class Project {
 	 *                                it will be deleted and a new file will be
 	 *                                created.
 	 */
-	static createConfigFile( force = false ) {
+	static async createConfigFile( force = false ) {
 
 		if ( force && helpers.fileExists( this.paths.config ) ) {
-			fs.removeSync( this.paths.config );
+			await fs.remove( this.paths.config );
 		}
 
 		if ( ! helpers.fileExists( this.paths.config ) ) {
