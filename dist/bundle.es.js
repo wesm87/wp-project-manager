@@ -3,7 +3,7 @@ import _JSON$stringify from 'babel-runtime/core-js/json/stringify';
 import _getIterator from 'babel-runtime/core-js/get-iterator';
 import _classCallCheck from 'babel-runtime/helpers/classCallCheck';
 import _createClass from 'babel-runtime/helpers/createClass';
-import _, { defaultsDeep, has, isEmpty, isObjectLike, kebabCase, keys, merge, pickBy, snakeCase, startCase } from 'lodash';
+import { camelCase, defaultsDeep, has, isEmpty, isObjectLike, kebabCase, keys, merge, pickBy, snakeCase, startCase } from 'lodash';
 import colors from 'colors';
 import fs from 'fs-extra';
 import path from 'path';
@@ -255,6 +255,8 @@ var Helpers = function () {
   return Helpers;
 }();
 
+var helpers = mock(Helpers);
+
 /**
  * @module
  */
@@ -313,14 +315,14 @@ var Project = function () {
       var config = void 0;
 
       // Try to load the config file if one was passed and it exists.
-      if (file && Helpers.fileExists(file)) {
-        config = Helpers.loadYAML(file);
+      if (file && helpers.fileExists(file)) {
+        config = helpers.loadYAML(file);
       }
 
       // If we don't have a config object (or the config object is empty)
       // fall back to the default config file.
-      if (isEmpty(config) && Helpers.fileExists(this.paths.config)) {
-        config = Helpers.loadYAML(this.paths.config);
+      if (isEmpty(config) && helpers.fileExists(this.paths.config)) {
+        config = helpers.loadYAML(this.paths.config);
       }
 
       config = merge(config, yargs.argv);
@@ -481,7 +483,7 @@ var Project = function () {
       }
 
       if (!parsed.db.prefix) {
-        parsed.db.prefix = Helpers.randomString(DB_PREFIX_LENGTH) + '_';
+        parsed.db.prefix = helpers.randomString(DB_PREFIX_LENGTH) + '_';
       }
 
       return parsed;
@@ -511,10 +513,10 @@ var Project = function () {
           var type = _step.value;
 
           if (!parsed.secret[type + '_key']) {
-            parsed.secret[type + '_key'] = Helpers.randomString(SECRET_KEY_LENGTH, 'base64');
+            parsed.secret[type + '_key'] = helpers.randomString(SECRET_KEY_LENGTH, 'base64');
           }
           if (!parsed.secret[type + '_salt']) {
-            parsed.secret[type + '_salt'] = Helpers.randomString(SECRET_SALT_LENGTH, 'base64');
+            parsed.secret[type + '_salt'] = helpers.randomString(SECRET_SALT_LENGTH, 'base64');
           }
         }
       } catch (err) {
@@ -550,12 +552,12 @@ var Project = function () {
     value: function createConfigFile() {
       var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-      if (force && Helpers.fileExists(this.paths.config)) {
+      if (force && helpers.fileExists(this.paths.config)) {
         fs.removeSync(this.paths.config);
       }
 
-      if (!Helpers.fileExists(this.paths.config)) {
-        Helpers.writeYAML(this.paths.config, this.defaultConfig);
+      if (!helpers.fileExists(this.paths.config)) {
+        helpers.writeYAML(this.paths.config, this.defaultConfig);
       }
     }
   }, {
@@ -698,6 +700,8 @@ var Project = function () {
 
   return Project;
 }();
+
+var Project$1 = mock(Project);
 
 /**
  * @module
@@ -875,7 +879,7 @@ var Log = function () {
       // Check if a valid style was specified.
       if (style && output[style]) {
         // Bail if the style is 'debug' and debugging is disabled.
-        if (style === 'debug' && !Project.debug) {
+        if (style === 'debug' && !Project$1.debug) {
           return;
         }
 
@@ -899,21 +903,21 @@ var Log = function () {
 var log = new Log();
 
 var configDisplayCommand = {
-	command: 'config display',
-	describe: 'parse and display project settings',
-	builder: {},
-	handler: function handler() {
-		log.message(Project.config);
-	}
+  command: 'config display',
+  describe: 'parse and display project settings',
+  builder: {},
+  handler: function handler() {
+    log.message(Project$1.config);
+  }
 };
 
 var configCreateCommand = {
-	command: 'config create',
-	describe: 'create a new project.yml file with the default settings',
-	builder: {},
-	handler: function handler(argv) {
-		Project.createConfigFile(argv.force);
-	}
+  command: 'config create',
+  describe: 'create a new project.yml file with the default settings',
+  builder: {},
+  handler: function handler(argv) {
+    Project$1.createConfigFile(argv.force);
+  }
 };
 
 /**
@@ -928,13 +932,15 @@ var Deps = function Deps() {
   _classCallCheck(this, Deps);
 };
 
+var deps = mock(Deps);
+
 var depsInstallCommand = {
-	command: 'deps install [--type=all|npm|bower|composer]',
-	describe: 'install project, theme, and plugin dependencies',
-	builder: {},
-	handler: function handler(argv) {
-		Deps.install(argv.type);
-	}
+  command: 'deps install [--type=all|npm|bower|composer]',
+  describe: 'install project, theme, and plugin dependencies',
+  builder: {},
+  handler: function handler(argv) {
+    deps.install(argv.type);
+  }
 };
 
 /**
@@ -1041,7 +1047,7 @@ var Scaffold = function (_Project) {
         }
       });
 
-      if (!Helpers.fileExists(filePath)) {
+      if (!helpers.fileExists(filePath)) {
         fs.writeFileSync(filePath, contents);
       }
     }
@@ -1053,7 +1059,7 @@ var Scaffold = function (_Project) {
   }, {
     key: 'maybeCopyPluginZips',
     value: function maybeCopyPluginZips() {
-      if (!Helpers.directoryExists(this.paths.plugins)) {
+      if (!helpers.directoryExists(this.paths.plugins)) {
         return;
       }
 
@@ -1085,7 +1091,7 @@ var Scaffold = function (_Project) {
       var _iteratorError = undefined;
 
       try {
-        for (var _iterator = _getIterator(Helpers.readDir(pluginZipsDir)), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        for (var _iterator = _getIterator(helpers.readDir(pluginZipsDir)), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var val = _step.value;
 
           this.templateData.pluginZips.push({
@@ -1124,7 +1130,7 @@ var Scaffold = function (_Project) {
 
       log.message('Checking for Git repo...');
 
-      var dirExists = Helpers.directoryExists(path.join(this.paths.project, '.git'));
+      var dirExists = helpers.directoryExists(path.join(this.paths.project, '.git'));
 
       if (dirExists) {
         log.ok('Repo exists.');
@@ -1160,7 +1166,7 @@ var Scaffold = function (_Project) {
     value: function initDevLib() {
       log.message('Checking for wp-dev-lib submodule...');
 
-      var dirExists = Helpers.directoryExists(path.join(this.paths.project, 'dev-lib'));
+      var dirExists = helpers.directoryExists(path.join(this.paths.project, 'dev-lib'));
 
       if (dirExists) {
         log.ok('Submodule exists.');
@@ -1189,7 +1195,7 @@ var Scaffold = function (_Project) {
     value: function initProject() {
       log.message('Checking for Bedrock...');
 
-      var dirExists = Helpers.directoryExists(path.join(this.paths.project, 'htdocs'));
+      var dirExists = helpers.directoryExists(path.join(this.paths.project, 'htdocs'));
 
       if (dirExists) {
         log.ok('Bedrock exists');
@@ -1241,7 +1247,7 @@ var Scaffold = function (_Project) {
 
       var basePath = this.getBasePath('plugin');
 
-      if (Helpers.directoryExists(basePath)) {
+      if (helpers.directoryExists(basePath)) {
         log.ok('Plugin exists.');
 
         return false;
@@ -1291,7 +1297,7 @@ var Scaffold = function (_Project) {
 
       var basePath = this.getBasePath('theme');
 
-      if (Helpers.directoryExists(basePath)) {
+      if (helpers.directoryExists(basePath)) {
         log.ok('Child theme exists.');
 
         return true;
@@ -1391,7 +1397,7 @@ var Scaffold = function (_Project) {
 
         return true;
       } catch (error) {
-        if (logError && !_.isEmpty(error)) {
+        if (logError && !isEmpty(error)) {
           log.error(error);
         }
 
@@ -1423,7 +1429,7 @@ var Scaffold = function (_Project) {
 
       // We convert the type to camel case so we don't run into issues if we
       // want to use a type like `type-name` or `type_name`.
-      var base = basePaths[_.camelCase(type)];
+      var base = basePaths[camelCase(type)];
 
       if (!base) {
         base = '';
@@ -1449,7 +1455,7 @@ var Scaffold = function (_Project) {
         theme: 'assets/source'
       };
 
-      var assetsPath = assetsPaths[_.camelCase(type)];
+      var assetsPath = assetsPaths[camelCase(type)];
 
       if (!assetsPath) {
         assetsPath = '';
@@ -1552,7 +1558,7 @@ var Scaffold = function (_Project) {
       var source = path.join(this.paths.assets, type, dir);
       var dest = path.join(this.getAssetsPath(type), dir);
 
-      if (!Helpers.directoryExists(source)) {
+      if (!helpers.directoryExists(source)) {
         log.error(source + ' is not a valid assets folder.');
 
         return false;
@@ -1562,9 +1568,9 @@ var Scaffold = function (_Project) {
         fs.mkdirpSync(dest);
         fs.copySync(source, dest);
 
-        log.ok(_.startCase(type) + ' assets created.');
+        log.ok(startCase(type) + ' assets created.');
       } catch (error) {
-        if (!_.isEmpty(error)) {
+        if (!isEmpty(error)) {
           log.error(error);
         }
       }
@@ -1607,14 +1613,14 @@ var Scaffold = function (_Project) {
 
           log.message('Checking for ' + destBase + '...');
 
-          if (Helpers.symlinkExists(dest)) {
+          if (helpers.symlinkExists(dest)) {
             log.ok(dest + ' exists.');
           } else {
             try {
               fs.ensureSymlinkSync(dest, source);
               log.ok(dest + ' created.');
             } catch (error) {
-              if (!_.isEmpty(error)) {
+              if (!isEmpty(error)) {
                 log.error(error);
               }
             }
@@ -1667,7 +1673,7 @@ var Scaffold = function (_Project) {
           try {
             fs.removeSync(file);
           } catch (error) {
-            if (!_.isEmpty(error)) {
+            if (!isEmpty(error)) {
               log.error(error);
             }
           }
@@ -1702,15 +1708,15 @@ var Scaffold = function (_Project) {
 
       var source = path.join(this.paths.templates, type);
 
-      if (!Helpers.directoryExists(source)) {
+      if (!helpers.directoryExists(source)) {
         log.error(source + ' is not a valid template directory');
 
         return false;
       }
 
-      var dirs = Helpers.readDir(source);
+      var dirs = helpers.readDir(source);
 
-      if (!_.isEmpty(dirs)) {
+      if (!isEmpty(dirs)) {
         var _iteratorNormalCompletion6 = true;
         var _didIteratorError6 = false;
         var _iteratorError6 = undefined;
@@ -1766,7 +1772,7 @@ var Scaffold = function (_Project) {
       var base = this.getBasePath(type);
       var dest = path.join(base, file);
 
-      if (Helpers.fileExists(dest)) {
+      if (helpers.fileExists(dest)) {
         log.ok(file + ' exists.');
 
         return true;
@@ -1782,7 +1788,7 @@ var Scaffold = function (_Project) {
 
         log.ok(file + ' created.');
       } catch (error) {
-        if (!_.isEmpty(error)) {
+        if (!isEmpty(error)) {
           log.error(error);
 
           return false;
@@ -1816,67 +1822,67 @@ var Scaffold = function (_Project) {
   }]);
 
   return Scaffold;
-}(Project);
+}(Project$1);
 
 var scaffold = mock(Scaffold);
 
 var pluginCreateTestsCommand = {
-	command: 'plugin create-tests',
-	describe: 'create plugin unit tests',
-	builder: {},
-	handler: function handler() {
-		scaffold.init();
-		scaffold.createPluginTests();
-	}
+  command: 'plugin create-tests',
+  describe: 'create plugin unit tests',
+  builder: {},
+  handler: function handler() {
+    scaffold.init();
+    scaffold.createPluginTests();
+  }
 };
 
 var pluginCreateCommand = {
-	command: 'plugin create',
-	describe: 'scaffold new plugin',
-	builder: {},
-	handler: function handler() {
-		scaffold.init();
-		scaffold.initPlugin();
-	}
+  command: 'plugin create',
+  describe: 'scaffold new plugin',
+  builder: {},
+  handler: function handler() {
+    scaffold.init();
+    scaffold.initPlugin();
+  }
 };
 
 var themeCreateTestsCommand = {
-	command: 'theme create-tests',
-	describe: 'create theme unit tests',
-	builder: {},
-	handler: function handler() {
-		scaffold.init();
-		scaffold.createThemeTests();
-	}
+  command: 'theme create-tests',
+  describe: 'create theme unit tests',
+  builder: {},
+  handler: function handler() {
+    scaffold.init();
+    scaffold.createThemeTests();
+  }
 };
 
 var themeCreateCommand = {
-	command: 'theme create',
-	describe: 'scaffold new child theme',
-	builder: {},
-	handler: function handler() {
-		scaffold.init();
-		scaffold.initTheme();
-	}
+  command: 'theme create',
+  describe: 'scaffold new child theme',
+  builder: {},
+  handler: function handler() {
+    scaffold.init();
+    scaffold.initTheme();
+  }
 };
 
 var projectCreateCommand = {
-	command: 'project create',
-	describe: 'scaffold new project',
-	builder: {},
-	handler: function handler() {
-		scaffold.init();
-		scaffold.createProject();
-	}
+  command: 'project create',
+  describe: 'scaffold new project',
+  builder: {},
+  handler: function handler() {
+    scaffold.init();
+    scaffold.createProject();
+  }
 };
 
 var wpInstallCommand = {
-	command: 'wp install',
-	describe: 'install WordPress',
-	builder: {},
-	handler: function handler() {
-		log.error('This feature is not ready');
-	}
+  command: 'wp install',
+  describe: 'install WordPress',
+  builder: {},
+  handler: function handler() {
+    log.error('This feature is not ready');
+  }
 };
 
 /**
