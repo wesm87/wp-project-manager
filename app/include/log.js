@@ -2,7 +2,7 @@
  * @module
  */
 
-import _      from 'lodash';
+import { isEmpty, isObjectLike, keys } from 'lodash';
 import colors from 'colors';
 
 // import { mock } from 'mocktail';
@@ -22,135 +22,132 @@ const JSON_TAB_WIDTH = 2;
  */
 class Log {
 
-	/**
-	 * Message styles.
-	 *
-	 * @since 0.4.0
-	 *
-	 * @member {Object}
-	 */
-	get styles() {
-		return {
-			ok:      [ 'green' ],
-			info:    [ 'cyan' ],
-			warn:    [ 'yellow', 'underline' ],
-			error:   [ 'red', 'underline' ],
-			debug:   [ 'cyan', 'underline' ],
-			message: [ 'reset' ],
-		};
-	}
+  /**
+   * Message styles.
+   *
+   * @since 0.4.0
+   *
+   * @member {Object}
+   */
+  get styles() {
+    return {
+      ok: ['green'],
+      info: ['cyan'],
+      warn: ['yellow', 'underline'],
+      error: ['red', 'underline'],
+      debug: ['cyan', 'underline'],
+      message: ['reset'],
+    };
+  }
 
-	/**
-	 * Message icons. Includes plain-text fallbacks for Windows, since the CMD
-	 * prompt supports a very limited character set.
-	 *
-	 * @since 0.4.0
-	 *
-	 * @see https://github.com/sindresorhus/log-symbols
-	 *
-	 * @member {Object}
-	 */
-	get icons() {
+  /**
+   * Message icons. Includes plain-text fallbacks for Windows, since the CMD
+   * prompt supports a very limited character set.
+   *
+   * @since 0.4.0
+   *
+   * @see https://github.com/sindresorhus/log-symbols
+   *
+   * @member {Object}
+   */
+  get icons() {
+    if (process.platform === 'win32') {
+      return {
+        ok: '√',
+        info: 'i',
+        warn: '‼',
+        error: '×',
+        debug: '*',
+      };
+    }
 
-		if ( 'win32' === process.platform ) {
-			return {
-				ok:    '√',
-				info:  'i',
-				warn:  '‼',
-				error: '×',
-				debug: '*',
-			};
-		}
+    return {
+      ok: '✔',
+      info: 'ℹ',
+      warn: '⚠',
+      error: '✘',
+      debug: '✱',
+    };
+  }
 
-		return {
-			ok:    '✔',
-			info:  'ℹ',
-			warn:  '⚠',
-			error: '✘',
-			debug: '✱',
-		};
-	}
+  /**
+   * Class constructor.
+   *
+   * @since 0.4.0
+   */
+  constructor() {
+    if (!this.instance) {
+      this.init();
+    }
 
-	/**
-	 * Class constructor.
-	 *
-	 * @since 0.4.0
-	 */
-	constructor() {
+    return this.instance;
+  }
 
-		if ( ! this.instance ) {
-			this.init();
-		}
+  /**
+   * Initialize class and store the class instance.
+   *
+   * @since 0.5.0
+   */
+  init() {
+    // Set the colors theme based on our styles.
+    colors.setTheme(this.styles);
 
-		return this.instance;
-	}
+    // Automatically create methods for each style.
+    for (const style of keys(this.styles)) {
+      this[style] = message => this._log(message, style);
+    }
 
-	/**
-	 * Initialize class and store the class instance.
-	 *
-	 * @since 0.5.0
-	 */
-	init() {
+    this.instance = this;
+  }
 
-		// Set the colors theme based on our styles.
-		colors.setTheme( this.styles );
+  /**
+   * Logs a message with an optional style.
+   *
+   * If message is an object, array, function, class, etc. it is converted to
+   * a string using `JSON.stringify()`.
+   *
+   * @since 0.4.0
+   *
+   * @access private
+   *
+   * @param {*}      message The message to log.
+   * @param {String} [style] A style to apply to the message.
+   */
+  _log(message, style) {
+    let output = message;
 
-		// Automatically create methods for each style.
-		for ( const style of _.keys( this.styles ) ) {
-			this[ style ] = ( message ) => this._log( message, style );
-		}
+    // Convert object-like messages to string.
+    if (isObjectLike(output)) {
+      output = JSON.stringify(output, null, JSON_TAB_WIDTH);
+    }
 
-		this.instance = this;
-	}
+    // Don't log anything if message is empty.
+    if (isEmpty(output)) {
+      return;
+    }
 
-	/**
-	 * Logs a message with an optional style.
-	 *
-	 * If message is an object, array, function, class, etc. it is converted to
-	 * a string using `JSON.stringify()`.
-	 *
-	 * @since 0.4.0
-	 *
-	 * @access private
-	 *
-	 * @param {*}      message The message to log.
-	 * @param {String} [style] A style to apply to the message.
-	 */
-	_log( message, style ) {
+    // Make sure the message is a string.
+    output = String(output);
 
-		// Convert object-like messages to string.
-		if ( _.isObjectLike( message ) ) {
-			message = JSON.stringify( message, null, JSON_TAB_WIDTH );
-		}
+    // Check if a valid style was specified.
+    if (style && output[style]) {
+      // Bail if the style is 'debug' and debugging is disabled.
+      if (style === 'debug' && !project.debug) {
+        return;
+      }
 
-		// Don't log anything if message is empty.
-		if ( _.isEmpty( message ) ) {
-			return;
-		}
+      // If the style has an associated icon, prepend it to the message.
+      if (this.icons[style]) {
+        output = `${this.icons[style]} ${output}`;
+      }
 
-		// Make sure the message is a string.
-		message = message.toString();
+      // Apply the style to the message.
+      output = output[style];
+    }
 
-		// Check if a valid style was specified.
-		if ( style && message[ style ] ) {
-
-			// Bail if the style is 'debug' and debugging is disabled.
-			if ( 'debug' === style && ! project.debug ) {
-				return;
-			}
-
-			// If the style has an associated icon, prepend it to the message.
-			if ( this.icons[ style ] ) {
-				message = `${ this.icons[ style ] } ${ message }`;
-			}
-
-			// Apply the style to the message.
-			message = message[ style ];
-		}
-
-		// Log the message.
-		console.log( message );
-	}
+    // Log the message.
+    console.log(output);
+  }
 }
 
 export default new Log();
