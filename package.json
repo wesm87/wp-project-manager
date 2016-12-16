@@ -1,7 +1,7 @@
 {
   "name": "wp-project-manager",
   "description": "A Node CLI tool that simplifies the process of setting up a new WordPress project and development environment.",
-  "version": "0.7.19",
+  "version": "0.7.20",
   "license": "MIT",
   "homepage": "https://github.com/wesm87/wp-project-manager",
   "repository": {
