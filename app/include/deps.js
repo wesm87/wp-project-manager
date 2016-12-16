@@ -11,4 +11,4 @@ class Deps {
 
 }
 
-export default mock( Deps );
+export default mock(Deps);

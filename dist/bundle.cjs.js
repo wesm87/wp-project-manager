@@ -3,7 +3,11 @@
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var yargs = _interopDefault(require('yargs'));
-var _ = _interopDefault(require('lodash'));
+var _JSON$stringify = _interopDefault(require('babel-runtime/core-js/json/stringify'));
+var _getIterator = _interopDefault(require('babel-runtime/core-js/get-iterator'));
+var _classCallCheck = _interopDefault(require('babel-runtime/helpers/classCallCheck'));
+var _createClass = _interopDefault(require('babel-runtime/helpers/createClass'));
+var lodash = require('lodash');
 var colors = _interopDefault(require('colors'));
 var fs = _interopDefault(require('fs-extra'));
 var path = _interopDefault(require('path'));
@@ -11,101 +15,19 @@ var upsearch = _interopDefault(require('utils-upsearch'));
 var mocktail = require('mocktail');
 var YAML = _interopDefault(require('js-yaml'));
 var crypto = _interopDefault(require('crypto'));
+var _Set = _interopDefault(require('babel-runtime/core-js/set'));
+var _Map = _interopDefault(require('babel-runtime/core-js/map'));
+var _slicedToArray = _interopDefault(require('babel-runtime/helpers/slicedToArray'));
+var _Object$getPrototypeOf = _interopDefault(require('babel-runtime/core-js/object/get-prototype-of'));
+var _possibleConstructorReturn = _interopDefault(require('babel-runtime/helpers/possibleConstructorReturn'));
+var _inherits = _interopDefault(require('babel-runtime/helpers/inherits'));
 var os = _interopDefault(require('os'));
 var cp = _interopDefault(require('child_process'));
 var mustache = _interopDefault(require('mustache'));
 
-var classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
-
-var createClass = function () {
-  function defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-
-  return function (Constructor, protoProps, staticProps) {
-    if (protoProps) defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) defineProperties(Constructor, staticProps);
-    return Constructor;
-  };
-}();
-
-var inherits = function (subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-  }
-
-  subClass.prototype = Object.create(superClass && superClass.prototype, {
-    constructor: {
-      value: subClass,
-      enumerable: false,
-      writable: true,
-      configurable: true
-    }
-  });
-  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-};
-
-var possibleConstructorReturn = function (self, call) {
-  if (!self) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-
-  return call && (typeof call === "object" || typeof call === "function") ? call : self;
-};
-
-var slicedToArray = function () {
-  function sliceIterator(arr, i) {
-    var _arr = [];
-    var _n = true;
-    var _d = false;
-    var _e = undefined;
-
-    try {
-      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-        _arr.push(_s.value);
-
-        if (i && _arr.length === i) break;
-      }
-    } catch (err) {
-      _d = true;
-      _e = err;
-    } finally {
-      try {
-        if (!_n && _i["return"]) _i["return"]();
-      } finally {
-        if (_d) throw _e;
-      }
-    }
-
-    return _arr;
-  }
-
-  return function (arr, i) {
-    if (Array.isArray(arr)) {
-      return arr;
-    } else if (Symbol.iterator in Object(arr)) {
-      return sliceIterator(arr, i);
-    } else {
-      throw new TypeError("Invalid attempt to destructure non-iterable instance");
-    }
-  };
-}();
-
 /**
  * @module
  */
-
-// eslint-disable-line no-shadow
 
 /**
  * Ratios used when converting numbers from one format to another.
@@ -115,8 +37,8 @@ var slicedToArray = function () {
  * @type {Object}
  */
 var RATIOS = {
-	BYTES_TO_HEX: 0.5,
-	BYTES_TO_BASE64: 0.75
+  BYTES_TO_HEX: 0.5,
+  BYTES_TO_BASE64: 0.75
 };
 
 /**
@@ -124,217 +46,217 @@ var RATIOS = {
  */
 
 var Helpers = function () {
-	function Helpers() {
-		classCallCheck(this, Helpers);
-	}
+  function Helpers() {
+    _classCallCheck(this, Helpers);
+  }
 
-	createClass(Helpers, null, [{
-		key: 'pathExists',
-
-
-		/**
-   * Checks if the specified file or directory exists.
-   *
-   * @since 0.1.0
-   * @since 0.2.0 Added 'symlink' type.
-   *
-   * @param  {String} path The path to check.
-   * @param  {String} type Optional. A type to check the path against.
-   * @return {Boolean}     True if path exists and is `type`; false if not.
-   */
-		value: function pathExists(path) {
-			var type = arguments.length <= 1 || arguments[1] === undefined ? 'any' : arguments[1];
-
-			try {
-				var info = fs.lstatSync(path);
-
-				switch (type) {
-					case 'file':
-						return info.isFile();
-					case 'folder':
-					case 'directory':
-						return info.isDirectory();
-					case 'link':
-					case 'symlink':
-						return info.isSymbolicLink();
-					default:
-						return !!info;
-				}
-			} catch (error) {
-				return false;
-			}
-		}
-
-		/**
-   * Checks if the specified file exists.
-   *
-   * @since 0.1.0
-   *
-   * @param  {String} path The path to the file to check.
-   * @return {Boolean}     True the file exists; false if not.
-   */
-
-	}, {
-		key: 'fileExists',
-		value: function fileExists(path) {
-			return this.pathExists(path, 'file');
-		}
-
-		/**
-   * Checks if the specified directory exists.
-   *
-   * @since 0.1.0
-   *
-   * @param  {String} path The path to the directory to check.
-   * @return {Boolean}     True the directory exists; false if not.
-   */
-
-	}, {
-		key: 'directoryExists',
-		value: function directoryExists(path) {
-			return this.pathExists(path, 'directory');
-		}
-
-		/**
-   * Checks if the specified symbolic link exists.
-   *
-   * @since 0.2.0
-   *
-   * @param  {String} path The path to the symbolic link to check.
-   * @return {Boolean}     True the symbolic link exists; false if not.
-   */
-
-	}, {
-		key: 'symlinkExists',
-		value: function symlinkExists(path) {
-			return this.pathExists(path, 'symlink');
-		}
-
-		/**
-   * Takes a directory path and returns an array containing the contents of
-   * the directory.
-   *
-   * @since 0.4.0
-   *
-   * @param  {String}  dir                   The directory path.
-   * @param  {Boolean} [includeHidden=false] If true, hidden files are included.
-   * @return {Array}  The directory contents.
-   */
-
-	}, {
-		key: 'readDir',
-		value: function readDir(dir) {
-			var includeHidden = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+  _createClass(Helpers, null, [{
+    key: 'pathExists',
 
 
-			try {
-				var files = fs.readdirSync(dir);
+    /**
+     * Checks if the specified file or directory exists.
+     *
+     * @since 0.1.0
+     * @since 0.2.0 Added 'symlink' type.
+     *
+     * @param  {String} path The path to check.
+     * @param  {String} type Optional. A type to check the path against.
+     * @return {Boolean}     True if path exists and is `type`; false if not.
+     */
+    value: function pathExists(path$$1) {
+      var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'any';
 
-				if (!includeHidden) {
+      try {
+        var info = fs.lstatSync(path$$1);
 
-					// eslint-disable-next-line no-magic-numbers
-					files = files.filter(function (file) {
-						return 0 !== file.indexOf('.');
-					});
-				}
+        switch (type) {
+          case 'file':
+            {
+              return info.isFile();
+            }
+          case 'folder':
+          case 'directory':
+            {
+              return info.isDirectory();
+            }
+          case 'link':
+          case 'symlink':
+            {
+              return info.isSymbolicLink();
+            }
+          default:
+            {
+              return !!info;
+            }
+        }
+      } catch (error) {
+        return false;
+      }
+    }
 
-				return files;
-			} catch (error) {
-				return [];
-			}
-		}
+    /**
+     * Checks if the specified file exists.
+     *
+     * @since 0.1.0
+     *
+     * @param  {String} path The path to the file to check.
+     * @return {Boolean}     True the file exists; false if not.
+     */
 
-		/**
-   * Tries to load a YAML config file and parse it into JSON.
-   *
-   * @since 0.1.0
-   *
-   * @param  {String} filePath The path to the YAML file.
-   * @return {Object}          The parsed results. If the file is blank or
-   *                           doesn't exist, we return an empty object.
-   */
+  }, {
+    key: 'fileExists',
+    value: function fileExists(path$$1) {
+      return this.pathExists(path$$1, 'file');
+    }
 
-	}, {
-		key: 'loadYAML',
-		value: function loadYAML(filePath) {
+    /**
+     * Checks if the specified directory exists.
+     *
+     * @since 0.1.0
+     *
+     * @param  {String} path The path to the directory to check.
+     * @return {Boolean}     True the directory exists; false if not.
+     */
 
-			try {
+  }, {
+    key: 'directoryExists',
+    value: function directoryExists(path$$1) {
+      return this.pathExists(path$$1, 'directory');
+    }
 
-				// Get file contents as JSON.
-				var json = YAML.safeLoad(fs.readFileSync(filePath, 'utf8'));
+    /**
+     * Checks if the specified symbolic link exists.
+     *
+     * @since 0.2.0
+     *
+     * @param  {String} path The path to the symbolic link to check.
+     * @return {Boolean}     True the symbolic link exists; false if not.
+     */
 
-				// Make sure the config isn't empty.
-				if (json) {
-					return json;
-				}
-			} catch (error) {
-				log.error(error);
-			}
+  }, {
+    key: 'symlinkExists',
+    value: function symlinkExists(path$$1) {
+      return this.pathExists(path$$1, 'symlink');
+    }
 
-			// If the file doesn't exist or is empty, return an empty object.
-			return {};
-		}
+    /**
+     * Takes a directory path and returns an array containing the contents of
+     * the directory.
+     *
+     * @since 0.4.0
+     *
+     * @param  {String}  dir                   The directory path.
+     * @param  {Boolean} [includeHidden=false] If true, hidden files are included.
+     * @return {Array}  The directory contents.
+     */
 
-		/**
-   * Takes a JSON string or object, parses it into YAML, and writes to a file.
-   *
-   * @since 0.3.0
-   *
-   * @param {String} filePath The path to the file to write to.
-   * @param {Object} json     The JSON object to parse into YAML.
-   */
+  }, {
+    key: 'readDir',
+    value: function readDir(dir) {
+      var includeHidden = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-	}, {
-		key: 'writeYAML',
-		value: function writeYAML(filePath, json) {
+      try {
+        var files = fs.readdirSync(dir);
 
-			try {
+        if (!includeHidden) {
+          files = files.filter(function (file) {
+            return !file.startsWith('.');
+          });
+        }
 
-				// Convert JSON to YAML.
-				var yaml = YAML.safeDump(json, { noCompatMode: true });
+        return files;
+      } catch (error) {
+        return [];
+      }
+    }
 
-				fs.writeFileSync(filePath, yaml);
-			} catch (error) {
-				log.error(error);
-			}
-		}
+    /**
+     * Tries to load a YAML config file and parse it into JSON.
+     *
+     * @since 0.1.0
+     *
+     * @param  {String} filePath The path to the YAML file.
+     * @return {Object}          The parsed results. If the file is blank or
+     *                           doesn't exist, we return an empty object.
+     */
 
-		/**
-   * Generates a random string in hexadecimal format.
-   *
-   * @since 0.1.0
-   *
-   * @param  {Number} strLen         The number of characters to include in the string.
-   * @param  {String} [format='hex'] The string format to use (hex, base64, etc).
-   * @return {String}                The randomly generated string.
-   */
+  }, {
+    key: 'loadYAML',
+    value: function loadYAML(filePath) {
+      try {
+        // Get file contents as JSON.
+        var json = YAML.safeLoad(fs.readFileSync(filePath, 'utf8'));
 
-	}, {
-		key: 'randomString',
-		value: function randomString(strLen) {
-			var format = arguments.length <= 1 || arguments[1] === undefined ? 'hex' : arguments[1];
+        // Make sure the config isn't empty.
+        if (json) {
+          return json;
+        }
+      } catch (error) {
+        log.error(error);
+      }
 
+      // If the file doesn't exist or is empty, return an empty object.
+      return {};
+    }
 
-			try {
+    /**
+     * Takes a JSON string or object, parses it into YAML, and writes to a file.
+     *
+     * @since 0.3.0
+     *
+     * @param {String} filePath The path to the file to write to.
+     * @param {Object} json     The JSON object to parse into YAML.
+     */
 
-				var numBytes = void 0;
+  }, {
+    key: 'writeYAML',
+    value: function writeYAML(filePath, json) {
+      try {
+        // Convert JSON to YAML.
+        var yaml = YAML.safeDump(json, { noCompatMode: true });
 
-				// Adjust number of bytes based on desired string format.
-				if ('hex' === format) {
-					numBytes = Math.ceil(strLen * RATIOS.BYTES_TO_HEX);
-				} else if ('base64' === format) {
-					numBytes = Math.ceil(strLen * RATIOS.BYTES_TO_BASE64);
-				}
+        fs.writeFileSync(filePath, yaml);
+      } catch (error) {
+        log.error(error);
+      }
+    }
 
-				return crypto.randomBytes(numBytes).toString(format).slice(0, strLen); // eslint-disable-line no-magic-numbers
-			} catch (error) {
-				log.error(error);
+    /**
+     * Generates a random string in hexadecimal format.
+     *
+     * @since 0.1.0
+     *
+     * @param  {Number} strLen         The number of characters to include in the string.
+     * @param  {String} [format='hex'] The string format to use (hex, base64, etc).
+     * @return {String}                The randomly generated string.
+     */
 
-				return '';
-			}
-		}
-	}]);
-	return Helpers;
+  }, {
+    key: 'randomString',
+    value: function randomString(strLen) {
+      var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'hex';
+
+      try {
+        var numBytes = void 0;
+
+        // Adjust number of bytes based on desired string format.
+        if (format === 'hex') {
+          numBytes = Math.ceil(strLen * RATIOS.BYTES_TO_HEX);
+        } else if (format === 'base64') {
+          numBytes = Math.ceil(strLen * RATIOS.BYTES_TO_BASE64);
+        }
+
+        return crypto.randomBytes(numBytes).toString(format).slice(0, strLen);
+      } catch (error) {
+        log.error(error);
+
+        return '';
+      }
+    }
+  }]);
+
+  return Helpers;
 }();
 
 var helpers = mocktail.mock(Helpers);
@@ -343,11 +265,9 @@ var helpers = mocktail.mock(Helpers);
  * @module
  */
 
-if (!_.upperSnakeCase) {
-	_.upperSnakeCase = function (string) {
-		return _.startCase(string).replace(/ /g, '_');
-	};
-}
+var upperSnakeCase = function upperSnakeCase(string) {
+  return lodash.startCase(string).replace(/ /g, '_');
+};
 
 /**
  * The number of characters to use when generating a database prefix.
@@ -375,412 +295,414 @@ var SECRET_SALT_LENGTH = 64;
  */
 
 var Project = function () {
-	function Project() {
-		classCallCheck(this, Project);
-	}
-
-	createClass(Project, null, [{
-		key: 'loadConfig',
-
-
-		/**
-   * Loads and parses a YAML config file. If no file is passed, or the
-   * specified file doesn't exist or is empty, the default config file path
-   * is used.
-   *
-   * @since 0.1.0
-   *
-   * @param  {String} file The path to the config file.
-   * @return {Object}      The resulting config object.
-   */
-		value: function loadConfig() {
-			var file = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
-
-
-			var config = void 0;
-
-			// Try to load the config file if one was passed and it exists.
-			if (file && helpers.fileExists(file)) {
-				config = helpers.loadYAML(file);
-			}
-
-			// If we don't have a config object (or the config object is empty)
-			// fall back to the default config file.
-			if (_.isEmpty(config) && helpers.fileExists(this.paths.config)) {
-				config = helpers.loadYAML(this.paths.config);
-			}
-
-			config = _.merge(config, yargs.argv);
-
-			return this.parseConfig(config);
-		}
-
-		/**
-   * Parses the project config. Missing values are filled in from the default
-   * config object.
-   *
-   * @since 0.1.0
-   *
-   * @param  {Object} config The config object to parse.
-   * @return {Object}        The parsed config object.
-   */
-
-	}, {
-		key: 'parseConfig',
-		value: function parseConfig(config) {
-			var _this = this;
-
-			// Merge config with defaults.
-			config = _.pickBy(_.defaultsDeep(config, this.defaultConfig), function (value, key) {
-				return _.has(_this.defaultConfig, key);
-			});
-
-			// Fill in any config values that aren't set.
-			config = this.ensureProjectConfig(config);
-			config = this.ensurePluginConfig(config);
-			config = this.ensureThemeConfig(config);
-			config = this.ensureDatabaseConfig(config);
-			config = this.ensureSecretConfig(config);
-
-			// Set internal config values.
-			config.project.folder = path.basename(this.paths.project);
-			config.project.namespace = _.upperSnakeCase(config.project.title);
-
-			config.plugin.id = _.snakeCase(config.plugin.name);
-			config.plugin.class = _.upperSnakeCase(config.plugin.name);
-			config.plugin.namespace = config.project.namespace || config.plugin.class;
-			config.plugin.namespace = config.plugin.namespace + '\\Plugin';
-
-			config.theme.id = _.snakeCase(config.theme.name);
-			config.theme.class = _.upperSnakeCase(config.theme.name);
-			config.theme.namespace = config.project.namespace || config.theme.class;
-			config.theme.namespace = config.theme.namespace + '\\Theme';
-
-			// Return the updated config settings.
-			return config;
-		}
-
-		/**
-   * Fills in any missing project settings with their default values.
-   *
-   * @since 0.5.0
-   *
-   * @param  {Object} config The current config object.
-   * @return {Object}        The updated config object.
-   */
-
-	}, {
-		key: 'ensureProjectConfig',
-		value: function ensureProjectConfig(config) {
-
-			if (!config.project.title && config.project.slug) {
-				config.project.title = _.startCase(config.project.slug);
-			}
-
-			if (!config.project.slug && config.project.title) {
-				config.project.slug = _.kebabCase(config.project.title);
-			}
-
-			if (!config.project.url) {
-				config.project.url = config.project.slug + '.dev';
-			}
-
-			return config;
-		}
-
-		/**
-   * Fills in any missing plugin settings with their default values.
-   *
-   * @since 0.5.0
-   *
-   * @param  {Object} config The current config object.
-   * @return {Object}        The updated config object.
-   */
-
-	}, {
-		key: 'ensurePluginConfig',
-		value: function ensurePluginConfig(config) {
-
-			if (!config.plugin.name) {
-				if (config.plugin.slug) {
-					config.plugin.name = _.startCase(config.plugin.slug);
-				} else {
-					config.plugin.name = config.project.title;
-				}
-			}
-
-			if (!config.plugin.slug) {
-				config.plugin.slug = _.kebabCase(config.plugin.name);
-			}
-
-			return config;
-		}
-
-		/**
-   * Fills in any missing theme settings with their default values.
-   *
-   * @since 0.5.0
-   *
-   * @param  {Object} config The current config object.
-   * @return {Object}        The updated config object.
-   */
-
-	}, {
-		key: 'ensureThemeConfig',
-		value: function ensureThemeConfig(config) {
-
-			if (!config.theme.name) {
-				if (config.theme.slug) {
-					config.theme.name = _.startCase(config.theme.slug);
-				} else {
-					config.theme.name = config.project.title;
-				}
-			}
-
-			if (!config.theme.slug) {
-				config.theme.slug = _.kebabCase(config.theme.name);
-			}
-
-			return config;
-		}
-
-		/**
-   * Fills in any missing database settings with their default values.
-   *
-   * @since 0.5.0
-   *
-   * @param  {Object} config The current config object.
-   * @return {Object}        The updated config object.
-   */
-
-	}, {
-		key: 'ensureDatabaseConfig',
-		value: function ensureDatabaseConfig(config) {
-
-			if (!config.db.name) {
-				config.db.name = config.project.slug;
-			}
-
-			if (!config.db.prefix) {
-				config.db.prefix = helpers.randomString(DB_PREFIX_LENGTH) + '_';
-			}
-
-			return config;
-		}
-
-		/**
-   * Fills in any missing secret key / salts with their default values.
-   *
-   * @since 0.5.0
-   *
-   * @param  {Object} config The current config object.
-   * @return {Object}        The updated config object.
-   */
-
-	}, {
-		key: 'ensureSecretConfig',
-		value: function ensureSecretConfig(config) {
-
-			var types = ['auth', 'secure_auth', 'logged_in', 'nonce'];
-
-			var _iteratorNormalCompletion = true;
-			var _didIteratorError = false;
-			var _iteratorError = undefined;
-
-			try {
-				for (var _iterator = types[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-					var type = _step.value;
-
-					if (!config.secret[type + '_key']) {
-						config.secret[type + '_key'] = helpers.randomString(SECRET_KEY_LENGTH, 'base64');
-					}
-					if (!config.secret[type + '_salt']) {
-						config.secret[type + '_salt'] = helpers.randomString(SECRET_SALT_LENGTH, 'base64');
-					}
-				}
-			} catch (err) {
-				_didIteratorError = true;
-				_iteratorError = err;
-			} finally {
-				try {
-					if (!_iteratorNormalCompletion && _iterator.return) {
-						_iterator.return();
-					}
-				} finally {
-					if (_didIteratorError) {
-						throw _iteratorError;
-					}
-				}
-			}
-
-			return config;
-		}
-
-		/**
-   * Creates a new `project.yml` file with the default settings.
-   *
-   * @since 0.3.0
-   *
-   * @param {Boolean} [force=false] If true and a config file already exists,
-   *                                it will be deleted and a new file will be
-   *                                created.
-   */
-
-	}, {
-		key: 'createConfigFile',
-		value: function createConfigFile() {
-			var force = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
-
-
-			if (force && helpers.fileExists(this.paths.config)) {
-				fs.removeSync(this.paths.config);
-			}
-
-			if (!helpers.fileExists(this.paths.config)) {
-				helpers.writeYAML(this.paths.config, this.defaultConfig);
-			}
-		}
-	}, {
-		key: 'paths',
-
-
-		/**
-   * Gets project paths.
-   *
-   * @since 0.3.0
-   *
-   * @return {Object}
-   */
-		get: function get() {
-
-			if (!this._paths) {
-
-				var rootPath = path.join(__dirname, '..');
-
-				this._paths = {
-					root: rootPath,
-					cwd: process.cwd(),
-					project: process.cwd(),
-					assets: path.join(rootPath, 'project-files', 'assets'),
-					templates: path.join(rootPath, 'project-files', 'templates'),
-					plugins: path.join(rootPath, 'project-files', 'plugin-zips'),
-					test: path.join(rootPath, 'test'),
-					config: upsearch.sync('project.yml')
-				};
-
-				if (this._paths.root === this._paths.project) {
-					this._paths.project = path.join(this._paths.root, '_test-project');
-				}
-
-				if (!this._paths.config) {
-					this._paths.config = path.join(this._paths.project, 'project.yml');
-				}
-			}
-
-			return this._paths;
-		}
-
-		/**
-   * Gets config.
-   *
-   * @since 0.1.0
-   *
-   * @return {Object}
-   */
-
-	}, {
-		key: 'config',
-		get: function get() {
-
-			if (!this._config) {
-				this._config = this.loadConfig();
-			}
-
-			return this._config;
-		}
-
-		/**
-   * Sets config.
-   *
-   * @since 0.1.0
-   *
-   * @param {Object} config The new config settings.
-   */
-		,
-		set: function set(config) {
-			this._config = this.parseConfig(config);
-		}
-
-		/**
-   * Gets default config settings.
-   *
-   * @since 0.1.0
-   *
-   * @return {Object}
-   */
-
-	}, {
-		key: 'defaultConfig',
-		get: function get() {
-			return {
-				vvv: true,
-				debug: false,
-				token: '',
-				author: {
-					name: 'Your Name',
-					email: 'your-email@example.com',
-					website: 'http://your-website.example.com'
-				},
-				project: {
-					multisite: false,
-					title: '',
-					slug: '',
-					url: ''
-				},
-				repo: {
-					create: false,
-					url: ''
-				},
-				plugin: {
-					scaffold: true,
-					name: '',
-					slug: '',
-					description: ''
-				},
-				theme: {
-					scaffold: true,
-					name: '',
-					slug: '',
-					description: ''
-				},
-				admin: {
-					user: 'admin',
-					pass: 'admin_password',
-					email: 'admin@localhost.dev'
-				},
-				db: {
-					name: '',
-					user: 'external',
-					pass: 'external',
-					host: 'vvv.dev:3306',
-					root_user: 'root',
-					root_pass: 'root',
-					prefix: ''
-				},
-				secret: {
-					auth_key: '',
-					auth_salt: '',
-					secure_auth_key: '',
-					secure_auth_salt: '',
-					logged_in_key: '',
-					logged_in_salt: '',
-					nonce_key: '',
-					nonce_salt: ''
-				}
-			};
-		}
-	}]);
-	return Project;
+  function Project() {
+    _classCallCheck(this, Project);
+  }
+
+  _createClass(Project, null, [{
+    key: 'loadConfig',
+
+
+    /**
+     * Loads and parses a YAML config file. If no file is passed, or the
+     * specified file doesn't exist or is empty, the default config file path
+     * is used.
+     *
+     * @since 0.1.0
+     *
+     * @param  {String} file The path to the config file.
+     * @return {Object}      The resulting config object.
+     */
+    value: function loadConfig() {
+      var file = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+      var config = void 0;
+
+      // Try to load the config file if one was passed and it exists.
+      if (file && helpers.fileExists(file)) {
+        config = helpers.loadYAML(file);
+      }
+
+      // If we don't have a config object (or the config object is empty)
+      // fall back to the default config file.
+      if (lodash.isEmpty(config) && helpers.fileExists(this.paths.config)) {
+        config = helpers.loadYAML(this.paths.config);
+      }
+
+      config = lodash.merge(config, yargs.argv);
+
+      return this.parseConfig(config);
+    }
+
+    /**
+     * Parses the project config. Missing values are filled in from the default
+     * config object.
+     *
+     * @since 0.1.0
+     *
+     * @param  {Object} config The config object to parse.
+     * @return {Object}        The parsed config object.
+     */
+
+  }, {
+    key: 'parseConfig',
+    value: function parseConfig(config) {
+      var _this = this;
+
+      var parsed = config;
+
+      // Merge config with defaults.
+      parsed = lodash.pickBy(lodash.defaultsDeep(config, this.defaultConfig), function (value, key) {
+        return lodash.has(_this.defaultConfig, key);
+      });
+
+      // Fill in any config values that aren't set.
+      parsed = this.ensureProjectConfig(parsed);
+      parsed = this.ensurePluginConfig(parsed);
+      parsed = this.ensureThemeConfig(parsed);
+      parsed = this.ensureDatabaseConfig(parsed);
+      parsed = this.ensureSecretConfig(parsed);
+
+      // Set internal config values.
+      parsed.project.folder = path.basename(this.paths.project);
+      parsed.project.namespace = upperSnakeCase(parsed.project.title);
+
+      parsed.plugin.id = lodash.snakeCase(parsed.plugin.name);
+      parsed.plugin.class = upperSnakeCase(parsed.plugin.name);
+      parsed.plugin.namespace = parsed.project.namespace || parsed.plugin.class;
+      parsed.plugin.namespace = parsed.plugin.namespace + '\\Plugin';
+
+      parsed.theme.id = lodash.snakeCase(parsed.theme.name);
+      parsed.theme.class = upperSnakeCase(parsed.theme.name);
+      parsed.theme.namespace = parsed.project.namespace || parsed.theme.class;
+      parsed.theme.namespace = parsed.theme.namespace + '\\Theme';
+
+      // Return the updated config settings.
+      return parsed;
+    }
+
+    /**
+     * Fills in any missing project settings with their default values.
+     *
+     * @since 0.5.0
+     *
+     * @param  {Object} config The current config object.
+     * @return {Object}        The updated config object.
+     */
+
+  }, {
+    key: 'ensureProjectConfig',
+    value: function ensureProjectConfig(config) {
+      var parsed = config;
+
+      if (!parsed.project.title && parsed.project.slug) {
+        parsed.project.title = lodash.startCase(parsed.project.slug);
+      }
+
+      if (!parsed.project.slug && parsed.project.title) {
+        parsed.project.slug = lodash.kebabCase(parsed.project.title);
+      }
+
+      if (!parsed.project.url) {
+        parsed.project.url = parsed.project.slug + '.dev';
+      }
+
+      return parsed;
+    }
+
+    /**
+     * Fills in any missing plugin settings with their default values.
+     *
+     * @since 0.5.0
+     *
+     * @param  {Object} config The current config object.
+     * @return {Object}        The updated config object.
+     */
+
+  }, {
+    key: 'ensurePluginConfig',
+    value: function ensurePluginConfig(config) {
+      var parsed = config;
+
+      if (!parsed.plugin.name) {
+        if (parsed.plugin.slug) {
+          parsed.plugin.name = lodash.startCase(parsed.plugin.slug);
+        } else {
+          parsed.plugin.name = parsed.project.title;
+        }
+      }
+
+      if (!parsed.plugin.slug) {
+        parsed.plugin.slug = lodash.kebabCase(parsed.plugin.name);
+      }
+
+      return parsed;
+    }
+
+    /**
+     * Fills in any missing theme settings with their default values.
+     *
+     * @since 0.5.0
+     *
+     * @param  {Object} config The current config object.
+     * @return {Object}        The updated config object.
+     */
+
+  }, {
+    key: 'ensureThemeConfig',
+    value: function ensureThemeConfig(config) {
+      var parsed = config;
+
+      if (!parsed.theme.name) {
+        if (parsed.theme.slug) {
+          parsed.theme.name = lodash.startCase(parsed.theme.slug);
+        } else {
+          parsed.theme.name = parsed.project.title;
+        }
+      }
+
+      if (!parsed.theme.slug) {
+        parsed.theme.slug = parsed.theme.name;
+      }
+
+      return parsed;
+    }
+
+    /**
+     * Fills in any missing database settings with their default values.
+     *
+     * @since 0.5.0
+     *
+     * @param  {Object} config The current config object.
+     * @return {Object}        The updated config object.
+     */
+
+  }, {
+    key: 'ensureDatabaseConfig',
+    value: function ensureDatabaseConfig(config) {
+      var parsed = config;
+
+      if (!parsed.db.name) {
+        parsed.db.name = parsed.project.slug;
+      }
+
+      if (!parsed.db.prefix) {
+        parsed.db.prefix = helpers.randomString(DB_PREFIX_LENGTH) + '_';
+      }
+
+      return parsed;
+    }
+
+    /**
+     * Fills in any missing secret key / salts with their default values.
+     *
+     * @since 0.5.0
+     *
+     * @param  {Object} config The current config object.
+     * @return {Object}        The updated config object.
+     */
+
+  }, {
+    key: 'ensureSecretConfig',
+    value: function ensureSecretConfig(config) {
+      var parsed = config;
+      var types = ['auth', 'secure_auth', 'logged_in', 'nonce'];
+
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = _getIterator(types), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var type = _step.value;
+
+          if (!parsed.secret[type + '_key']) {
+            parsed.secret[type + '_key'] = helpers.randomString(SECRET_KEY_LENGTH, 'base64');
+          }
+          if (!parsed.secret[type + '_salt']) {
+            parsed.secret[type + '_salt'] = helpers.randomString(SECRET_SALT_LENGTH, 'base64');
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      return parsed;
+    }
+
+    /**
+     * Creates a new `project.yml` file with the default settings.
+     *
+     * @since 0.3.0
+     *
+     * @param {Boolean} [force=false] If true and a config file already exists,
+     *                                it will be deleted and a new file will be
+     *                                created.
+     */
+
+  }, {
+    key: 'createConfigFile',
+    value: function createConfigFile() {
+      var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+      if (force && helpers.fileExists(this.paths.config)) {
+        fs.removeSync(this.paths.config);
+      }
+
+      if (!helpers.fileExists(this.paths.config)) {
+        helpers.writeYAML(this.paths.config, this.defaultConfig);
+      }
+    }
+  }, {
+    key: 'paths',
+
+
+    /**
+     * Gets project paths.
+     *
+     * @since 0.3.0
+     *
+     * @return {Object}
+     */
+    get: function get() {
+      if (!this._paths) {
+        var rootPath = path.join(__dirname, '..');
+
+        this._paths = {
+          root: rootPath,
+          cwd: process.cwd(),
+          project: process.cwd(),
+          assets: path.join(rootPath, 'project-files', 'assets'),
+          templates: path.join(rootPath, 'project-files', 'templates'),
+          plugins: path.join(rootPath, 'project-files', 'plugin-zips'),
+          test: path.join(rootPath, 'test'),
+          config: upsearch.sync('project.yml')
+        };
+
+        if (this._paths.root === this._paths.project) {
+          this._paths.project = path.join(this._paths.root, '_test-project');
+        }
+
+        if (!this._paths.config) {
+          this._paths.config = path.join(this._paths.project, 'project.yml');
+        }
+      }
+
+      return this._paths;
+    }
+
+    /**
+     * Gets config.
+     *
+     * @since 0.1.0
+     *
+     * @return {Object}
+     */
+
+  }, {
+    key: 'config',
+    get: function get() {
+      if (!this._config) {
+        this._config = this.loadConfig();
+      }
+
+      return this._config;
+    }
+
+    /**
+     * Sets config.
+     *
+     * @since 0.1.0
+     *
+     * @param {Object} config The new config settings.
+     */
+    ,
+    set: function set(config) {
+      this._config = this.parseConfig(config);
+    }
+
+    /**
+     * Gets default config settings.
+     *
+     * @since 0.1.0
+     *
+     * @return {Object}
+     */
+
+  }, {
+    key: 'defaultConfig',
+    get: function get() {
+      return {
+        vvv: true,
+        debug: false,
+        token: '',
+        author: {
+          name: 'Your Name',
+          email: 'your-email@example.com',
+          website: 'http://your-website.example.com'
+        },
+        project: {
+          multisite: false,
+          title: '',
+          slug: '',
+          url: ''
+        },
+        repo: {
+          create: false,
+          url: ''
+        },
+        plugin: {
+          scaffold: true,
+          name: '',
+          slug: '',
+          description: ''
+        },
+        theme: {
+          scaffold: true,
+          name: '',
+          slug: '',
+          description: ''
+        },
+        admin: {
+          user: 'admin',
+          pass: 'admin_password',
+          email: 'admin@localhost.dev'
+        },
+        db: {
+          name: '',
+          user: 'external',
+          pass: 'external',
+          host: 'vvv.dev:3306',
+          root_user: 'root',
+          root_pass: 'root',
+          prefix: ''
+        },
+        secret: {
+          auth_key: '',
+          auth_salt: '',
+          secure_auth_key: '',
+          secure_auth_salt: '',
+          logged_in_key: '',
+          logged_in_salt: '',
+          nonce_key: '',
+          nonce_salt: ''
+        }
+      };
+    }
+  }]);
+
+  return Project;
 }();
 
 var Project$1 = mocktail.mock(Project);
@@ -803,204 +725,203 @@ var JSON_TAB_WIDTH = 2;
  */
 
 var Log = function () {
-	createClass(Log, [{
-		key: 'styles',
+  _createClass(Log, [{
+    key: 'styles',
 
 
-		/**
-   * Message styles.
+    /**
+     * Message styles.
+     *
+     * @since 0.4.0
+     *
+     * @member {Object}
+     */
+    get: function get() {
+      return {
+        ok: ['green'],
+        info: ['cyan'],
+        warn: ['yellow', 'underline'],
+        error: ['red', 'underline'],
+        debug: ['cyan', 'underline'],
+        message: ['reset']
+      };
+    }
+
+    /**
+     * Message icons. Includes plain-text fallbacks for Windows, since the CMD
+     * prompt supports a very limited character set.
+     *
+     * @since 0.4.0
+     *
+     * @see https://github.com/sindresorhus/log-symbols
+     *
+     * @member {Object}
+     */
+
+  }, {
+    key: 'icons',
+    get: function get() {
+      if (process.platform === 'win32') {
+        return {
+          ok: '√',
+          info: 'i',
+          warn: '‼',
+          error: '×',
+          debug: '*'
+        };
+      }
+
+      return {
+        ok: '✔',
+        info: 'ℹ',
+        warn: '⚠',
+        error: '✘',
+        debug: '✱'
+      };
+    }
+
+    /**
+     * Class constructor.
+     *
+     * @since 0.4.0
+     */
+
+  }]);
+
+  function Log() {
+    _classCallCheck(this, Log);
+
+    if (!this.instance) {
+      this.init();
+    }
+
+    return this.instance;
+  }
+
+  /**
+   * Initialize class and store the class instance.
    *
-   * @since 0.4.0
-   *
-   * @member {Object}
-   */
-		get: function get() {
-			return {
-				ok: ['green'],
-				info: ['cyan'],
-				warn: ['yellow', 'underline'],
-				error: ['red', 'underline'],
-				debug: ['cyan', 'underline'],
-				message: ['reset']
-			};
-		}
-
-		/**
-   * Message icons. Includes plain-text fallbacks for Windows, since the CMD
-   * prompt supports a very limited character set.
-   *
-   * @since 0.4.0
-   *
-   * @see https://github.com/sindresorhus/log-symbols
-   *
-   * @member {Object}
-   */
-
-	}, {
-		key: 'icons',
-		get: function get() {
-
-			if ('win32' === process.platform) {
-				return {
-					ok: '√',
-					info: 'i',
-					warn: '‼',
-					error: '×',
-					debug: '*'
-				};
-			}
-
-			return {
-				ok: '✔',
-				info: 'ℹ',
-				warn: '⚠',
-				error: '✘',
-				debug: '✱'
-			};
-		}
-
-		/**
-   * Class constructor.
-   *
-   * @since 0.4.0
-   */
-
-	}]);
-
-	function Log() {
-		classCallCheck(this, Log);
-
-
-		if (!this.instance) {
-			this.init();
-		}
-
-		return this.instance;
-	}
-
-	/**
-  * Initialize class and store the class instance.
-  *
-  * @since 0.5.0
-  */
-
-
-	createClass(Log, [{
-		key: 'init',
-		value: function init() {
-			var _this = this;
-
-			// Set the colors theme based on our styles.
-			colors.setTheme(this.styles);
-
-			// Automatically create methods for each style.
-			var _iteratorNormalCompletion = true;
-			var _didIteratorError = false;
-			var _iteratorError = undefined;
-
-			try {
-				var _loop = function _loop() {
-					var style = _step.value;
-
-					_this[style] = function (message) {
-						return _this._log(message, style);
-					};
-				};
-
-				for (var _iterator = _.keys(this.styles)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-					_loop();
-				}
-			} catch (err) {
-				_didIteratorError = true;
-				_iteratorError = err;
-			} finally {
-				try {
-					if (!_iteratorNormalCompletion && _iterator.return) {
-						_iterator.return();
-					}
-				} finally {
-					if (_didIteratorError) {
-						throw _iteratorError;
-					}
-				}
-			}
-
-			this.instance = this;
-		}
-
-		/**
-   * Logs a message with an optional style.
-   *
-   * If message is an object, array, function, class, etc. it is converted to
-   * a string using `JSON.stringify()`.
-   *
-   * @since 0.4.0
-   *
-   * @access private
-   *
-   * @param {*}      message The message to log.
-   * @param {String} [style] A style to apply to the message.
+   * @since 0.5.0
    */
 
-	}, {
-		key: '_log',
-		value: function _log(message, style) {
 
-			// Convert object-like messages to string.
-			if (_.isObjectLike(message)) {
-				message = JSON.stringify(message, null, JSON_TAB_WIDTH);
-			}
+  _createClass(Log, [{
+    key: 'init',
+    value: function init() {
+      var _this = this;
 
-			// Don't log anything if message is empty.
-			if (_.isEmpty(message)) {
-				return;
-			}
+      // Set the colors theme based on our styles.
+      colors.setTheme(this.styles);
 
-			// Make sure the message is a string.
-			message = message.toString();
+      // Automatically create methods for each style.
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
 
-			// Check if a valid style was specified.
-			if (style && message[style]) {
+      try {
+        var _loop = function _loop() {
+          var style = _step.value;
 
-				// Bail if the style is 'debug' and debugging is disabled.
-				if ('debug' === style && !Project$1.debug) {
-					return;
-				}
+          _this[style] = function (message) {
+            return _this._log(message, style);
+          };
+        };
 
-				// If the style has an associated icon, prepend it to the message.
-				if (this.icons[style]) {
-					message = this.icons[style] + ' ' + message;
-				}
+        for (var _iterator = _getIterator(lodash.keys(this.styles)), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          _loop();
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
 
-				// Apply the style to the message.
-				message = message[style];
-			}
+      this.instance = this;
+    }
 
-			// Log the message.
-			console.log(message);
-		}
-	}]);
-	return Log;
+    /**
+     * Logs a message with an optional style.
+     *
+     * If message is an object, array, function, class, etc. it is converted to
+     * a string using `JSON.stringify()`.
+     *
+     * @since 0.4.0
+     *
+     * @access private
+     *
+     * @param {*}      message The message to log.
+     * @param {String} [style] A style to apply to the message.
+     */
+
+  }, {
+    key: '_log',
+    value: function _log(message, style) {
+      var output = message;
+
+      // Convert object-like messages to string.
+      if (lodash.isObjectLike(output)) {
+        output = _JSON$stringify(output, null, JSON_TAB_WIDTH);
+      }
+
+      // Don't log anything if message is empty.
+      if (lodash.isEmpty(output)) {
+        return;
+      }
+
+      // Make sure the message is a string.
+      output = String(output);
+
+      // Check if a valid style was specified.
+      if (style && output[style]) {
+        // Bail if the style is 'debug' and debugging is disabled.
+        if (style === 'debug' && !Project$1.debug) {
+          return;
+        }
+
+        // If the style has an associated icon, prepend it to the message.
+        if (this.icons[style]) {
+          output = this.icons[style] + ' ' + output;
+        }
+
+        // Apply the style to the message.
+        output = output[style];
+      }
+
+      // Log the message.
+      console.log(output);
+    }
+  }]);
+
+  return Log;
 }();
 
 var log = new Log();
 
 var configDisplayCommand = {
-	command: 'config display',
-	describe: 'parse and display project settings',
-	builder: {},
-	handler: function handler() {
-		log.message(Project$1.config);
-	}
+  command: 'config display',
+  describe: 'parse and display project settings',
+  builder: {},
+  handler: function handler() {
+    log.message(Project$1.config);
+  }
 };
 
 var configCreateCommand = {
-	command: 'config create',
-	describe: 'create a new project.yml file with the default settings',
-	builder: {},
-	handler: function handler(argv) {
-		Project$1.createConfigFile(argv.force);
-	}
+  command: 'config create',
+  describe: 'create a new project.yml file with the default settings',
+  builder: {},
+  handler: function handler(argv) {
+    Project$1.createConfigFile(argv.force);
+  }
 };
 
 /**
@@ -1012,18 +933,18 @@ var configCreateCommand = {
  */
 
 var Deps = function Deps() {
-  classCallCheck(this, Deps);
+  _classCallCheck(this, Deps);
 };
 
 var deps = mocktail.mock(Deps);
 
 var depsInstallCommand = {
-	command: 'deps install [--type=all|npm|bower|composer]',
-	describe: 'install project, theme, and plugin dependencies',
-	builder: {},
-	handler: function handler(argv) {
-		deps.install(argv.type);
-	}
+  command: 'deps install [--type=all|npm|bower|composer]',
+  describe: 'install project, theme, and plugin dependencies',
+  builder: {},
+  handler: function handler(argv) {
+    deps.install(argv.type);
+  }
 };
 
 /**
@@ -1042,953 +963,930 @@ var depsInstallCommand = {
  */
 
 var Scaffold = function (_Project) {
-	inherits(Scaffold, _Project);
-
-	function Scaffold() {
-		classCallCheck(this, Scaffold);
-		return possibleConstructorReturn(this, (Scaffold.__proto__ || Object.getPrototypeOf(Scaffold)).apply(this, arguments));
-	}
-
-	createClass(Scaffold, null, [{
-		key: 'init',
+  _inherits(Scaffold, _Project);
+
+  function Scaffold() {
+    _classCallCheck(this, Scaffold);
+
+    return _possibleConstructorReturn(this, (Scaffold.__proto__ || _Object$getPrototypeOf(Scaffold)).apply(this, arguments));
+  }
+
+  _createClass(Scaffold, null, [{
+    key: 'init',
+
+
+    /**
+     * Sets initial values required for other class methods.
+     */
+    value: function init() {
+      this.templateData = this.config;
+
+      fs.mkdirpSync(this.paths.project);
+
+      if (this.config.env === 'node-test') {
+        fs.removeSync(this.paths.project);
+        fs.mkdirpSync(this.paths.project);
+      }
+    }
+
+    /**
+     * Creates a new project.
+     *
+     * @return {Boolean}
+     */
+
+  }, {
+    key: 'createProject',
+    value: function createProject() {
+      if (!this.config.project.title) {
+        log.error('You must specify a project title.');
+        log.info('Check the README for usage information.');
+
+        return false;
+      }
+
+      this.initProjectFiles();
+      this.initRepo();
+      this.initDevLib();
+      this.initProject();
+      this.initPlugin();
+      this.initTheme();
+
+      return true;
+    }
+
+    /**
+     * Creates project files.
+     */
+
+  }, {
+    key: 'initProjectFiles',
+    value: function initProjectFiles() {
+      this.maybeCreateAuthFiles();
+      this.maybeCopyPluginZips();
+      this.parseTemplateData();
+
+      this.scaffoldFiles('scripts');
+
+      if (this.config.vvv) {
+        this.scaffoldFiles('vvv');
+      }
+    }
+
+    /**
+     * Creates a Composer `auth.json` file if enabled in project config.
+     */
+
+  }, {
+    key: 'maybeCreateAuthFiles',
+    value: function maybeCreateAuthFiles() {
+      if (!this.config.token) {
+        return;
+      }
+
+      var filePath = path.join(os.homedir(), '.composer/auth.json');
+      var contents = _JSON$stringify({
+        'github-oauth': {
+          'github.com': '' + this.config.token
+        }
+      });
+
+      if (!helpers.fileExists(filePath)) {
+        fs.writeFileSync(filePath, contents);
+      }
+    }
+
+    /**
+     * Copies plugin ZIP files.
+     */
+
+  }, {
+    key: 'maybeCopyPluginZips',
+    value: function maybeCopyPluginZips() {
+      if (!helpers.directoryExists(this.paths.plugins)) {
+        return;
+      }
+
+      log.message('Copying plugin ZIPs...');
+
+      var source = this.paths.plugins;
+      var dest = path.join(this.paths.project, 'project-files/plugin-zips');
+
+      fs.copySync(source, dest);
+
+      log.ok('Plugin ZIPs copied.');
+    }
+
+    /**
+     * Parses template data from project config.
+     */
+
+  }, {
+    key: 'parseTemplateData',
+    value: function parseTemplateData() {
+      var pluginZipsDir = path.join(this.paths.project, 'project-files/plugin-zips');
+
+      if (!this.templateData.pluginZips) {
+        this.templateData.pluginZips = [];
+      }
+
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = _getIterator(helpers.readDir(pluginZipsDir)), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var val = _step.value;
+
+          this.templateData.pluginZips.push({
+            name: path.basename(val, '.zip'),
+            file: val
+          });
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+    }
+
+    /**
+     * Initializes the Git repo if enabled in project config.
+     *
+     * @return {Boolean}
+     */
+
+  }, {
+    key: 'initRepo',
+    value: function initRepo() {
+      if (!this.config.repo.create) {
+        return false;
+      }
+
+      log.message('Checking for Git repo...');
+
+      var dirExists = helpers.directoryExists(path.join(this.paths.project, '.git'));
+
+      if (dirExists) {
+        log.ok('Repo exists.');
+
+        return false;
+      }
+
+      // Initialize repo.
+      if (this.execSync('git init', 'project', false)) {
+        log.ok('Repo initialized.');
+      }
+
+      // If the repo URL is set, add it as a remote.
+      if (this.config.repo.url) {
+        var command = 'git remote add origin ' + this.config.repo.url;
+
+        if (this.execSync(command, 'project', false)) {
+          log.ok('Remote URL added.');
+        }
+      }
+
+      return true;
+    }
+
+    /**
+     * Adds the `wp-dev-lib` git submodule.
+     *
+     * @return {Boolean}
+     */
 
+  }, {
+    key: 'initDevLib',
+    value: function initDevLib() {
+      log.message('Checking for wp-dev-lib submodule...');
 
-		/**
-   * Sets initial values required for other class methods.
-   */
-		value: function init() {
+      var dirExists = helpers.directoryExists(path.join(this.paths.project, 'dev-lib'));
 
-			this.templateData = this.config;
+      if (dirExists) {
+        log.ok('Submodule exists.');
 
-			fs.mkdirpSync(this.paths.project);
+        return false;
+      }
 
-			if ('node-test' === this.config.env) {
-				fs.removeSync(this.paths.project);
-				fs.mkdirpSync(this.paths.project);
-			}
-		}
+      // Add the sub-module.
+      var command = 'git submodule add -f -b master https://github.com/xwp/wp-dev-lib.git dev-lib';
+
+      if (this.execSync(command, 'project')) {
+        log.ok('Submodule added.');
+      }
+
+      return true;
+    }
+
+    /**
+     * Creates project files and install project dependencies.
+     *
+     * @return {Boolean}
+     */
+
+  }, {
+    key: 'initProject',
+    value: function initProject() {
+      log.message('Checking for Bedrock...');
+
+      var dirExists = helpers.directoryExists(path.join(this.paths.project, 'htdocs'));
+
+      if (dirExists) {
+        log.ok('Bedrock exists');
 
-		/**
-   * Creates a new project.
-   *
-   * @return {Boolean}
-   */
+        return false;
+      }
 
-	}, {
-		key: 'createProject',
-		value: function createProject() {
+      // Install Bedrock.
+      var command = 'composer create-project roots/bedrock htdocs --no-install';
 
-			if (!this.config.project.title) {
-				log.error('You must specify a project title.' + ' Check the README for usage information.');
+      if (this.execSync(command, 'project')) {
+        log.ok('Bedrock installed.');
+      }
 
-				return false;
-			}
+      this.linkFiles('project');
+      this.scaffoldFiles('project');
+      this.scaffoldFiles('bedrock');
+      this.removeFiles('bedrock');
 
-			this.initProjectFiles();
-			this.initRepo();
-			this.initDevLib();
-			this.initProject();
-			this.initPlugin();
-			this.initTheme();
+      log.message('Installing project dependencies...');
 
-			return true;
-		}
-
-		/**
-   * Creates project files.
-   */
-
-	}, {
-		key: 'initProjectFiles',
-		value: function initProjectFiles() {
-
-			this.maybeCreateAuthFiles();
-			this.maybeCopyPluginZips();
-			this.parseTemplateData();
-
-			this.scaffoldFiles('scripts');
-
-			if (this.config.vvv) {
-				this.scaffoldFiles('vvv');
-			}
-		}
-
-		/**
-   * Creates a Composer `auth.json` file if enabled in project config.
-   */
-
-	}, {
-		key: 'maybeCreateAuthFiles',
-		value: function maybeCreateAuthFiles() {
-
-			if (!this.config.token) {
-				return;
-			}
-
-			var filePath = path.join(os.homedir(), '.composer/auth.json');
-			var contents = JSON.stringify({
-				'github-oauth': {
-					'github.com': '' + this.config.token
-				}
-			});
-
-			if (!helpers.fileExists(filePath)) {
-				fs.writeFileSync(filePath, contents);
-			}
-		}
-
-		/**
-   * Copies plugin ZIP files.
-   */
-
-	}, {
-		key: 'maybeCopyPluginZips',
-		value: function maybeCopyPluginZips() {
-
-			if (!helpers.directoryExists(this.paths.plugins)) {
-				return;
-			}
-
-			log.message('Copying plugin ZIPs...');
-
-			var source = this.paths.plugins;
-			var dest = path.join(this.paths.project, 'project-files/plugin-zips');
-
-			fs.copySync(source, dest);
-
-			log.ok('Plugin ZIPs copied.');
-		}
-
-		/**
-   * Parses template data from project config.
-   */
-
-	}, {
-		key: 'parseTemplateData',
-		value: function parseTemplateData() {
+      if (this.execSync('composer install', 'project')) {
+        log.ok('Dependencies installed.');
+      }
 
-			var pluginZipsDir = path.join(this.paths.project, 'project-files/plugin-zips');
-
-			if (!this.templateData.pluginZips) {
-				this.templateData.pluginZips = [];
-			}
-
-			var _iteratorNormalCompletion = true;
-			var _didIteratorError = false;
-			var _iteratorError = undefined;
-
-			try {
-				for (var _iterator = helpers.readDir(pluginZipsDir)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-					var val = _step.value;
-
-					this.templateData.pluginZips.push({
-						name: path.basename(val, '.zip'),
-						file: val
-					});
-				}
-			} catch (err) {
-				_didIteratorError = true;
-				_iteratorError = err;
-			} finally {
-				try {
-					if (!_iteratorNormalCompletion && _iterator.return) {
-						_iterator.return();
-					}
-				} finally {
-					if (_didIteratorError) {
-						throw _iteratorError;
-					}
-				}
-			}
-		}
+      return true;
+    }
 
-		/**
-   * Initializes the Git repo if enabled in project config.
-   *
-   * @return {Boolean}
-   */
+    /**
+     * Creates plugin files.
+     *
+     * @return {Boolean}
+     */
 
-	}, {
-		key: 'initRepo',
-		value: function initRepo() {
+  }, {
+    key: 'initPlugin',
+    value: function initPlugin() {
+      if (!this.config.plugin.scaffold) {
+        return false;
+      }
 
-			if (!this.config.repo.create) {
-				return false;
-			}
+      if (!this.config.plugin.name) {
+        log.error('You must specify a plugin name.' + ' Check the README for usage information.');
 
-			log.message('Checking for Git repo...');
+        return false;
+      }
 
-			var dirExists = helpers.directoryExists(path.join(this.paths.project, '.git'));
+      log.message('Checking for plugin...');
 
-			if (dirExists) {
-				log.ok('Repo exists.');
+      var basePath = this.getBasePath('plugin');
 
-				return false;
-			}
+      if (helpers.directoryExists(basePath)) {
+        log.ok('Plugin exists.');
 
-			// Initialize repo.
-			if (this.execSync('git init', 'project', false)) {
-				log.ok('Repo initialized.');
-			}
+        return false;
+      }
 
-			// If the repo URL is set, add it as a remote.
-			if (this.config.repo.url) {
-				var command = 'git remote add origin ' + this.config.repo.url;
+      this.scaffoldFiles('plugin');
 
-				if (this.execSync(command, 'project', false)) {
-					log.ok('Remote URL added.');
-				}
-			}
+      this.createPlaceholders('plugin');
 
-			return true;
-		}
+      log.ok('Plugin created.');
 
-		/**
-   * Adds the `wp-dev-lib` git submodule.
-   *
-   * @return {Boolean}
-   */
+      return true;
+    }
 
-	}, {
-		key: 'initDevLib',
-		value: function initDevLib() {
+    /**
+     * Creates plugin unit tests.
+     */
 
-			log.message('Checking for wp-dev-lib submodule...');
+  }, {
+    key: 'createPluginTests',
+    value: function createPluginTests() {
+      log.error('This feature is not ready');
+    }
 
-			var dirExists = helpers.directoryExists(path.join(this.paths.project, 'dev-lib'));
+    /**
+     * Creates a child theme.
+     *
+     * @since 0.1.0
+     *
+     * @return {Boolean} False if theme exists,
+     */
 
-			if (dirExists) {
-				log.ok('Submodule exists.');
+  }, {
+    key: 'initTheme',
+    value: function initTheme() {
+      if (!this.config.theme.scaffold) {
+        return false;
+      }
 
-				return false;
-			}
+      if (!this.config.theme.name) {
+        log.error('You must specify a theme name.' + ' Check the README for usage information.');
 
-			// Add the sub-module.
-			var command = 'git submodule add -f -b master https://github.com/xwp/wp-dev-lib.git dev-lib';
+        return false;
+      }
 
-			if (this.execSync(command, 'project')) {
-				log.ok('Submodule added.');
-			}
+      log.message('Checking for child theme...');
 
-			return true;
-		}
+      var basePath = this.getBasePath('theme');
 
-		/**
-   * Creates project files and install project dependencies.
-   *
-   * @return {Boolean}
-   */
+      if (helpers.directoryExists(basePath)) {
+        log.ok('Child theme exists.');
 
-	}, {
-		key: 'initProject',
-		value: function initProject() {
+        return true;
+      }
 
-			log.message('Checking for Bedrock...');
+      this.scaffoldFiles('theme');
+
+      this.createPlaceholders('theme');
 
-			var dirExists = helpers.directoryExists(path.join(this.paths.project, 'htdocs'));
-
-			if (dirExists) {
-				log.ok('Bedrock exists');
-
-				return false;
-			}
-
-			// Install Bedrock.
-			var command = 'composer create-project roots/bedrock htdocs --no-install';
-
-			if (this.execSync(command, 'project')) {
-				log.ok('Bedrock installed.');
-			}
-
-			this.linkFiles('project');
-			this.scaffoldFiles('project');
-			this.scaffoldFiles('bedrock');
-			this.removeFiles('bedrock');
-
-			log.message('Installing project dependencies...');
-
-			if (this.execSync('composer install', 'project')) {
-				log.ok('Dependencies installed.');
-			}
-
-			return true;
-		}
-
-		/**
-   * Creates plugin files.
-   *
-   * @return {Boolean}
-   */
-
-	}, {
-		key: 'initPlugin',
-		value: function initPlugin() {
-
-			if (!this.config.plugin.scaffold) {
-				return false;
-			}
-
-			if (!this.config.plugin.name) {
-				log.error('You must specify a plugin name.' + ' Check the README for usage information.');
-
-				return false;
-			}
-
-			log.message('Checking for plugin...');
-
-			var basePath = this.getBasePath('plugin');
-
-			if (helpers.directoryExists(basePath)) {
-				log.ok('Plugin exists.');
-
-				return false;
-			}
-
-			this.scaffoldFiles('plugin');
-
-			this.createPlaceholders('plugin');
-
-			log.ok('Plugin created.');
-
-			return true;
-		}
-
-		/**
-   * Creates plugin unit tests.
-   */
-
-	}, {
-		key: 'createPluginTests',
-		value: function createPluginTests() {
-			log.error('This feature is not ready');
-		}
-
-		/**
-   * Creates a child theme.
-   *
-   * @since 0.1.0
-   *
-   * @return {Boolean} False if theme exists,
-   */
-
-	}, {
-		key: 'initTheme',
-		value: function initTheme() {
-
-			if (!this.config.theme.scaffold) {
-				return false;
-			}
-
-			if (!this.config.theme.name) {
-				log.error('You must specify a theme name.' + ' Check the README for usage information.');
-
-				return false;
-			}
-
-			log.message('Checking for child theme...');
-
-			var basePath = this.getBasePath('theme');
-
-			if (helpers.directoryExists(basePath)) {
-				log.ok('Child theme exists.');
-
-				return true;
-			}
-
-			this.scaffoldFiles('theme');
-
-			this.createPlaceholders('theme');
-
-			this.copyAssets('theme');
-
-			log.ok('Theme created.');
-
-			log.message('Installing theme dependencies...');
-
-			this.execSync('npm install', 'theme');
-			this.execSync('bower install', 'theme');
-
-			log.message('Compiling theme assets...');
-			this.execSync('npm run build', 'theme');
-
-			log.ok('Done');
-
-			return true;
-		}
-
-		/**
-   * Creates theme unit tests.
-   */
-
-	}, {
-		key: 'createThemeTests',
-		value: function createThemeTests() {
-			log.error('This feature is not ready');
-		}
-
-		/**
-   * Executes a command.
-   *
-   * @param  {String}   command The command.
-   * @param  {String}   [type = 'project'] Type to use for the base path.
-   * @param  {Function} [callback = null]  A callback to call on success.
-   * @return {Boolean}
-   */
-
-	}, {
-		key: 'exec',
-		value: function exec(command) {
-			var type = arguments.length <= 1 || arguments[1] === undefined ? 'project' : arguments[1];
-			var callback = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
-
-
-			var options = {
-				cwd: this.getBasePath(type)
-			};
-
-			return cp.exec(command, options, function (error, stdout, stderr) {
-
-				// Exit on error.
-				if (null !== error) {
-					log.error(error);
-
-					return false;
-				}
-
-				// If a callback was provided, call it.
-				if (callback) {
-					callback(stdout, stderr);
-
-					return true;
-				}
-
-				// Otherwise just return true.
-				return true;
-			});
-		}
-
-		/**
-   * Synchronously executes a command.
-   *
-   * @param  {String} command             The command.
-   * @param  {String} [type = 'project']  Command runs in the type's base path.
-   * @param  {Boolean} [logError = false] Whether to log errors.
-   * @return {Boolean}
-   */
-
-	}, {
-		key: 'execSync',
-		value: function execSync(command) {
-			var type = arguments.length <= 1 || arguments[1] === undefined ? 'project' : arguments[1];
-			var logError = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
-
-
-			var options = {
-				cwd: this.getBasePath(type)
-			};
-
-			try {
-				cp.execSync(command, options);
-
-				return true;
-			} catch (error) {
-
-				if (logError && !_.isEmpty(error)) {
-					log.error(error);
-				}
-
-				return false;
-			}
-		}
-
-		/**
-   * Gets base path to a specific type of file.
-   *
-   * @param  {String} [type = 'project'] [description]
-   * @return {String}
-   */
-
-	}, {
-		key: 'getBasePath',
-		value: function getBasePath() {
-			var type = arguments.length <= 0 || arguments[0] === undefined ? 'project' : arguments[0];
-
-
-			var basePaths = {
-				project: '.',
-				vvv: 'vvv',
-				scripts: 'scripts',
-				bedrock: 'htdocs',
-				wordpress: 'htdocs/web/wp',
-				plugin: path.join('htdocs/web/app/plugins/', this.config.plugin.slug),
-				theme: path.join('htdocs/web/app/themes/', this.config.theme.slug)
-			};
-
-			// We convert the type to camel case so we don't run into issues if we
-			// want to use a type like `type-name` or `type_name`.
-			var base = basePaths[_.camelCase(type)];
-
-			if (!base) {
-				base = '';
-			}
-
-			return path.join(this.paths.project, base);
-		}
-
-		/**
-   * Gets path to plugin or theme assets.
-   *
-   * @param  {String} [type = 'theme'] [description]
-   * @return {String}
-   */
-
-	}, {
-		key: 'getAssetsPath',
-		value: function getAssetsPath() {
-			var type = arguments.length <= 0 || arguments[0] === undefined ? 'theme' : arguments[0];
-
-
-			var assetsPaths = {
-				plugin: 'assets/source',
-				theme: 'assets/source'
-			};
-
-			var assetsPath = assetsPaths[_.camelCase(type)];
-
-			if (!assetsPath) {
-				assetsPath = '';
-			}
-
-			return path.join(this.getBasePath(type), assetsPath);
-		}
-
-		/**
-   * Creates placeholder files and folders.
-   *
-   * @param  {String} [type = 'theme'] [description]
-   */
-
-	}, {
-		key: 'createPlaceholders',
-		value: function createPlaceholders() {
-			var type = arguments.length <= 0 || arguments[0] === undefined ? 'theme' : arguments[0];
-
-
-			var base = this.getBasePath(type);
-
-			var dirs = ['includes', 'assets/source/css', 'assets/source/js', 'assets/source/images', 'assets/source/fonts', 'assets/dist/css', 'assets/dist/js', 'assets/dist/images', 'assets/dist/fonts'];
-
-			var files = ['assets/dist/css/.gitkeep', 'assets/dist/js/.gitkeep', 'assets/dist/images/.gitkeep', 'assets/dist/fonts/.gitkeep'];
-
-			var _iteratorNormalCompletion2 = true;
-			var _didIteratorError2 = false;
-			var _iteratorError2 = undefined;
-
-			try {
-				for (var _iterator2 = dirs[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-					var dir = _step2.value;
-
-					try {
-						fs.mkdirpSync(path.join(base, dir));
-					} catch (error) {
-						log.error(error);
-					}
-				}
-			} catch (err) {
-				_didIteratorError2 = true;
-				_iteratorError2 = err;
-			} finally {
-				try {
-					if (!_iteratorNormalCompletion2 && _iterator2.return) {
-						_iterator2.return();
-					}
-				} finally {
-					if (_didIteratorError2) {
-						throw _iteratorError2;
-					}
-				}
-			}
-
-			var _iteratorNormalCompletion3 = true;
-			var _didIteratorError3 = false;
-			var _iteratorError3 = undefined;
-
-			try {
-				for (var _iterator3 = files[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-					var file = _step3.value;
-
-					try {
-						fs.ensureFileSync(path.join(base, file));
-					} catch (error) {
-
-						// Do nothing.
-					}
-				}
-			} catch (err) {
-				_didIteratorError3 = true;
-				_iteratorError3 = err;
-			} finally {
-				try {
-					if (!_iteratorNormalCompletion3 && _iterator3.return) {
-						_iterator3.return();
-					}
-				} finally {
-					if (_didIteratorError3) {
-						throw _iteratorError3;
-					}
-				}
-			}
-		}
-
-		/**
-   * Copy an included set of plugin or theme assets.
-   *
-   * @param  {String} [type = 'theme'] [description]
-   * @param  {String} [dir  = '']      [description]
-   * @return {Boolean}
-   */
-
-	}, {
-		key: 'copyAssets',
-		value: function copyAssets() {
-			var type = arguments.length <= 0 || arguments[0] === undefined ? 'theme' : arguments[0];
-			var dir = arguments.length <= 1 || arguments[1] === undefined ? '' : arguments[1];
-
-
-			var source = path.join(this.paths.assets, type, dir);
-			var dest = path.join(this.getAssetsPath(type), dir);
-
-			if (!helpers.directoryExists(source)) {
-				log.error(source + ' is not a valid assets folder.');
-
-				return false;
-			}
-
-			try {
-				fs.mkdirpSync(dest);
-				fs.copySync(source, dest);
-
-				log.ok(_.startCase(type) + ' assets created.');
-			} catch (error) {
-				if (!_.isEmpty(error)) {
-					log.error(error);
-				}
-			}
-
-			return true;
-		}
-
-		/**
-   * Creates symlinks to a set of files.
-   *
-   * @param  {String} type = 'project' [description]
-   */
-
-	}, {
-		key: 'linkFiles',
-		value: function linkFiles() {
-			var type = arguments.length <= 0 || arguments[0] === undefined ? 'project' : arguments[0];
-
-
-			var base = this.getBasePath(type);
-			var files = this.files[type].link;
-
-			if (!files) {
-				return;
-			}
-
-			var _iteratorNormalCompletion4 = true;
-			var _didIteratorError4 = false;
-			var _iteratorError4 = undefined;
-
-			try {
-				for (var _iterator4 = files[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-					var _step4$value = slicedToArray(_step4.value, 2);
-
-					var source = _step4$value[0];
-					var dest = _step4$value[1];
-
-
-					var destBase = path.join(dest, path.basename(source));
-
-					source = path.join(base, source);
-					dest = path.join(base, destBase);
-
-					log.message('Checking for ' + destBase + '...');
-
-					if (helpers.symlinkExists(dest)) {
-						log.ok(dest + ' exists.');
-					} else {
-						try {
-							fs.ensureSymlinkSync(dest, source);
-							log.ok(dest + ' created.');
-						} catch (error) {
-							if (!_.isEmpty(error)) {
-								log.error(error);
-							}
-						}
-					}
-				}
-			} catch (err) {
-				_didIteratorError4 = true;
-				_iteratorError4 = err;
-			} finally {
-				try {
-					if (!_iteratorNormalCompletion4 && _iterator4.return) {
-						_iterator4.return();
-					}
-				} finally {
-					if (_didIteratorError4) {
-						throw _iteratorError4;
-					}
-				}
-			}
-		}
-
-		/**
-   * Removes a set of files.
-   *
-   * @param  {String} type = 'project' [description]
-   */
-
-	}, {
-		key: 'removeFiles',
-		value: function removeFiles() {
-			var type = arguments.length <= 0 || arguments[0] === undefined ? 'project' : arguments[0];
-
-
-			var base = this.getBasePath(type);
-			var files = this.files[type].remove;
-
-			if (!files) {
-				return;
-			}
-
-			var _iteratorNormalCompletion5 = true;
-			var _didIteratorError5 = false;
-			var _iteratorError5 = undefined;
-
-			try {
-				for (var _iterator5 = files[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-					var file = _step5.value;
-
-					file = path.join(base, file);
-
-					try {
-						fs.removeSync(file);
-					} catch (error) {
-						if (!_.isEmpty(error)) {
-							log.error(error);
-						}
-					}
-				}
-			} catch (err) {
-				_didIteratorError5 = true;
-				_iteratorError5 = err;
-			} finally {
-				try {
-					if (!_iteratorNormalCompletion5 && _iterator5.return) {
-						_iterator5.return();
-					}
-				} finally {
-					if (_didIteratorError5) {
-						throw _iteratorError5;
-					}
-				}
-			}
-		}
-
-		/**
-   * Renders a set of template files using the template data.
-   *
-   * @param  {String} type =             'project' [description]
-   * @return {Boolean}      [description]
-   */
-
-	}, {
-		key: 'scaffoldFiles',
-		value: function scaffoldFiles() {
-			var type = arguments.length <= 0 || arguments[0] === undefined ? 'project' : arguments[0];
-
-
-			var source = path.join(this.paths.templates, type);
-
-			if (!helpers.directoryExists(source)) {
-				log.error(source + ' is not a valid template directory');
-
-				return false;
-			}
-
-			var dirs = helpers.readDir(source);
-
-			if (!_.isEmpty(dirs)) {
-				var _iteratorNormalCompletion6 = true;
-				var _didIteratorError6 = false;
-				var _iteratorError6 = undefined;
-
-				try {
-					for (var _iterator6 = dirs[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-						var file = _step6.value;
-
-						this.scaffoldFile(path.join(source, file), type);
-					}
-				} catch (err) {
-					_didIteratorError6 = true;
-					_iteratorError6 = err;
-				} finally {
-					try {
-						if (!_iteratorNormalCompletion6 && _iterator6.return) {
-							_iterator6.return();
-						}
-					} finally {
-						if (_didIteratorError6) {
-							throw _iteratorError6;
-						}
-					}
-				}
-			}
-
-			return true;
-		}
-
-		/**
-   * Renders a specific template file.
-   *
-   * @param  {String} source [description]
-   * @param  {String} type   = 'project' [description]
-   * @return {Boolean}        [description]
-   */
-
-	}, {
-		key: 'scaffoldFile',
-		value: function scaffoldFile(source) {
-			var type = arguments.length <= 1 || arguments[1] === undefined ? 'project' : arguments[1];
-
-
-			var file = path.basename(source, '.mustache');
-
-			// Templates for hidden files start with `_` instead of `.`
-			if (0 === file.indexOf('_')) {
-				// eslint-disable-line no-magic-numbers
-				file = file.replace('_', '.');
-			}
-
-			log.message('Checking for ' + file + '...');
-
-			var base = this.getBasePath(type);
-			var dest = path.join(base, file);
-
-			if (helpers.fileExists(dest)) {
-				log.ok(file + ' exists.');
-
-				return true;
-			}
-
-			fs.mkdirpSync(base);
-
-			try {
-				var templateContent = fs.readFileSync(source).toString();
-				var renderedContent = mustache.render(templateContent, this.templateData);
-
-				fs.writeFileSync(dest, renderedContent);
-
-				log.ok(file + ' created.');
-			} catch (error) {
-
-				if (!_.isEmpty(error)) {
-					log.error(error);
-
-					return false;
-				}
-			}
-
-			return true;
-		}
-	}, {
-		key: 'files',
-
-
-		/**
-   * Project files that need to be symlinked, removed, or any other special
-   * type of action that we can't determine automatically based on template
-   * files or project configuration.
-   *
-   * @return {Object}
-   */
-		get: function get() {
-			return {
-				project: {
-					link: new Map([['dev-lib/pre-commit', '.git/hooks'], ['dev-lib/.jshintrc', '.'], ['dev-lib/.jscsrc', '.']])
-				},
-
-				bedrock: {
-					remove: new Set(['composer.*', '*.md', 'phpcs.xml', 'wp-cli.yml', '.gitignore', '.travis.yml', '.env.example', '.editorconfig'])
-				}
-			};
-		}
-	}]);
-	return Scaffold;
+      this.copyAssets('theme');
+
+      log.ok('Theme created.');
+
+      log.message('Installing theme dependencies...');
+
+      this.execSync('npm install', 'theme');
+      this.execSync('bower install', 'theme');
+
+      log.message('Compiling theme assets...');
+      this.execSync('npm run build', 'theme');
+
+      log.ok('Done');
+
+      return true;
+    }
+
+    /**
+     * Creates theme unit tests.
+     */
+
+  }, {
+    key: 'createThemeTests',
+    value: function createThemeTests() {
+      log.error('This feature is not ready');
+    }
+
+    /**
+     * Executes a command.
+     *
+     * @param  {String}   command The command.
+     * @param  {String}   [type = 'project'] Type to use for the base path.
+     * @param  {Function} [callback = null]  A callback to call on success.
+     * @return {Boolean}
+     */
+
+  }, {
+    key: 'exec',
+    value: function exec(command) {
+      var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'project';
+      var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+      var options = {
+        cwd: this.getBasePath(type)
+      };
+
+      return cp.exec(command, options, function (error, stdout, stderr) {
+        // Exit on error.
+        if (error !== null) {
+          log.error(error);
+
+          return false;
+        }
+
+        // If a callback was provided, call it.
+        if (callback) {
+          callback(stdout, stderr);
+
+          return true;
+        }
+
+        // Otherwise just return true.
+        return true;
+      });
+    }
+
+    /**
+     * Synchronously executes a command.
+     *
+     * @param  {String} command             The command.
+     * @param  {String} [type = 'project']  Command runs in the type's base path.
+     * @param  {Boolean} [logError = false] Whether to log errors.
+     * @return {Boolean}
+     */
+
+  }, {
+    key: 'execSync',
+    value: function execSync(command) {
+      var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'project';
+      var logError = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+      var options = {
+        cwd: this.getBasePath(type)
+      };
+
+      try {
+        cp.execSync(command, options);
+
+        return true;
+      } catch (error) {
+        if (logError && !lodash.isEmpty(error)) {
+          log.error(error);
+        }
+
+        return false;
+      }
+    }
+
+    /**
+     * Gets base path to a specific type of file.
+     *
+     * @param  {String} [type = 'project'] [description]
+     * @return {String}
+     */
+
+  }, {
+    key: 'getBasePath',
+    value: function getBasePath() {
+      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'project';
+
+      var basePaths = {
+        project: '.',
+        vvv: 'vvv',
+        scripts: 'scripts',
+        bedrock: 'htdocs',
+        wordpress: 'htdocs/web/wp',
+        plugin: path.join('htdocs/web/app/plugins/', this.config.plugin.slug),
+        theme: path.join('htdocs/web/app/themes/', this.config.theme.slug)
+      };
+
+      // We convert the type to camel case so we don't run into issues if we
+      // want to use a type like `type-name` or `type_name`.
+      var base = basePaths[lodash.camelCase(type)];
+
+      if (!base) {
+        base = '';
+      }
+
+      return path.join(this.paths.project, base);
+    }
+
+    /**
+     * Gets path to plugin or theme assets.
+     *
+     * @param  {String} [type = 'theme'] [description]
+     * @return {String}
+     */
+
+  }, {
+    key: 'getAssetsPath',
+    value: function getAssetsPath() {
+      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'theme';
+
+      var assetsPaths = {
+        plugin: 'assets/source',
+        theme: 'assets/source'
+      };
+
+      var assetsPath = assetsPaths[lodash.camelCase(type)];
+
+      if (!assetsPath) {
+        assetsPath = '';
+      }
+
+      return path.join(this.getBasePath(type), assetsPath);
+    }
+
+    /**
+     * Creates placeholder files and folders.
+     *
+     * @param  {String} [type = 'theme'] [description]
+     */
+
+  }, {
+    key: 'createPlaceholders',
+    value: function createPlaceholders() {
+      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'theme';
+
+      var base = this.getBasePath(type);
+
+      var dirs = ['includes', 'assets/source/css', 'assets/source/js', 'assets/source/images', 'assets/source/fonts', 'assets/dist/css', 'assets/dist/js', 'assets/dist/images', 'assets/dist/fonts'];
+
+      var files = ['assets/dist/css/.gitkeep', 'assets/dist/js/.gitkeep', 'assets/dist/images/.gitkeep', 'assets/dist/fonts/.gitkeep'];
+
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = _getIterator(dirs), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var dir = _step2.value;
+
+          try {
+            fs.mkdirpSync(path.join(base, dir));
+          } catch (error) {
+            log.error(error);
+          }
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+            _iterator2.return();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
+
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = _getIterator(files), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var file = _step3.value;
+
+          try {
+            fs.ensureFileSync(path.join(base, file));
+          } catch (error) {
+
+            // Do nothing.
+          }
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3.return) {
+            _iterator3.return();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
+    }
+
+    /**
+     * Copy an included set of plugin or theme assets.
+     *
+     * @param  {String} [type = 'theme'] [description]
+     * @param  {String} [dir  = '']      [description]
+     * @return {Boolean}
+     */
+
+  }, {
+    key: 'copyAssets',
+    value: function copyAssets() {
+      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'theme';
+      var dir = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+
+      var source = path.join(this.paths.assets, type, dir);
+      var dest = path.join(this.getAssetsPath(type), dir);
+
+      if (!helpers.directoryExists(source)) {
+        log.error(source + ' is not a valid assets folder.');
+
+        return false;
+      }
+
+      try {
+        fs.mkdirpSync(dest);
+        fs.copySync(source, dest);
+
+        log.ok(lodash.startCase(type) + ' assets created.');
+      } catch (error) {
+        if (!lodash.isEmpty(error)) {
+          log.error(error);
+        }
+      }
+
+      return true;
+    }
+
+    /**
+     * Creates symlinks to a set of files.
+     *
+     * @param  {String} type = 'project' [description]
+     */
+
+  }, {
+    key: 'linkFiles',
+    value: function linkFiles() {
+      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'project';
+
+      var base = this.getBasePath(type);
+      var files = this.files[type].link;
+
+      if (!files) {
+        return;
+      }
+
+      var _iteratorNormalCompletion4 = true;
+      var _didIteratorError4 = false;
+      var _iteratorError4 = undefined;
+
+      try {
+        for (var _iterator4 = _getIterator(files), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+          var _step4$value = _slicedToArray(_step4.value, 2),
+              source = _step4$value[0],
+              dest = _step4$value[1];
+
+          var destBase = path.join(dest, path.basename(source));
+
+          source = path.join(base, source);
+          dest = path.join(base, destBase);
+
+          log.message('Checking for ' + destBase + '...');
+
+          if (helpers.symlinkExists(dest)) {
+            log.ok(dest + ' exists.');
+          } else {
+            try {
+              fs.ensureSymlinkSync(dest, source);
+              log.ok(dest + ' created.');
+            } catch (error) {
+              if (!lodash.isEmpty(error)) {
+                log.error(error);
+              }
+            }
+          }
+        }
+      } catch (err) {
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion4 && _iterator4.return) {
+            _iterator4.return();
+          }
+        } finally {
+          if (_didIteratorError4) {
+            throw _iteratorError4;
+          }
+        }
+      }
+    }
+
+    /**
+     * Removes a set of files.
+     *
+     * @param  {String} type = 'project' [description]
+     */
+
+  }, {
+    key: 'removeFiles',
+    value: function removeFiles() {
+      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'project';
+
+      var base = this.getBasePath(type);
+      var files = this.files[type].remove;
+
+      if (!files) {
+        return;
+      }
+
+      var _iteratorNormalCompletion5 = true;
+      var _didIteratorError5 = false;
+      var _iteratorError5 = undefined;
+
+      try {
+        for (var _iterator5 = _getIterator(files), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+          var file = _step5.value;
+
+          file = path.join(base, file);
+
+          try {
+            fs.removeSync(file);
+          } catch (error) {
+            if (!lodash.isEmpty(error)) {
+              log.error(error);
+            }
+          }
+        }
+      } catch (err) {
+        _didIteratorError5 = true;
+        _iteratorError5 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion5 && _iterator5.return) {
+            _iterator5.return();
+          }
+        } finally {
+          if (_didIteratorError5) {
+            throw _iteratorError5;
+          }
+        }
+      }
+    }
+
+    /**
+     * Renders a set of template files using the template data.
+     *
+     * @param  {String} type =             'project' [description]
+     * @return {Boolean}      [description]
+     */
+
+  }, {
+    key: 'scaffoldFiles',
+    value: function scaffoldFiles() {
+      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'project';
+
+      var source = path.join(this.paths.templates, type);
+
+      if (!helpers.directoryExists(source)) {
+        log.error(source + ' is not a valid template directory');
+
+        return false;
+      }
+
+      var dirs = helpers.readDir(source);
+
+      if (!lodash.isEmpty(dirs)) {
+        var _iteratorNormalCompletion6 = true;
+        var _didIteratorError6 = false;
+        var _iteratorError6 = undefined;
+
+        try {
+          for (var _iterator6 = _getIterator(dirs), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+            var file = _step6.value;
+
+            this.scaffoldFile(path.join(source, file), type);
+          }
+        } catch (err) {
+          _didIteratorError6 = true;
+          _iteratorError6 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion6 && _iterator6.return) {
+              _iterator6.return();
+            }
+          } finally {
+            if (_didIteratorError6) {
+              throw _iteratorError6;
+            }
+          }
+        }
+      }
+
+      return true;
+    }
+
+    /**
+     * Renders a specific template file.
+     *
+     * @param  {String} source [description]
+     * @param  {String} type   = 'project' [description]
+     * @return {Boolean}        [description]
+     */
+
+  }, {
+    key: 'scaffoldFile',
+    value: function scaffoldFile(source) {
+      var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'project';
+
+      var file = path.basename(source, '.mustache');
+
+      // Templates for hidden files start with `_` instead of `.`
+      if (file.indexOf('_') === 0) {
+        // eslint-disable-line no-magic-numbers
+        file = file.replace('_', '.');
+      }
+
+      log.message('Checking for ' + file + '...');
+
+      var base = this.getBasePath(type);
+      var dest = path.join(base, file);
+
+      if (helpers.fileExists(dest)) {
+        log.ok(file + ' exists.');
+
+        return true;
+      }
+
+      fs.mkdirpSync(base);
+
+      try {
+        var templateContent = fs.readFileSync(source).toString();
+        var renderedContent = mustache.render(templateContent, this.templateData);
+
+        fs.writeFileSync(dest, renderedContent);
+
+        log.ok(file + ' created.');
+      } catch (error) {
+        if (!lodash.isEmpty(error)) {
+          log.error(error);
+
+          return false;
+        }
+      }
+
+      return true;
+    }
+  }, {
+    key: 'files',
+
+
+    /**
+     * Project files that need to be symlinked, removed, or any other special
+     * type of action that we can't determine automatically based on template
+     * files or project configuration.
+     *
+     * @return {Object}
+     */
+    get: function get() {
+      return {
+        project: {
+          link: new _Map([['dev-lib/pre-commit', '.git/hooks'], ['dev-lib/.jshintrc', '.'], ['dev-lib/.jscsrc', '.']])
+        },
+
+        bedrock: {
+          remove: new _Set(['composer.*', '*.md', 'phpcs.xml', 'wp-cli.yml', '.gitignore', '.travis.yml', '.env.example', '.editorconfig'])
+        }
+      };
+    }
+  }]);
+
+  return Scaffold;
 }(Project$1);
 
 var scaffold = mocktail.mock(Scaffold);
 
 var pluginCreateTestsCommand = {
-	command: 'plugin create-tests',
-	describe: 'create plugin unit tests',
-	builder: {},
-	handler: function handler() {
-		scaffold.init();
-		scaffold.createPluginTests();
-	}
+  command: 'plugin create-tests',
+  describe: 'create plugin unit tests',
+  builder: {},
+  handler: function handler() {
+    scaffold.init();
+    scaffold.createPluginTests();
+  }
 };
 
 var pluginCreateCommand = {
-	command: 'plugin create',
-	describe: 'scaffold new plugin',
-	builder: {},
-	handler: function handler() {
-		scaffold.init();
-		scaffold.initPlugin();
-	}
+  command: 'plugin create',
+  describe: 'scaffold new plugin',
+  builder: {},
+  handler: function handler() {
+    scaffold.init();
+    scaffold.initPlugin();
+  }
 };
 
 var themeCreateTestsCommand = {
-	command: 'theme create-tests',
-	describe: 'create theme unit tests',
-	builder: {},
-	handler: function handler() {
-		scaffold.init();
-		scaffold.createThemeTests();
-	}
+  command: 'theme create-tests',
+  describe: 'create theme unit tests',
+  builder: {},
+  handler: function handler() {
+    scaffold.init();
+    scaffold.createThemeTests();
+  }
 };
 
 var themeCreateCommand = {
-	command: 'theme create',
-	describe: 'scaffold new child theme',
-	builder: {},
-	handler: function handler() {
-		scaffold.init();
-		scaffold.initTheme();
-	}
+  command: 'theme create',
+  describe: 'scaffold new child theme',
+  builder: {},
+  handler: function handler() {
+    scaffold.init();
+    scaffold.initTheme();
+  }
 };
 
 var projectCreateCommand = {
-	command: 'project create',
-	describe: 'scaffold new project',
-	builder: {},
-	handler: function handler() {
-		scaffold.init();
-		scaffold.createProject();
-	}
+  command: 'project create',
+  describe: 'scaffold new project',
+  builder: {},
+  handler: function handler() {
+    scaffold.init();
+    scaffold.createProject();
+  }
 };
 
 var wpInstallCommand = {
-	command: 'wp install',
-	describe: 'install WordPress',
-	builder: {},
-	handler: function handler() {
-		log.error('This feature is not ready');
-	}
+  command: 'wp install',
+  describe: 'install WordPress',
+  builder: {},
+  handler: function handler() {
+    log.error('This feature is not ready');
+  }
 };
 
 /**
