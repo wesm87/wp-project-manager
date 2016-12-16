@@ -49,8 +49,7 @@ const SECRET_SALT_LENGTH = 64;
 /**
  * Project config settings and helper methods.
  */
-@mock
-export default class Project {
+class Project {
 
   /**
    * Gets project paths.
@@ -399,3 +398,5 @@ export default class Project {
     }
   }
 }
+
+export default mock(Project);

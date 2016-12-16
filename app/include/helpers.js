@@ -25,8 +25,7 @@ const RATIOS = {
 /**
  * Helper functions.
  */
-@mock
-export default class Helpers {
+class Helpers {
 
   /**
    * Checks if the specified file or directory exists.
@@ -199,3 +198,5 @@ export default class Helpers {
     }
   }
 }
+
+export default mock(Helpers);

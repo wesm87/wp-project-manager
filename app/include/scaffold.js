@@ -7,7 +7,7 @@ import fs from 'fs-extra';
 import cp from 'child_process';
 import path from 'path';
 import mustache from 'mustache';
-import _ from 'lodash';
+import { isEmpty, camelCase, startCase } from 'lodash';
 
 import { mock } from 'mocktail';
 
@@ -428,7 +428,7 @@ class Scaffold extends Project {
 
       return true;
     } catch (error) {
-      if (logError && !_.isEmpty(error)) {
+      if (logError && !isEmpty(error)) {
         log.error(error);
       }
 
@@ -455,7 +455,7 @@ class Scaffold extends Project {
 
     // We convert the type to camel case so we don't run into issues if we
     // want to use a type like `type-name` or `type_name`.
-    let base = basePaths[_.camelCase(type)];
+    let base = basePaths[camelCase(type)];
 
     if (!base) {
       base = '';
@@ -476,7 +476,7 @@ class Scaffold extends Project {
       theme: 'assets/source',
     };
 
-    let assetsPath = assetsPaths[_.camelCase(type)];
+    let assetsPath = assetsPaths[camelCase(type)];
 
     if (!assetsPath) {
       assetsPath = '';
@@ -551,9 +551,9 @@ class Scaffold extends Project {
       fs.mkdirpSync(dest);
       fs.copySync(source, dest);
 
-      log.ok(`${_.startCase(type)} assets created.`);
+      log.ok(`${startCase(type)} assets created.`);
     } catch (error) {
-      if (!_.isEmpty(error)) {
+      if (!isEmpty(error)) {
         log.error(error);
       }
     }
@@ -589,7 +589,7 @@ class Scaffold extends Project {
           fs.ensureSymlinkSync(dest, source);
           log.ok(`${dest} created.`);
         } catch (error) {
-          if (!_.isEmpty(error)) {
+          if (!isEmpty(error)) {
             log.error(error);
           }
         }
@@ -616,7 +616,7 @@ class Scaffold extends Project {
       try {
         fs.removeSync(file);
       } catch (error) {
-        if (!_.isEmpty(error)) {
+        if (!isEmpty(error)) {
           log.error(error);
         }
       }
@@ -640,7 +640,7 @@ class Scaffold extends Project {
 
     const dirs = helpers.readDir(source);
 
-    if (!_.isEmpty(dirs)) {
+    if (!isEmpty(dirs)) {
       for (const file of dirs) {
         this.scaffoldFile(path.join(source, file), type);
       }
@@ -685,7 +685,7 @@ class Scaffold extends Project {
 
       log.ok(`${file} created.`);
     } catch (error) {
-      if (!_.isEmpty(error)) {
+      if (!isEmpty(error)) {
         log.error(error);
 
         return false;
