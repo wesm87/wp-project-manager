@@ -63,7 +63,7 @@ var Helpers = function () {
    * @return {Boolean}     True if path exists and is `type`; false if not.
    */
 		value: function pathExists(path) {
-			var type = arguments.length <= 1 || arguments[1] === undefined ? 'any' : arguments[1];
+			var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'any';
 
 			try {
 				var info = fs.lstatSync(path);
@@ -144,7 +144,7 @@ var Helpers = function () {
 	}, {
 		key: 'readDir',
 		value: function readDir(dir) {
-			var includeHidden = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+			var includeHidden = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
 
 			try {
@@ -232,7 +232,7 @@ var Helpers = function () {
 	}, {
 		key: 'randomString',
 		value: function randomString(strLen) {
-			var format = arguments.length <= 1 || arguments[1] === undefined ? 'hex' : arguments[1];
+			var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'hex';
 
 
 			try {
@@ -315,7 +315,7 @@ var Project = function () {
    * @return {Object}      The resulting config object.
    */
 		value: function loadConfig() {
-			var file = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+			var file = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
 
 			var config = void 0;
@@ -550,7 +550,7 @@ var Project = function () {
 	}, {
 		key: 'createConfigFile',
 		value: function createConfigFile() {
-			var force = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+			var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
 
 			if (force && helpers.fileExists(this.paths.config)) {
@@ -1361,8 +1361,8 @@ var Scaffold = function (_Project) {
 	}, {
 		key: 'exec',
 		value: function exec(command) {
-			var type = arguments.length <= 1 || arguments[1] === undefined ? 'project' : arguments[1];
-			var callback = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+			var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'project';
+			var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
 
 			var options = {
@@ -1402,8 +1402,8 @@ var Scaffold = function (_Project) {
 	}, {
 		key: 'execSync',
 		value: function execSync(command) {
-			var type = arguments.length <= 1 || arguments[1] === undefined ? 'project' : arguments[1];
-			var logError = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+			var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'project';
+			var logError = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
 
 			var options = {
@@ -1434,7 +1434,7 @@ var Scaffold = function (_Project) {
 	}, {
 		key: 'getBasePath',
 		value: function getBasePath() {
-			var type = arguments.length <= 0 || arguments[0] === undefined ? 'project' : arguments[0];
+			var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'project';
 
 
 			var basePaths = {
@@ -1468,7 +1468,7 @@ var Scaffold = function (_Project) {
 	}, {
 		key: 'getAssetsPath',
 		value: function getAssetsPath() {
-			var type = arguments.length <= 0 || arguments[0] === undefined ? 'theme' : arguments[0];
+			var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'theme';
 
 
 			var assetsPaths = {
@@ -1494,7 +1494,7 @@ var Scaffold = function (_Project) {
 	}, {
 		key: 'createPlaceholders',
 		value: function createPlaceholders() {
-			var type = arguments.length <= 0 || arguments[0] === undefined ? 'theme' : arguments[0];
+			var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'theme';
 
 
 			var base = this.getBasePath(type);
@@ -1574,8 +1574,8 @@ var Scaffold = function (_Project) {
 	}, {
 		key: 'copyAssets',
 		value: function copyAssets() {
-			var type = arguments.length <= 0 || arguments[0] === undefined ? 'theme' : arguments[0];
-			var dir = arguments.length <= 1 || arguments[1] === undefined ? '' : arguments[1];
+			var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'theme';
+			var dir = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
 
 
 			var source = path.join(this.paths.assets, type, dir);
@@ -1610,7 +1610,7 @@ var Scaffold = function (_Project) {
 	}, {
 		key: 'linkFiles',
 		value: function linkFiles() {
-			var type = arguments.length <= 0 || arguments[0] === undefined ? 'project' : arguments[0];
+			var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'project';
 
 
 			var base = this.getBasePath(type);
@@ -1677,7 +1677,7 @@ var Scaffold = function (_Project) {
 	}, {
 		key: 'removeFiles',
 		value: function removeFiles() {
-			var type = arguments.length <= 0 || arguments[0] === undefined ? 'project' : arguments[0];
+			var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'project';
 
 
 			var base = this.getBasePath(type);
@@ -1731,7 +1731,7 @@ var Scaffold = function (_Project) {
 	}, {
 		key: 'scaffoldFiles',
 		value: function scaffoldFiles() {
-			var type = arguments.length <= 0 || arguments[0] === undefined ? 'project' : arguments[0];
+			var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'project';
 
 
 			var source = path.join(this.paths.templates, type);
@@ -1785,7 +1785,7 @@ var Scaffold = function (_Project) {
 	}, {
 		key: 'scaffoldFile',
 		value: function scaffoldFile(source) {
-			var type = arguments.length <= 1 || arguments[1] === undefined ? 'project' : arguments[1];
+			var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'project';
 
 
 			var file = path.basename(source, '.mustache');
