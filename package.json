@@ -39,16 +39,16 @@
   "scripts": {
     "gulp": "gulp",
     "build": "gulp build",
-    "docs": "npm run docs:jsdoc",
+    "docs": "npm run --silent docs:jsdoc",
     "docs:jsdoc": "jsdoc -c jsdoc.conf.json",
     "types:install": "flow-typed install",
     "lint": "eslint app test",
     "test": "gulp test",
     "coverage": "gulp coverage",
     "codeclimate": "codeclimate-test-reporter < coverage/lcov.info",
-    "travis": "npm run build && npm run lint && npm run coverage",
-    "preversion": "npm test",
-    "version": "npm run build",
+    "travis": "npm run --silent build && npm run --silent lint && npm run --silent coverage",
+    "preversion": "npm run --silent test",
+    "version": "npm run --silent build",
     "postversion": "git push && git push --tags && npm publish"
   },
   "dependencies": {
