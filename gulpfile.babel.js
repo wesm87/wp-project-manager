@@ -1,8 +1,9 @@
+// @flow
+/* eslint-disable import/no-extraneous-dependencies */
+
 /**
  * Gulpfile.
  */
-
-/* eslint-disable import/no-extraneous-dependencies */
 
 import 'babel-polyfill';
 
@@ -169,23 +170,32 @@ class GulpTasks {
    *
    * @return {Function}
    */
-  async test() {
+  testSync() {
     return gulp.src(this.files.js.tests)
       .pipe(mocha(this.config.mocha));
+  }
+
+  /**
+   * Unit tests.
+   *
+   * @return {Promise}
+   */
+  async test() {
+    return this.testSync();
   }
 
   /**
    * Code coverage.
    *
    * @param  {Function} done Async callback.
-   * @return {Function}
+   * @return {Promise}
    */
   async coverage(done) {
     return gulp.src(this.files.js.source)
       .pipe(istanbul(this.config.istanbul.read))
       .pipe(istanbul.hookRequire())
       .on('finish', () =>
-        this.test()
+        this.testSync()
           .pipe(istanbul.writeReports(this.config.istanbul.write))
           .on('end', done),
       );
@@ -195,7 +205,7 @@ class GulpTasks {
    * Checks for any potential security issues (NSP = Node Security Project).
    *
    * @param  {Function} done Async callback.
-   * @return {Function}
+   * @return {Promise}
    */
   async nsp(done) {
     return nsp(this.config.nsp, done);
@@ -205,6 +215,7 @@ class GulpTasks {
    * Automatically bumps the version number for a new release.
    *
    * @param {Function} done Async callback.
+   * @return {Promise}
    */
   async bump(done) {
     const argv = yargs.argv;
@@ -243,6 +254,7 @@ class GulpTasks {
    * coverage info, and bumps the version number.
    *
    * @param {Function} done Async callback.
+   * @return {Promise}
    */
   async release(done) {
     await this.build(done);
