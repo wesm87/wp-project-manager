@@ -2,6 +2,7 @@
  * Gulpfile.
  */
 
+/* eslint-disable import/no-extraneous-dependencies */
 
 import 'babel-polyfill';
 
@@ -20,7 +21,7 @@ import istanbul from 'gulp-istanbul';
 import { rollup } from 'rollup';
 import { Instrumenter } from 'isparta';
 
-const pkg = require('./package.json');
+import pkg from './package.json';
 
 /**
  * Gulp tasks.
@@ -93,10 +94,7 @@ class GulpTasks {
   }
 
   /**
-   * Constructor.
-   *
-   * Once ES7 arrives we can just define class methods as arrow functions.
-   * In the meantime, we need to bind each task method to the class.
+   * Initialize tasks
    */
   constructor() {
     for (const task of this.tasks) {
@@ -142,9 +140,7 @@ class GulpTasks {
       dest: `dist/bundle.${format}.js`,
     };
 
-    return rollup(rollupConfig).then(
-      bundle => bundle.write(bundleConfig),
-    );
+    return rollup(rollupConfig).then(bundle => bundle.write(bundleConfig));
   }
 
   /**
@@ -257,4 +253,4 @@ class GulpTasks {
   }
 }
 
-new GulpTasks();
+new GulpTasks(); // eslint-disable-line no-new
