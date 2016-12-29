@@ -170,18 +170,9 @@ class GulpTasks {
    *
    * @return {Function}
    */
-  testSync() {
+  async test() {
     return gulp.src(this.files.js.tests)
       .pipe(mocha(this.config.mocha));
-  }
-
-  /**
-   * Unit tests.
-   *
-   * @return {Promise}
-   */
-  async test() {
-    return this.testSync();
   }
 
   /**
@@ -194,11 +185,12 @@ class GulpTasks {
     return gulp.src(this.files.js.source)
       .pipe(istanbul(this.config.istanbul.read))
       .pipe(istanbul.hookRequire())
-      .on('finish', () =>
-        this.testSync()
-          .pipe(istanbul.writeReports(this.config.istanbul.write))
-          .on('end', done),
-      );
+      .on('finish', () => {
+        this.test().then(result => (
+          result.pipe(istanbul.writeReports(this.config.istanbul.write))
+            .on('end', done)
+        ));
+      });
   }
 
   /**
