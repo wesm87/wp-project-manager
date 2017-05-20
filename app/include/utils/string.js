@@ -10,6 +10,19 @@ import {
 
 
 /**
+ * Ratios used when converting numbers from one format to another.
+ *
+ * @since 0.7.7
+ *
+ * @type {Object}
+ */
+const RATIOS = {
+  BYTES_TO_HEX: 0.5,
+  BYTES_TO_BASE64: 0.75,
+};
+
+
+/**
  * Generates a random string in hexadecimal format.
  *
  * @since 0.1.0
