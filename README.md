@@ -3,13 +3,10 @@ WP Project Manager
 
 [![Chat on Gitter][gitter-img]][gitter-url]
 [![npm Version][npm-img]][npm-url]
-[![GitHub Release][github-img]][github-url]
 [![Build Status][travis-img]][travis-url]
 [![Code Climate Score][cc-gpa-img]][cc-gpa-url]
 [![Test Coverage][cc-coverage-img]][cc-coverage-url]
 [![Documentation Coverage][inch-ci-img]][inch-ci-url]
-[![dependencies Status][david-img]][david-url]
-[![devDependencies Status][david-dev-img]][david-dev-url]
 
 A Node CLI tool that simplifies the process of setting up a new WordPress
 project and development environment.
@@ -296,9 +293,6 @@ define environment-specific settings (such as enabling `WP_DEBUG` for
 [npm-img]:         https://img.shields.io/npm/v/wp-project-manager.svg
 [npm-url]:         https://www.npmjs.com/package/wp-project-manager
 
-[github-img]:      https://img.shields.io/github/tag/wesm87/wp-project-manager.svg
-[github-url]:      https://github.com/wesm87/wp-project-manager
-
 [travis-img]:      https://img.shields.io/travis/wesm87/wp-project-manager.svg
 [travis-url]:      https://travis-ci.org/wesm87/wp-project-manager
 
@@ -310,9 +304,3 @@ define environment-specific settings (such as enabling `WP_DEBUG` for
 
 [inch-ci-img]:     http://inch-ci.org/github/wesm87/wp-project-manager.svg?branch=master
 [inch-ci-url]:     https://inch-ci.org/github/wesm87/wp-project-manager?branch=master
-
-[david-img]:       https://img.shields.io/david/wesm87/wp-project-manager.svg
-[david-url]:       https://david-dm.org/wesm87/wp-project-manager
-
-[david-dev-img]:   https://img.shields.io/david/dev/wesm87/wp-project-manager.svg
-[david-dev-url]:   https://david-dm.org/wesm87/wp-project-manager?type=dev

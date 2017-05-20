@@ -1,50 +1,48 @@
 
-import '../setup';
-
 import chai from 'chai';
+
+import '../setup';
 
 const should = chai.should();
 
-describe( 'commands', () => {
+describe('commands', () => {
+  const commands = [
+    'config.create',
+    'config.display',
+    'deps.install',
+    'plugin.create-tests',
+    'plugin.create',
+    'project.create',
+    'theme.create-tests',
+    'theme.create',
+    'wp.install',
+  ];
 
-	const commands = [
-		'config.create',
-		'config.display',
-		'deps.install',
-		'plugin.create-tests',
-		'plugin.create',
-		'project.create',
-		'theme.create-tests',
-		'theme.create',
-		'wp.install',
-	];
+  for (const command of commands) {
+    describe(command, () => {
+      // eslint-disable-next-line global-require, import/no-dynamic-require
+      const commandModule = require(`../../app/commands/${command}`).default;
 
-	for ( const command of commands ) {
+      it('should export a non-empty object', () => {
+        should.exist(commandModule);
+        commandModule.should.be.an('object');
+      });
 
-		describe( command, () => {
+      it('should export a `command` property', () => {
+        commandModule.should.have.property('command');
+      });
 
-			const commandModule = require( `../../app/commands/${ command }` ).default;
+      it('should export a `describe` property', () => {
+        commandModule.should.have.property('describe');
+      });
 
-			it( 'should export a non-empty object', () => {
-				should.exist( commandModule );
-				commandModule.should.be.an( 'object' );
-			} );
+      it('should export a `builder` property', () => {
+        commandModule.should.have.property('builder');
+      });
 
-			it( 'should export a `command` property', () => {
-				commandModule.should.have.property( 'command' );
-			} );
-
-			it( 'should export a `describe` property', () => {
-				commandModule.should.have.property( 'describe' );
-			} );
-
-			it( 'should export a `builder` property', () => {
-				commandModule.should.have.property( 'builder' );
-			} );
-
-			it( 'should export a `handler()` method', () => {
-				commandModule.should.respondTo( 'handler' );
-			} );
-		} );
-	}
-} );
+      it('should export a `handler()` method', () => {
+        commandModule.should.respondTo('handler');
+      });
+    });
+  }
+});

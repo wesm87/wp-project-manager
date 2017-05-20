@@ -1,24 +1,20 @@
 
-module.exports = ( gulp, doRollup, runNsp ) => {
+/**
+ * Build task.
+ */
+module.exports = (gulp, doRollup, runNsp) => {
+  function handleError(err) {
+    console.error(err.stack);
+  }
 
-  /**
-   * Build task.
-   *
-   * @param  {Function} done Async callback.
-   * @return {Promise}
-   */
-  gulp.task( 'build', () => {
+  gulp.task('build', function buildTask() {
     process.env.BABEL_ENV = 'production';
 
-    const promises = ( [ 'es', 'cjs' ] ).map( doRollup );
+    const moduleTypes = ['es', 'cjs'];
+    const promises = moduleTypes.map(doRollup);
 
-    return Promise
-      .all( promises )
-      .then( () => {
-        runNsp();
-      } )
-      .catch( ( err ) => {
-        console.error( err.stack );
-      } );
-  } );
+    return Promise.all(promises)
+      .then(runNsp)
+      .catch(handleError);
+  });
 };

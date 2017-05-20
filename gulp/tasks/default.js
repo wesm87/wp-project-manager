@@ -1,6 +1,7 @@
 
-module.exports = ( gulp, runTests ) => {
-  gulp.task( 'default', () => {
-    runTests();
-  } );
+/**
+ * Default task.
+ */
+module.exports = (gulp) => {
+  gulp.task('default', ['test', 'build']);
 };

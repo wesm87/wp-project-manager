@@ -3,22 +3,22 @@ import sinon from 'sinon';
 
 import { env, ENV, inject } from 'mocktail';
 
-env( ENV.TESTING );
+env(ENV.TESTING);
 
 class ProjectMock {
 
-	static get config() {
-		return {
+  static get config() {
+    return {
 
-		};
-	}
+    };
+  }
 
-	static createConfigFile( force = false ) {
-		return force;
-	}
+  static createConfigFile(force = false) {
+    return force;
+  }
 
 }
 
-sinon.stub( ProjectMock, 'createConfigFile' );
+sinon.stub(ProjectMock, 'createConfigFile');
 
-inject( 'Project', ProjectMock );
+inject('Project', ProjectMock);
