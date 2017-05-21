@@ -1,12 +1,6 @@
 
 import crypto from 'crypto';
 
-import {
-  compose,
-  truncate,
-  toString,
-} from 'lodash/fp';
-
 import log from '../log';
 
 
@@ -33,13 +27,6 @@ const RATIOS = {
  * @return {String}                The randomly generated string.
  */
 export function randomString(strLen, format = 'hex') {
-  const sliceString = truncate({
-    length: strLen,
-    ommission: '',
-  });
-
-  const formatString = compose(sliceString, toString);
-
   try {
     let ratio;
 
@@ -51,9 +38,11 @@ export function randomString(strLen, format = 'hex') {
     }
 
     const numBytes = Math.ceil(strLen * ratio);
-    const randomBytes = crypto.randomBytes(numBytes);
 
-    return formatString(randomBytes);
+    return crypto
+      .randomBytes(numBytes)
+      .toString(format)
+      .slice(0, strLen);
   } catch (error) {
     log.error(error);
 

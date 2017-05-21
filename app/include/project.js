@@ -364,7 +364,7 @@ class Project {
     }
 
     if (!parsed.theme.slug) {
-      parsed.theme.slug = (parsed.theme.name);
+      parsed.theme.slug = kebabCase(parsed.theme.name);
     }
 
     return parsed;

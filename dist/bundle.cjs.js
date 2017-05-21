@@ -49,13 +49,6 @@ var RATIOS = {
 function randomString(strLen) {
   var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'hex';
 
-  var sliceString = lodash_fp.truncate({
-    length: strLen,
-    ommission: ''
-  });
-
-  var formatString = lodash_fp.compose(sliceString, lodash_fp.toString);
-
   try {
     var ratio = void 0;
 
@@ -67,9 +60,8 @@ function randomString(strLen) {
     }
 
     var numBytes = Math.ceil(strLen * ratio);
-    var randomBytes = crypto.randomBytes(numBytes);
 
-    return formatString(randomBytes);
+    return crypto.randomBytes(numBytes).toString(format).slice(0, strLen);
   } catch (error) {
     log.error(error);
 
@@ -367,26 +359,154 @@ var Project = function () {
      * @param  {String} file The path to the config file.
      * @return {Object}      The resulting config object.
      */
-    value: function loadConfig() {
-      var file = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    value: function () {
+      var _ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee() {
+        var file = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+        var config, customFileExists, configFileExists;
+        return _regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                config = void 0;
 
-      var config = void 0;
+                // Try to load the config file if one was passed and it exists.
 
-      // Try to load the config file if one was passed and it exists.
-      if (file && fileExists(file)) {
-        config = loadYAML(file);
+                if (!file) {
+                  _context.next = 9;
+                  break;
+                }
+
+                _context.next = 4;
+                return fileExists(file);
+
+              case 4:
+                customFileExists = _context.sent;
+
+                if (!customFileExists) {
+                  _context.next = 9;
+                  break;
+                }
+
+                _context.next = 8;
+                return loadYAML(file);
+
+              case 8:
+                config = _context.sent;
+
+              case 9:
+                if (!lodash_fp.isEmpty(config)) {
+                  _context.next = 17;
+                  break;
+                }
+
+                _context.next = 12;
+                return fileExists(this.paths.config);
+
+              case 12:
+                configFileExists = _context.sent;
+
+                if (!configFileExists) {
+                  _context.next = 17;
+                  break;
+                }
+
+                _context.next = 16;
+                return loadYAML(this.paths.config);
+
+              case 16:
+                config = _context.sent;
+
+              case 17:
+
+                config = lodash_fp.merge(config, yargs.argv);
+
+                return _context.abrupt('return', this.parseConfig(config));
+
+              case 19:
+              case 'end':
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function loadConfig() {
+        return _ref.apply(this, arguments);
       }
 
-      // If we don't have a config object (or the config object is empty)
-      // fall back to the default config file.
-      if (lodash_fp.isEmpty(config) && fileExists(this.paths.config)) {
-        config = loadYAML(this.paths.config);
+      return loadConfig;
+    }()
+
+    /**
+     * Creates a new `project.yml` file with the default settings.
+     *
+     * @since 0.3.0
+     *
+     * @param {Boolean} [force=false] If true and a config file already exists,
+     *                                it will be deleted and a new file will be
+     *                                created.
+     */
+
+  }, {
+    key: 'createConfigFile',
+    value: function () {
+      var _ref2 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee2() {
+        var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+        var _configFileExists, configFileExists;
+
+        return _regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                if (!force) {
+                  _context2.next = 7;
+                  break;
+                }
+
+                _context2.next = 3;
+                return fileExists(this.paths.config);
+
+              case 3:
+                _configFileExists = _context2.sent;
+
+                if (!_configFileExists) {
+                  _context2.next = 7;
+                  break;
+                }
+
+                _context2.next = 7;
+                return fs.remove(this.paths.config);
+
+              case 7:
+                _context2.next = 9;
+                return fileExists(this.paths.config);
+
+              case 9:
+                configFileExists = _context2.sent;
+
+                if (configFileExists) {
+                  _context2.next = 13;
+                  break;
+                }
+
+                _context2.next = 13;
+                return writeYAML(this.paths.config, this.defaultConfig);
+
+              case 13:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function createConfigFile() {
+        return _ref2.apply(this, arguments);
       }
 
-      config = lodash_fp.merge(config, yargs.argv);
-
-      return this.parseConfig(config);
-    }
+      return createConfigFile;
+    }()
 
     /**
      * Parses the project config. Missing values are filled in from the default
@@ -510,7 +630,7 @@ var Project = function () {
       }
 
       if (!parsed.theme.slug) {
-        parsed.theme.slug = parsed.theme.name;
+        parsed.theme.slug = lodash_fp.kebabCase(parsed.theme.name);
       }
 
       return parsed;
@@ -594,77 +714,6 @@ var Project = function () {
 
       return parsed;
     }
-
-    /**
-     * Creates a new `project.yml` file with the default settings.
-     *
-     * @since 0.3.0
-     *
-     * @param {Boolean} [force=false] If true and a config file already exists,
-     *                                it will be deleted and a new file will be
-     *                                created.
-     */
-
-  }, {
-    key: 'createConfigFile',
-    value: function () {
-      var _ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee() {
-        var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
-        var _configFileExists, configFileExists;
-
-        return _regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                if (!force) {
-                  _context.next = 7;
-                  break;
-                }
-
-                _context.next = 3;
-                return fileExists(this.paths.config);
-
-              case 3:
-                _configFileExists = _context.sent;
-
-                if (!_configFileExists) {
-                  _context.next = 7;
-                  break;
-                }
-
-                _context.next = 7;
-                return fs.remove(this.paths.config);
-
-              case 7:
-                _context.next = 9;
-                return fileExists(this.paths.config);
-
-              case 9:
-                configFileExists = _context.sent;
-
-                if (configFileExists) {
-                  _context.next = 13;
-                  break;
-                }
-
-                _context.next = 13;
-                return writeYAML(this.paths.config, this.defaultConfig);
-
-              case 13:
-              case 'end':
-                return _context.stop();
-            }
-          }
-        }, _callee, this);
-      }));
-
-      function createConfigFile() {
-        return _ref.apply(this, arguments);
-      }
-
-      return createConfigFile;
-    }()
   }, {
     key: 'paths',
 
@@ -1081,6 +1130,10 @@ var Scaffold = function (_Project) {
      */
     value: function getBasePath() {
       var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'project';
+      var _config = this.config,
+          plugin = _config.plugin,
+          theme = _config.theme;
+
 
       var basePaths = {
         project: '.',
@@ -1088,8 +1141,8 @@ var Scaffold = function (_Project) {
         scripts: 'scripts',
         bedrock: 'htdocs',
         wordpress: 'htdocs/web/wp',
-        plugin: path.join('htdocs/web/app/plugins/', this.config.plugin.slug),
-        theme: path.join('htdocs/web/app/themes/', this.config.theme.slug)
+        plugin: path.join('htdocs/web/app/plugins/', plugin.slug),
+        theme: path.join('htdocs/web/app/themes/', theme.slug)
       };
 
       // We convert the type to camel case so we don't run into issues if we
@@ -1144,21 +1197,30 @@ var Scaffold = function (_Project) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
+                _context.next = 2;
+                return this.config;
+
+              case 2:
+                this.config = _context.sent;
+
                 this.templateData = this.config;
 
                 if (!isTest(this.config.env)) {
-                  _context.next = 4;
+                  _context.next = 7;
                   break;
                 }
 
-                _context.next = 4;
+                _context.next = 7;
                 return fs.remove(this.paths.project);
 
-              case 4:
-                _context.next = 6;
+              case 7:
+                _context.next = 9;
                 return fs.mkdirp(this.paths.project);
 
-              case 6:
+              case 9:
+                return _context.abrupt('return', true);
+
+              case 10:
               case 'end':
                 return _context.stop();
             }
@@ -1183,12 +1245,15 @@ var Scaffold = function (_Project) {
     key: 'createProject',
     value: function () {
       var _ref2 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee2() {
+        var project;
         return _regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                if (this.config.project.title) {
-                  _context2.next = 4;
+                project = this.config.project;
+
+                if (!(!project || !project.title)) {
+                  _context2.next = 5;
                   break;
                 }
 
@@ -1197,30 +1262,30 @@ var Scaffold = function (_Project) {
 
                 return _context2.abrupt('return', false);
 
-              case 4:
-                _context2.next = 6;
+              case 5:
+                _context2.next = 7;
                 return this.initProjectFiles();
 
-              case 6:
-                _context2.next = 8;
+              case 7:
+                _context2.next = 9;
                 return this.initRepo();
 
-              case 8:
-                _context2.next = 10;
+              case 9:
+                _context2.next = 11;
                 return this.initProject();
 
-              case 10:
-                _context2.next = 12;
+              case 11:
+                _context2.next = 13;
                 return this.initPlugin();
 
-              case 12:
-                _context2.next = 14;
+              case 13:
+                _context2.next = 15;
                 return this.initTheme();
 
-              case 14:
+              case 15:
                 return _context2.abrupt('return', true);
 
-              case 15:
+              case 16:
               case 'end':
                 return _context2.stop();
             }
@@ -1451,7 +1516,7 @@ var Scaffold = function (_Project) {
 
                 dirPath = path.join(this.paths.project, '.git');
                 _context6.next = 6;
-                return fs.directoryExists(dirPath);
+                return directoryExists(dirPath);
 
               case 6:
                 dirExists$$1 = _context6.sent;
@@ -1533,7 +1598,7 @@ var Scaffold = function (_Project) {
 
                 dirPath = path.join(this.paths.project, 'htdocs');
                 _context7.next = 4;
-                return fs.directoryExists(dirPath);
+                return directoryExists(dirPath);
 
               case 4:
                 dirExists$$1 = _context7.sent;
@@ -1647,7 +1712,7 @@ var Scaffold = function (_Project) {
 
                 basePath = this.getBasePath('plugin');
                 _context8.next = 9;
-                return fs.directoryExists(basePath);
+                return directoryExists(basePath);
 
               case 9:
                 dirExists$$1 = _context8.sent;
@@ -1743,7 +1808,7 @@ var Scaffold = function (_Project) {
 
                 basePath = this.getBasePath('theme');
                 _context9.next = 10;
-                return fs.directoryExists(basePath);
+                return directoryExists(basePath);
 
               case 10:
                 dirExists$$1 = _context9.sent;
@@ -2068,7 +2133,7 @@ var Scaffold = function (_Project) {
                 source = path.join(this.paths.assets, type, dir);
                 dest = path.join(this.getAssetsPath(type), dir);
                 _context13.next = 4;
-                return fs.directoryExists(source);
+                return directoryExists(source);
 
               case 4:
                 dirExists$$1 = _context13.sent;
@@ -2144,7 +2209,7 @@ var Scaffold = function (_Project) {
             switch (_context14.prev = _context14.next) {
               case 0:
                 base = this.getBasePath(type);
-                files = this.files[type].link;
+                files = lodash_fp.getOr('', [type, 'link'], this.files);
 
                 if (files) {
                   _context14.next = 4;
@@ -2398,7 +2463,7 @@ var Scaffold = function (_Project) {
               case 0:
                 source = path.join(this.paths.templates, type);
                 _context16.next = 3;
-                return fs.directoryExists(source);
+                return directoryExists(source);
 
               case 3:
                 dirExists$$1 = _context16.sent;
@@ -2664,8 +2729,26 @@ var projectCreateCommand = {
   describe: 'scaffold new project',
   builder: {},
   handler: function handler() {
-    scaffold.init();
-    scaffold.createProject();
+    var _this = this;
+
+    return _asyncToGenerator(_regeneratorRuntime.mark(function _callee() {
+      return _regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _context.next = 2;
+              return scaffold.init();
+
+            case 2:
+              scaffold.createProject();
+
+            case 3:
+            case 'end':
+              return _context.stop();
+          }
+        }
+      }, _callee, _this);
+    }))();
   }
 };
 
