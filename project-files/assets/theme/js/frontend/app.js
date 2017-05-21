@@ -1,7 +1,6 @@
-( function( $ ) {
 
-	$( () => {
-		// ES6 shorthand for `$( function() { ... } );`
-	} );
+(function onReadyIIFE($) {
+  $(function onReady() {
 
-} )( window.jQuery );
+  });
+})(window.jQuery);

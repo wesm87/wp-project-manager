@@ -9,6 +9,7 @@ import cp from 'mz/child_process';
 import mustache from 'mustache';
 
 import {
+  getOr,
   camelCase,
   startCase,
   isEmpty,
@@ -71,14 +72,16 @@ class Scaffold extends Project {
    * @return {String}
    */
   static getBasePath(type = 'project') {
+    const { plugin, theme } = this.config;
+
     const basePaths = {
       project: '.',
       vvv: 'vvv',
       scripts: 'scripts',
       bedrock: 'htdocs',
       wordpress: 'htdocs/web/wp',
-      plugin: path.join('htdocs/web/app/plugins/', this.config.plugin.slug),
-      theme: path.join('htdocs/web/app/themes/', this.config.theme.slug),
+      plugin: path.join('htdocs/web/app/plugins/', plugin.slug),
+      theme: path.join('htdocs/web/app/themes/', theme.slug),
     };
 
     // We convert the type to camel case so we don't run into issues if we
@@ -120,6 +123,7 @@ class Scaffold extends Project {
    * Also creates the project folder if it doesn't exist.
    */
   static async init() {
+    this.config = await this.config;
     this.templateData = this.config;
 
     if (isTest(this.config.env)) {
@@ -127,6 +131,8 @@ class Scaffold extends Project {
     }
 
     await fs.mkdirp(this.paths.project);
+
+    return true;
   }
 
   /**
@@ -135,7 +141,9 @@ class Scaffold extends Project {
    * @return {Boolean}
    */
   static async createProject() {
-    if (!this.config.project.title) {
+    const { project } = this.config;
+
+    if (!project || !project.title) {
       log.error('You must specify a project title.');
       log.info('Check the README for usage information.');
 
@@ -217,7 +225,7 @@ class Scaffold extends Project {
     log.message('Checking for Git repo...');
 
     const dirPath = path.join(this.paths.project, '.git');
-    const dirExists = await fs.directoryExists(dirPath);
+    const dirExists = await directoryExists(dirPath);
 
     if (dirExists) {
       log.ok('Repo exists.');
@@ -254,7 +262,7 @@ class Scaffold extends Project {
     log.message('Checking for Bedrock...');
 
     const dirPath = path.join(this.paths.project, 'htdocs');
-    const dirExists = await fs.directoryExists(dirPath);
+    const dirExists = await directoryExists(dirPath);
 
     if (dirExists) {
       log.ok('Bedrock exists');
@@ -309,7 +317,7 @@ class Scaffold extends Project {
 
     const basePath = this.getBasePath('plugin');
 
-    const dirExists = await fs.directoryExists(basePath);
+    const dirExists = await directoryExists(basePath);
 
     if (dirExists) {
       log.ok('Plugin exists.');
@@ -357,7 +365,7 @@ class Scaffold extends Project {
 
     const basePath = this.getBasePath('theme');
 
-    const dirExists = await fs.directoryExists(basePath);
+    const dirExists = await directoryExists(basePath);
 
     if (dirExists) {
       log.ok('Child theme exists.');
@@ -464,7 +472,7 @@ class Scaffold extends Project {
     const source = path.join(this.paths.assets, type, dir);
     const dest = path.join(this.getAssetsPath(type), dir);
 
-    const dirExists = await fs.directoryExists(source);
+    const dirExists = await directoryExists(source);
 
     if (!dirExists) {
       log.error(`${source} is not a valid assets folder.`);
@@ -495,7 +503,7 @@ class Scaffold extends Project {
    */
   static async linkFiles(type = 'project') {
     const base = this.getBasePath(type);
-    const files = this.files[type].link;
+    const files = getOr('', [type, 'link'], this.files);
 
     if (!files) {
       return;
@@ -561,7 +569,7 @@ class Scaffold extends Project {
   static async scaffoldFiles(type = 'project') {
     const source = path.join(this.paths.templates, type);
 
-    const dirExists = await fs.directoryExists(source);
+    const dirExists = await directoryExists(source);
 
     if (!dirExists) {
       log.error(`${source} is not a valid template directory`);

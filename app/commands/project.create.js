@@ -5,8 +5,8 @@ export default {
   command: 'project create',
   describe: 'scaffold new project',
   builder: {},
-  handler() {
-    scaffold.init();
+  async handler() {
+    await scaffold.init();
     scaffold.createProject();
   },
 };

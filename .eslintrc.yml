@@ -21,6 +21,9 @@
       - ForInStatement
       - LabeledStatement
       - WithStatement
+    wrap-iife:
+      - error
+      - outside
     prefer-arrow-callback:
       - off
     import/prefer-default-export:
