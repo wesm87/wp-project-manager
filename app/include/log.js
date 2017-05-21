@@ -2,10 +2,16 @@
  * @module
  */
 
-import { isEmpty, isObjectLike, keys } from 'lodash';
-import colors from 'colors';
+import chalk from 'chalk';
 
-// import { mock } from 'mocktail';
+import {
+  partialRight,
+  identity,
+  getOr,
+  keys,
+  isEmpty,
+  isObjectLike,
+} from 'lodash/fp';
 
 import project from './project';
 
@@ -19,6 +25,9 @@ const JSON_TAB_WIDTH = 2;
  * Logger class. Contains various methods (debug, info, ok, warn, error, etc.)
  * that take a string or object-like value, apply an associated style, and log
  * it. Some styles also prepend an associated icon identifier to the message.
+ *
+ * @since 0.4.0
+ * @since 0.8.0 Switched from `colors` to `chalk`.
  */
 class Log {
 
@@ -31,12 +40,12 @@ class Log {
    */
   get styles() {
     return {
-      ok: ['green'],
-      info: ['cyan'],
-      warn: ['yellow', 'underline'],
-      error: ['red', 'underline'],
-      debug: ['cyan', 'underline'],
-      message: ['reset'],
+      ok: chalk.green,
+      info: chalk.cyan,
+      warn: chalk.yellow.underline,
+      error: chalk.red.underline,
+      debug: chalk.cyan.underline,
+      message: chalk.reset,
     };
   }
 
@@ -89,12 +98,11 @@ class Log {
    * @since 0.5.0
    */
   init() {
-    // Set the colors theme based on our styles.
-    colors.setTheme(this.styles);
+    const styles = keys(this.styles);
 
     // Automatically create methods for each style.
-    for (const style of keys(this.styles)) {
-      this[style] = message => this._log(message, style);
+    for (const style of styles) {
+      this[style] = partialRight(this._log, [style]);
     }
 
     this.instance = this;
@@ -116,34 +124,35 @@ class Log {
   _log(message, style) {
     let output = message;
 
-    // Convert object-like messages to string.
-    if (isObjectLike(output)) {
-      output = JSON.stringify(output, null, JSON_TAB_WIDTH);
-    }
-
     // Don't log anything if message is empty.
     if (isEmpty(output)) {
       return;
     }
 
+    // Convert object-like messages to string.
+    if (isObjectLike(output)) {
+      output = JSON.stringify(output, null, JSON_TAB_WIDTH);
+    }
+
     // Make sure the message is a string.
     output = String(output);
 
-    // Check if a valid style was specified.
-    if (style && output[style]) {
-      // Bail if the style is 'debug' and debugging is disabled.
-      if (style === 'debug' && !project.debug) {
-        return;
-      }
-
-      // If the style has an associated icon, prepend it to the message.
-      if (this.icons[style]) {
-        output = `${this.icons[style]} ${output}`;
-      }
-
-      // Apply the style to the message.
-      output = output[style];
+    // Bail if the style is 'debug' and debugging is disabled.
+    if (style === 'debug' && !project.debug) {
+      return;
     }
+
+    // If the style has an associated icon, prepend it to the message.
+    const icon = getOr('', style, this.icons);
+
+    if (icon) {
+      output = `${icon} ${output}`;
+    }
+
+    // Apply the style to the message.
+    const applyStyle = getOr(identity, style, this.styles);
+
+    output = applyStyle(output);
 
     // Log the message.
     console.log(output);

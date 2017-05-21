@@ -2,18 +2,31 @@
  * @module
  */
 
-import os from 'os';
-import fs from 'fs-extra';
-import cp from 'child_process';
 import path from 'path';
+
+import fs from 'fs-extra';
+import cp from 'mz/child_process';
 import mustache from 'mustache';
-import { isEmpty, camelCase, startCase } from 'lodash';
+
+import {
+  camelCase,
+  startCase,
+  isEmpty,
+} from 'lodash/fp';
 
 import { mock } from 'mocktail';
 
 import log from './log';
-import helpers from './helpers';
 import Project from './project';
+
+import { isTest } from './utils/env';
+
+import {
+  readDir,
+  fileExists,
+  symlinkExists,
+  directoryExists,
+} from './utils/fs';
 
 /**
  * Scaffolds out project files, plugins, themes, etc.
@@ -36,14 +49,6 @@ class Scaffold extends Project {
    */
   static get files() {
     return {
-      project: {
-        link: new Map([
-          ['dev-lib/pre-commit', '.git/hooks'],
-          ['dev-lib/.jshintrc', '.'],
-          ['dev-lib/.jscsrc', '.'],
-        ]),
-      },
-
       bedrock: {
         remove: new Set([
           'composer.*',
@@ -57,383 +62,6 @@ class Scaffold extends Project {
         ]),
       },
     };
-  }
-
-  /**
-   * Sets initial values required for other class methods.
-   */
-  static init() {
-    this.templateData = this.config;
-
-    fs.mkdirpSync(this.paths.project);
-
-    if (this.config.env === 'node-test') {
-      fs.removeSync(this.paths.project);
-      fs.mkdirpSync(this.paths.project);
-    }
-  }
-
-  /**
-   * Creates a new project.
-   *
-   * @return {Boolean}
-   */
-  static createProject() {
-    if (!this.config.project.title) {
-      log.error('You must specify a project title.');
-      log.info('Check the README for usage information.');
-
-      return false;
-    }
-
-    this.initProjectFiles();
-    this.initRepo();
-    this.initDevLib();
-    this.initProject();
-    this.initPlugin();
-    this.initTheme();
-
-    return true;
-  }
-
-  /**
-   * Creates project files.
-   */
-  static initProjectFiles() {
-    this.maybeCreateAuthFiles();
-    this.maybeCopyPluginZips();
-    this.parseTemplateData();
-
-    this.scaffoldFiles('scripts');
-
-    if (this.config.vvv) {
-      this.scaffoldFiles('vvv');
-    }
-  }
-
-  /**
-   * Creates a Composer `auth.json` file if enabled in project config.
-   */
-  static maybeCreateAuthFiles() {
-    if (!this.config.token) {
-      return;
-    }
-
-    const filePath = path.join(os.homedir(), '.composer/auth.json');
-    const contents = JSON.stringify({
-      'github-oauth': {
-        'github.com': `${this.config.token}`,
-      },
-    });
-
-    if (!helpers.fileExists(filePath)) {
-      fs.writeFileSync(filePath, contents);
-    }
-  }
-
-  /**
-   * Copies plugin ZIP files.
-   */
-  static maybeCopyPluginZips() {
-    if (!helpers.directoryExists(this.paths.plugins)) {
-      return;
-    }
-
-    log.message('Copying plugin ZIPs...');
-
-    const source = this.paths.plugins;
-    const dest = path.join(this.paths.project, 'project-files/plugin-zips');
-
-    fs.copySync(source, dest);
-
-    log.ok('Plugin ZIPs copied.');
-  }
-
-  /**
-   * Parses template data from project config.
-   */
-  static parseTemplateData() {
-    const pluginZipsDir = path.join(this.paths.project, 'project-files/plugin-zips');
-
-    if (!this.templateData.pluginZips) {
-      this.templateData.pluginZips = [];
-    }
-
-    for (const val of helpers.readDir(pluginZipsDir)) {
-      this.templateData.pluginZips.push({
-        name: path.basename(val, '.zip'),
-        file: val,
-      });
-    }
-  }
-
-  /**
-   * Initializes the Git repo if enabled in project config.
-   *
-   * @return {Boolean}
-   */
-  static initRepo() {
-    if (!this.config.repo.create) {
-      return false;
-    }
-
-    log.message('Checking for Git repo...');
-
-    const dirExists = helpers.directoryExists(
-      path.join(this.paths.project, '.git'),
-    );
-
-    if (dirExists) {
-      log.ok('Repo exists.');
-
-      return false;
-    }
-
-    // Initialize repo.
-    if (this.execSync('git init', 'project', false)) {
-      log.ok('Repo initialized.');
-    }
-
-    // If the repo URL is set, add it as a remote.
-    if (this.config.repo.url) {
-      const command = `git remote add origin ${this.config.repo.url}`;
-
-      if (this.execSync(command, 'project', false)) {
-        log.ok('Remote URL added.');
-      }
-    }
-
-    return true;
-  }
-
-  /**
-   * Adds the `wp-dev-lib` git submodule.
-   *
-   * @return {Boolean}
-   */
-  static initDevLib() {
-    log.message('Checking for wp-dev-lib submodule...');
-
-    const dirExists = helpers.directoryExists(
-      path.join(this.paths.project, 'dev-lib'),
-    );
-
-    if (dirExists) {
-      log.ok('Submodule exists.');
-
-      return false;
-    }
-
-    // Add the sub-module.
-    const command = 'git submodule add -f -b master https://github.com/xwp/wp-dev-lib.git dev-lib';
-
-    if (this.execSync(command, 'project')) {
-      log.ok('Submodule added.');
-    }
-
-    return true;
-  }
-
-  /**
-   * Creates project files and install project dependencies.
-   *
-   * @return {Boolean}
-   */
-  static initProject() {
-    log.message('Checking for Bedrock...');
-
-    const dirExists = helpers.directoryExists(
-      path.join(this.paths.project, 'htdocs'),
-    );
-
-    if (dirExists) {
-      log.ok('Bedrock exists');
-
-      return false;
-    }
-
-    // Install Bedrock.
-    const command = 'composer create-project roots/bedrock htdocs --no-install';
-
-    if (this.execSync(command, 'project')) {
-      log.ok('Bedrock installed.');
-    }
-
-    this.linkFiles('project');
-    this.scaffoldFiles('project');
-    this.scaffoldFiles('bedrock');
-    this.removeFiles('bedrock');
-
-    log.message('Installing project dependencies...');
-
-    if (this.execSync('composer install', 'project')) {
-      log.ok('Dependencies installed.');
-    }
-
-    return true;
-  }
-
-  /**
-   * Creates plugin files.
-   *
-   * @return {Boolean}
-   */
-  static initPlugin() {
-    if (!this.config.plugin.scaffold) {
-      return false;
-    }
-
-    if (!this.config.plugin.name) {
-      log.error(
-        'You must specify a plugin name.'
-        + ' Check the README for usage information.',
-      );
-
-      return false;
-    }
-
-    log.message('Checking for plugin...');
-
-    const basePath = this.getBasePath('plugin');
-
-    if (helpers.directoryExists(basePath)) {
-      log.ok('Plugin exists.');
-
-      return false;
-    }
-
-    this.scaffoldFiles('plugin');
-
-    this.createPlaceholders('plugin');
-
-    log.ok('Plugin created.');
-
-    return true;
-  }
-
-  /**
-   * Creates plugin unit tests.
-   */
-  static createPluginTests() {
-    log.error('This feature is not ready');
-  }
-
-  /**
-   * Creates a child theme.
-   *
-   * @since 0.1.0
-   *
-   * @return {Boolean} False if theme exists,
-   */
-  static initTheme() {
-    if (!this.config.theme.scaffold) {
-      return false;
-    }
-
-    if (!this.config.theme.name) {
-      log.error(
-        'You must specify a theme name.'
-        + ' Check the README for usage information.',
-      );
-
-      return false;
-    }
-
-    log.message('Checking for child theme...');
-
-    const basePath = this.getBasePath('theme');
-
-    if (helpers.directoryExists(basePath)) {
-      log.ok('Child theme exists.');
-
-      return true;
-    }
-
-    this.scaffoldFiles('theme');
-
-    this.createPlaceholders('theme');
-
-    this.copyAssets('theme');
-
-    log.ok('Theme created.');
-
-    log.message('Installing theme dependencies...');
-
-    this.execSync('npm install', 'theme');
-    this.execSync('bower install', 'theme');
-
-    log.message('Compiling theme assets...');
-    this.execSync('npm run build', 'theme');
-
-    log.ok('Done');
-
-    return true;
-  }
-
-  /**
-   * Creates theme unit tests.
-   */
-  static createThemeTests() {
-    log.error('This feature is not ready');
-  }
-
-  /**
-   * Executes a command.
-   *
-   * @param  {String}   command The command.
-   * @param  {String}   [type = 'project'] Type to use for the base path.
-   * @param  {Function} [callback = null]  A callback to call on success.
-   * @return {Boolean}
-   */
-  static exec(command, type = 'project', callback = null) {
-    const options = {
-      cwd: this.getBasePath(type),
-    };
-
-    return cp.exec(command, options, (error, stdout, stderr) => {
-      // Exit on error.
-      if (error !== null) {
-        log.error(error);
-
-        return false;
-      }
-
-      // If a callback was provided, call it.
-      if (callback) {
-        callback(stdout, stderr);
-
-        return true;
-      }
-
-      // Otherwise just return true.
-      return true;
-    });
-  }
-
-  /**
-   * Synchronously executes a command.
-   *
-   * @param  {String} command             The command.
-   * @param  {String} [type = 'project']  Command runs in the type's base path.
-   * @param  {Boolean} [logError = false] Whether to log errors.
-   * @return {Boolean}
-   */
-  static execSync(command, type = 'project', logError = false) {
-    const options = {
-      cwd: this.getBasePath(type),
-    };
-
-    try {
-      cp.execSync(command, options);
-
-      return true;
-    } catch (error) {
-      if (logError && !isEmpty(error)) {
-        log.error(error);
-      }
-
-      return false;
-    }
   }
 
   /**
@@ -455,10 +83,11 @@ class Scaffold extends Project {
 
     // We convert the type to camel case so we don't run into issues if we
     // want to use a type like `type-name` or `type_name`.
-    let base = basePaths[camelCase(type)];
+    const pathKey = camelCase(type);
+    const base = basePaths[pathKey];
 
     if (!base) {
-      base = '';
+      return '';
     }
 
     return path.join(this.paths.project, base);
@@ -476,13 +105,308 @@ class Scaffold extends Project {
       theme: 'assets/source',
     };
 
-    let assetsPath = assetsPaths[camelCase(type)];
+    const pathKey = camelCase(type);
+    const assetsPath = assetsPaths[pathKey];
 
     if (!assetsPath) {
-      assetsPath = '';
+      return '';
     }
 
     return path.join(this.getBasePath(type), assetsPath);
+  }
+
+  /**
+   * Sets initial values required for other class methods.
+   * Also creates the project folder if it doesn't exist.
+   */
+  static async init() {
+    this.templateData = this.config;
+
+    if (isTest(this.config.env)) {
+      await fs.remove(this.paths.project);
+    }
+
+    await fs.mkdirp(this.paths.project);
+  }
+
+  /**
+   * Creates a new project.
+   *
+   * @return {Boolean}
+   */
+  static async createProject() {
+    if (!this.config.project.title) {
+      log.error('You must specify a project title.');
+      log.info('Check the README for usage information.');
+
+      return false;
+    }
+
+    await this.initProjectFiles();
+    await this.initRepo();
+    await this.initProject();
+    await this.initPlugin();
+    await this.initTheme();
+
+    return true;
+  }
+
+  /**
+   * Creates project files.
+   */
+  static async initProjectFiles() {
+    await this.maybeCopyPluginZips();
+    await this.parseTemplateData();
+
+    await this.scaffoldFiles('scripts');
+
+    if (this.config.vvv) {
+      await this.scaffoldFiles('vvv');
+    }
+  }
+
+  /**
+   * Copies plugin ZIP files.
+   */
+  static async maybeCopyPluginZips() {
+    const dirExists = await directoryExists(this.paths.plugins);
+
+    if (!dirExists) {
+      return;
+    }
+
+    log.message('Copying plugin ZIPs...');
+
+    const source = this.paths.plugins;
+    const dest = path.join(this.paths.project, 'project-files/plugin-zips');
+
+    await fs.copy(source, dest);
+
+    log.ok('Plugin ZIPs copied.');
+  }
+
+  /**
+   * Parses template data from project config.
+   */
+  static async parseTemplateData() {
+    const pluginZipsDir = path.join(this.paths.project, 'project-files/plugin-zips');
+
+    if (!this.templateData.pluginZips) {
+      this.templateData.pluginZips = [];
+    }
+
+    const files = await readDir(pluginZipsDir);
+
+    for (const file of files) {
+      const name = path.basename(file, '.zip');
+
+      this.templateData.pluginZips.push({ name, file });
+    }
+  }
+
+  /**
+   * Initializes the Git repo if enabled in project config.
+   *
+   * @return {Boolean}
+   */
+  static async initRepo() {
+    if (!this.config.repo.create) {
+      return false;
+    }
+
+    log.message('Checking for Git repo...');
+
+    const dirPath = path.join(this.paths.project, '.git');
+    const dirExists = await fs.directoryExists(dirPath);
+
+    if (dirExists) {
+      log.ok('Repo exists.');
+
+      return false;
+    }
+
+    // Initialize repo.
+    const gitInitResult = await this.exec('git init', 'project');
+
+    if (gitInitResult) {
+      log.ok('Repo initialized.');
+    }
+
+    // If the repo URL is set, add it as a remote.
+    if (this.config.repo.url) {
+      const command = `git remote add origin ${this.config.repo.url}`;
+      const remoteAddResult = await this.exec(command, 'project');
+
+      if (remoteAddResult) {
+        log.ok('Remote URL added.');
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Creates project files and install project dependencies.
+   *
+   * @return {Boolean}
+   */
+  static async initProject() {
+    log.message('Checking for Bedrock...');
+
+    const dirPath = path.join(this.paths.project, 'htdocs');
+    const dirExists = await fs.directoryExists(dirPath);
+
+    if (dirExists) {
+      log.ok('Bedrock exists');
+
+      return false;
+    }
+
+    // Install Bedrock.
+    const command = 'composer create-project roots/bedrock htdocs --no-install';
+    const createProjectResult = await this.exec(command, 'project');
+
+    if (createProjectResult) {
+      log.ok('Bedrock installed.');
+    }
+
+    await this.linkFiles('project');
+    await this.scaffoldFiles('project');
+    await this.scaffoldFiles('bedrock');
+    await this.removeFiles('bedrock');
+
+    log.message('Installing project dependencies...');
+
+    const installResult = await this.exec('composer install', 'project');
+
+    if (installResult) {
+      log.ok('Dependencies installed.');
+    }
+
+    return true;
+  }
+
+  /**
+   * Creates plugin files.
+   *
+   * @return {Boolean}
+   */
+  static async initPlugin() {
+    if (!this.config.plugin.scaffold) {
+      return false;
+    }
+
+    if (!this.config.plugin.name) {
+      log.error(
+        'You must specify a plugin name.'
+        + ' Check the README for usage information.',
+      );
+
+      return false;
+    }
+
+    log.message('Checking for plugin...');
+
+    const basePath = this.getBasePath('plugin');
+
+    const dirExists = await fs.directoryExists(basePath);
+
+    if (dirExists) {
+      log.ok('Plugin exists.');
+
+      return false;
+    }
+
+    await this.scaffoldFiles('plugin');
+    await this.createPlaceholders('plugin');
+
+    log.ok('Plugin created.');
+
+    return true;
+  }
+
+  /**
+   * Creates plugin unit tests.
+   */
+  static createPluginTests() {
+    log.error('This feature is not ready');
+  }
+
+  /**
+   * Creates a child theme.
+   *
+   * @since 0.1.0
+   *
+   * @return {Boolean} False if theme exists,
+   */
+  static async initTheme() {
+    if (!this.config.theme.scaffold) {
+      return false;
+    }
+
+    if (!this.config.theme.name) {
+      const errorMessage = 'You must specify a theme name.'
+        + ' Check the README for usage information.';
+
+      log.error(errorMessage);
+
+      return false;
+    }
+
+    log.message('Checking for child theme...');
+
+    const basePath = this.getBasePath('theme');
+
+    const dirExists = await fs.directoryExists(basePath);
+
+    if (dirExists) {
+      log.ok('Child theme exists.');
+
+      return true;
+    }
+
+    await this.scaffoldFiles('theme');
+    await this.createPlaceholders('theme');
+    await this.copyAssets('theme');
+
+    log.ok('Theme created.');
+
+    log.message('Installing theme dependencies...');
+
+    await this.exec('npm install', 'theme');
+    await this.exec('bower install', 'theme');
+
+    log.message('Compiling theme assets...');
+
+    await this.exec('npm run build', 'theme');
+
+    log.ok('Done');
+
+    return true;
+  }
+
+  /**
+   * Creates theme unit tests.
+   */
+  static async createThemeTests() {
+    log.error('This feature is not ready');
+
+    return false;
+  }
+
+  /**
+   * Executes a command.
+   *
+   * @param  {String}   command The command.
+   * @param  {String}   [type = 'project'] Type to use for the base path.
+   * @return {Boolean}
+   */
+  static async exec(command, type = 'project') {
+    const options = {
+      cwd: this.getBasePath(type),
+    };
+
+    return cp.exec(command, options);
   }
 
   /**
@@ -490,7 +414,7 @@ class Scaffold extends Project {
    *
    * @param  {String} [type = 'theme'] [description]
    */
-  static createPlaceholders(type = 'theme') {
+  static async createPlaceholders(type = 'theme') {
     const base = this.getBasePath(type);
 
     const dirs = [
@@ -514,7 +438,7 @@ class Scaffold extends Project {
 
     for (const dir of dirs) {
       try {
-        fs.mkdirpSync(path.join(base, dir));
+        await fs.mkdirp(path.join(base, dir));
       } catch (error) {
         log.error(error);
       }
@@ -522,9 +446,8 @@ class Scaffold extends Project {
 
     for (const file of files) {
       try {
-        fs.ensureFileSync(path.join(base, file));
+        await fs.ensureFile(path.join(base, file));
       } catch (error) {
-
         // Do nothing.
       }
     }
@@ -537,21 +460,25 @@ class Scaffold extends Project {
    * @param  {String} [dir  = '']      [description]
    * @return {Boolean}
    */
-  static copyAssets(type = 'theme', dir = '') {
+  static async copyAssets(type = 'theme', dir = '') {
     const source = path.join(this.paths.assets, type, dir);
     const dest = path.join(this.getAssetsPath(type), dir);
 
-    if (!helpers.directoryExists(source)) {
+    const dirExists = await fs.directoryExists(source);
+
+    if (!dirExists) {
       log.error(`${source} is not a valid assets folder.`);
 
       return false;
     }
 
     try {
-      fs.mkdirpSync(dest);
-      fs.copySync(source, dest);
+      await fs.mkdirp(dest);
+      await fs.copy(source, dest);
 
-      log.ok(`${startCase(type)} assets created.`);
+      const assetName = startCase(type);
+
+      log.ok(`${assetName} assets created.`);
     } catch (error) {
       if (!isEmpty(error)) {
         log.error(error);
@@ -566,7 +493,7 @@ class Scaffold extends Project {
    *
    * @param  {String} type = 'project' [description]
    */
-  static linkFiles(type = 'project') {
+  static async linkFiles(type = 'project') {
     const base = this.getBasePath(type);
     const files = this.files[type].link;
 
@@ -582,11 +509,13 @@ class Scaffold extends Project {
 
       log.message(`Checking for ${destBase}...`);
 
-      if (helpers.symlinkExists(dest)) {
+      const linkExists = await symlinkExists(dest);
+
+      if (linkExists) {
         log.ok(`${dest} exists.`);
       } else {
         try {
-          fs.ensureSymlinkSync(dest, source);
+          await fs.ensureSymlink(dest, source);
           log.ok(`${dest} created.`);
         } catch (error) {
           if (!isEmpty(error)) {
@@ -602,7 +531,7 @@ class Scaffold extends Project {
    *
    * @param  {String} type = 'project' [description]
    */
-  static removeFiles(type = 'project') {
+  static async removeFiles(type = 'project') {
     const base = this.getBasePath(type);
     const files = this.files[type].remove;
 
@@ -614,7 +543,7 @@ class Scaffold extends Project {
       file = path.join(base, file);
 
       try {
-        fs.removeSync(file);
+        await fs.remove(file);
       } catch (error) {
         if (!isEmpty(error)) {
           log.error(error);
@@ -629,20 +558,22 @@ class Scaffold extends Project {
    * @param  {String} type =             'project' [description]
    * @return {Boolean}      [description]
    */
-  static scaffoldFiles(type = 'project') {
+  static async scaffoldFiles(type = 'project') {
     const source = path.join(this.paths.templates, type);
 
-    if (!helpers.directoryExists(source)) {
+    const dirExists = await fs.directoryExists(source);
+
+    if (!dirExists) {
       log.error(`${source} is not a valid template directory`);
 
       return false;
     }
 
-    const dirs = helpers.readDir(source);
+    const dirs = await readDir(source);
 
     if (!isEmpty(dirs)) {
       for (const file of dirs) {
-        this.scaffoldFile(path.join(source, file), type);
+        await this.scaffoldFile(path.join(source, file), type);
       }
     }
 
@@ -656,11 +587,11 @@ class Scaffold extends Project {
    * @param  {String} type   = 'project' [description]
    * @return {Boolean}        [description]
    */
-  static scaffoldFile(source, type = 'project') {
+  static async scaffoldFile(source, type = 'project') {
     let file = path.basename(source, '.mustache');
 
     // Templates for hidden files start with `_` instead of `.`
-    if (file.indexOf('_') === 0) { // eslint-disable-line no-magic-numbers
+    if (file.startsWith('_')) {
       file = file.replace('_', '.');
     }
 
@@ -669,19 +600,22 @@ class Scaffold extends Project {
     const base = this.getBasePath(type);
     const dest = path.join(base, file);
 
-    if (helpers.fileExists(dest)) {
+    const templateFileExists = await fileExists(dest);
+
+    if (templateFileExists) {
       log.ok(`${file} exists.`);
 
       return true;
     }
 
-    fs.mkdirpSync(base);
+    await fs.mkdirp(base);
 
     try {
-      const templateContent = fs.readFileSync(source).toString();
+      const fileBuffer = await fs.readFile(source);
+      const templateContent = fileBuffer.toString();
       const renderedContent = mustache.render(templateContent, this.templateData);
 
-      fs.writeFileSync(dest, renderedContent);
+      await fs.writeFile(dest, renderedContent);
 
       log.ok(`${file} created.`);
     } catch (error) {

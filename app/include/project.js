@@ -2,28 +2,36 @@
  * @module
  */
 
-import fs from 'fs-extra';
 import path from 'path';
+
+import fs from 'fs-extra';
 import yargs from 'yargs';
 import upsearch from 'utils-upsearch';
 import {
-  isEmpty,
-  has,
+  compose,
+  keys,
+  pick,
   merge,
-  pickBy,
   defaultsDeep,
+  replace,
   startCase,
   snakeCase,
   kebabCase,
-} from 'lodash';
+  isEmpty,
+} from 'lodash/fp';
 
 import { mock } from 'mocktail';
 
-import helpers from './helpers';
+import { randomString } from './utils/string';
 
-const upperSnakeCase = string => (
-  startCase(string).replace(/ /g, '_')
-);
+import {
+  fileExists,
+  loadYAML,
+  writeYAML,
+} from './utils/fs';
+
+
+const upperSnakeCase = compose(replace(/ /g, '_'), startCase);
 
 /**
  * The number of characters to use when generating a database prefix.
@@ -191,14 +199,14 @@ class Project {
     let config;
 
     // Try to load the config file if one was passed and it exists.
-    if (file && helpers.fileExists(file)) {
-      config = helpers.loadYAML(file);
+    if (file && fileExists(file)) {
+      config = loadYAML(file);
     }
 
     // If we don't have a config object (or the config object is empty)
     // fall back to the default config file.
-    if (isEmpty(config) && helpers.fileExists(this.paths.config)) {
-      config = helpers.loadYAML(this.paths.config);
+    if (isEmpty(config) && fileExists(this.paths.config)) {
+      config = loadYAML(this.paths.config);
     }
 
     config = merge(config, yargs.argv);
@@ -216,20 +224,22 @@ class Project {
    * @return {Object}        The parsed config object.
    */
   static parseConfig(config) {
-    let parsed = config;
-
     // Merge config with defaults.
-    parsed = pickBy(
-      defaultsDeep(config, this.defaultConfig),
-      (value, key) => has(this.defaultConfig, key),
+    const configKeys = keys(this.defaultConfig);
+    const configWithDefaults = defaultsDeep({}, config, this.defaultConfig);
+
+    // Filter out any invalid config values, then
+    // fill in any config values that aren't set.
+    const parseConfig = compose(
+      this.ensureSecretConfig,
+      this.ensureDatabaseConfig,
+      this.ensureThemeConfig,
+      this.ensurePluginConfig,
+      this.ensureProjectConfig,
+      pick(configKeys),
     );
 
-    // Fill in any config values that aren't set.
-    parsed = this.ensureProjectConfig(parsed);
-    parsed = this.ensurePluginConfig(parsed);
-    parsed = this.ensureThemeConfig(parsed);
-    parsed = this.ensureDatabaseConfig(parsed);
-    parsed = this.ensureSecretConfig(parsed);
+    const parsed = parseConfig(configWithDefaults);
 
     // Set internal config values.
     parsed.project.folder = path.basename(this.paths.project);
@@ -343,7 +353,9 @@ class Project {
     }
 
     if (!parsed.db.prefix) {
-      parsed.db.prefix = `${helpers.randomString(DB_PREFIX_LENGTH)}_`;
+      const prefix = randomString(DB_PREFIX_LENGTH);
+
+      parsed.db.prefix = `${prefix}_`;
     }
 
     return parsed;
@@ -363,16 +375,14 @@ class Project {
 
     for (const type of types) {
       if (!parsed.secret[`${type}_key`]) {
-        parsed.secret[`${type}_key`] = helpers.randomString(
-          SECRET_KEY_LENGTH,
-          'base64',
-        );
+        const secretKey = randomString(SECRET_KEY_LENGTH, 'base64');
+
+        parsed.secret[`${type}_key`] = secretKey;
       }
       if (!parsed.secret[`${type}_salt`]) {
-        parsed.secret[`${type}_salt`] = helpers.randomString(
-          SECRET_SALT_LENGTH,
-          'base64',
-        );
+        const secretSalt = randomString(SECRET_SALT_LENGTH, 'base64');
+
+        parsed.secret[`${type}_salt`] = secretSalt;
       }
     }
 
@@ -388,13 +398,19 @@ class Project {
    *                                it will be deleted and a new file will be
    *                                created.
    */
-  static createConfigFile(force = false) {
-    if (force && helpers.fileExists(this.paths.config)) {
-      fs.removeSync(this.paths.config);
+  static async createConfigFile(force = false) {
+    if (force) {
+      const configFileExists = await fileExists(this.paths.config);
+
+      if (configFileExists) {
+        await fs.remove(this.paths.config);
+      }
     }
 
-    if (!helpers.fileExists(this.paths.config)) {
-      helpers.writeYAML(this.paths.config, this.defaultConfig);
+    const configFileExists = await fileExists(this.paths.config);
+
+    if (!configFileExists) {
+      await writeYAML(this.paths.config, this.defaultConfig);
     }
   }
 }

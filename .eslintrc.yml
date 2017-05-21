@@ -21,3 +21,7 @@
       - ForInStatement
       - LabeledStatement
       - WithStatement
+    prefer-arrow-callback:
+      - off
+    import/prefer-default-export:
+      - off
