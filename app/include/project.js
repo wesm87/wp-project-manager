@@ -195,23 +195,56 @@ class Project {
    * @param  {String} file The path to the config file.
    * @return {Object}      The resulting config object.
    */
-  static loadConfig(file = null) {
+  static async loadConfig(file = null) {
     let config;
 
     // Try to load the config file if one was passed and it exists.
-    if (file && fileExists(file)) {
-      config = loadYAML(file);
+    if (file) {
+      const customFileExists = await fileExists(file);
+
+      if (customFileExists) {
+        config = await loadYAML(file);
+      }
     }
 
     // If we don't have a config object (or the config object is empty)
     // fall back to the default config file.
-    if (isEmpty(config) && fileExists(this.paths.config)) {
-      config = loadYAML(this.paths.config);
+    if (isEmpty(config)) {
+      const configFileExists = await fileExists(this.paths.config);
+
+      if (configFileExists) {
+        config = await loadYAML(this.paths.config);
+      }
     }
 
     config = merge(config, yargs.argv);
 
     return this.parseConfig(config);
+  }
+
+  /**
+   * Creates a new `project.yml` file with the default settings.
+   *
+   * @since 0.3.0
+   *
+   * @param {Boolean} [force=false] If true and a config file already exists,
+   *                                it will be deleted and a new file will be
+   *                                created.
+   */
+  static async createConfigFile(force = false) {
+    if (force) {
+      const configFileExists = await fileExists(this.paths.config);
+
+      if (configFileExists) {
+        await fs.remove(this.paths.config);
+      }
+    }
+
+    const configFileExists = await fileExists(this.paths.config);
+
+    if (!configFileExists) {
+      await writeYAML(this.paths.config, this.defaultConfig);
+    }
   }
 
   /**
@@ -387,31 +420,6 @@ class Project {
     }
 
     return parsed;
-  }
-
-  /**
-   * Creates a new `project.yml` file with the default settings.
-   *
-   * @since 0.3.0
-   *
-   * @param {Boolean} [force=false] If true and a config file already exists,
-   *                                it will be deleted and a new file will be
-   *                                created.
-   */
-  static async createConfigFile(force = false) {
-    if (force) {
-      const configFileExists = await fileExists(this.paths.config);
-
-      if (configFileExists) {
-        await fs.remove(this.paths.config);
-      }
-    }
-
-    const configFileExists = await fileExists(this.paths.config);
-
-    if (!configFileExists) {
-      await writeYAML(this.paths.config, this.defaultConfig);
-    }
   }
 }
 
