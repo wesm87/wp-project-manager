@@ -4,7 +4,6 @@ import chai from 'chai';
 
 import projectModule from '../app/include/project';
 import scaffoldModule from '../app/include/scaffold';
-import helpersModule from '../app/include/helpers';
 import depsModule from '../app/include/deps';
 import logModule from '../app/include/log';
 
@@ -24,12 +23,6 @@ describe('include', () => {
   describe('scaffold.js', () => {
     it('should export a non-empty object', () => {
       should.exist(scaffoldModule);
-    });
-  });
-
-  describe('helpers.js', () => {
-    it('should export a non-empty object', () => {
-      should.exist(helpersModule);
     });
   });
 

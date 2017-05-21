@@ -7,23 +7,11 @@
 
 import 'babel-polyfill';
 
-import fs from 'fs-extra';
 import path from 'path';
-import yargs from 'yargs';
-import semver from 'semver';
-
-import babel from 'rollup-plugin-babel';
 
 import gulp from 'gulp';
 import gulpDI from 'gulp-di';
-import nsp from 'gulp-nsp';
-import mocha from 'gulp-mocha';
-import istanbul from 'gulp-istanbul';
-
-import { rollup } from 'rollup';
 import { Instrumenter } from 'isparta';
-
-import pkg from './package.json';
 
 /**
  * Task config.
@@ -32,20 +20,20 @@ import pkg from './package.json';
  */
 const taskConfig = {
   nsp: {
-    package: path.resolve( 'package.json' ),
+    package: path.resolve('package.json'),
   },
   istanbul: {
     read: {
       includeUntested: true,
-      instrumenter:    Instrumenter,
+      instrumenter: Instrumenter,
     },
     write: {
-      reporters: [ 'lcov', 'text-summary' ],
+      reporters: ['lcov', 'text-summary'],
     },
   },
   mocha: {
-    reporter:  'spec',
-    require:   'chai',
+    reporter: 'spec',
+    require: 'chai',
     compilers: 'js:babel-core/register',
     recursive: true,
   },

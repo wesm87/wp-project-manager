@@ -3,254 +3,35 @@ import _JSON$stringify from 'babel-runtime/core-js/json/stringify';
 import _getIterator from 'babel-runtime/core-js/get-iterator';
 import _classCallCheck from 'babel-runtime/helpers/classCallCheck';
 import _createClass from 'babel-runtime/helpers/createClass';
-import { isEmpty, isObjectLike, keys } from 'lodash';
-import colors from 'colors';
-import path from 'path';
-import upsearch from 'utils-upsearch';
-import { camelCase, complement, compose, constant, defaultsDeep, has, isEmpty as isEmpty$1, isEqual, isFunction, kebabCase, merge, partialRight, pickBy, replace, snakeCase, startCase, startsWith, stubArray, stubFalse, stubString, toString, truncate, values } from 'lodash/fp';
-import { mock } from 'mocktail';
-import fs from 'fs-extra';
-import YAML from 'js-yaml';
-import thenifyAll from 'thenify-all';
-import crypto from 'mz/crypto';
-import _Set from 'babel-runtime/core-js/set';
-import _slicedToArray from 'babel-runtime/helpers/slicedToArray';
+import chalk from 'chalk';
+import { camelCase, complement, compose, constant, defaultsDeep, getOr, identity, isEmpty, isEqual, isObjectLike, kebabCase, keys, merge, partialRight, pick, replace, snakeCase, startCase, startsWith, stubArray, stubFalse, toString, truncate } from 'lodash/fp';
 import _regeneratorRuntime from 'babel-runtime/regenerator';
 import _asyncToGenerator from 'babel-runtime/helpers/asyncToGenerator';
+import path from 'path';
+import fs from 'fs-extra';
+import upsearch from 'utils-upsearch';
+import { mock } from 'mocktail';
+import crypto from 'crypto';
+import YAML from 'js-yaml';
+import _Set from 'babel-runtime/core-js/set';
+import _slicedToArray from 'babel-runtime/helpers/slicedToArray';
 import _Object$getPrototypeOf from 'babel-runtime/core-js/object/get-prototype-of';
 import _possibleConstructorReturn from 'babel-runtime/helpers/possibleConstructorReturn';
 import _inherits from 'babel-runtime/helpers/inherits';
 import cp from 'mz/child_process';
 import mustache from 'mustache';
 
-var _class;
-var _temp;
-
 /**
- * @module
+ * Ratios used when converting numbers from one format to another.
+ *
+ * @since 0.7.7
+ *
+ * @type {Object}
  */
-
-/**
- * Filesystem helper methods, plus everything from the `fs-extra` module (which
- * itself includes everything from the core `fs` module). All the `fs-extra`
- * methods have been modified to return a Promise so `async/await` can be used.
- */
-var FSHelpers = (_temp = _class = function () {
-  function FSHelpers() {
-    _classCallCheck(this, FSHelpers);
-  }
-
-  _createClass(FSHelpers, null, [{
-    key: '_inheritMethods',
-
-
-    /**
-     * Takes an object and copies any methods it has into this class.
-     *
-     * @since 0.7.17
-     *
-     * @param {Object} source The source object.
-     */
-    value: function _inheritMethods(source) {
-      var methods = values(source).filter(isFunction);
-
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = _getIterator(methods), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var method = _step.value;
-
-          this[method] = source[method].bind(this);
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-    }
-
-    /**
-     * Checks whether the specified file is a hidden file.
-     *
-     * @param  {String} file The file name to check.
-     * @return {Boolean}     True if the file name begins with a dot;
-     *                       false if not.
-     */
-
-  }, {
-    key: 'pathExists',
-
-
-    /**
-     * Checks if the specified file or directory exists.
-     *
-     * @since 0.1.0
-     * @since 0.2.0  Added 'symlink' type.
-     * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
-     *
-     * @param  {String} path The path to check.
-     * @param  {String} type Optional. A type to check the path against.
-     * @return {Promise}     Resolves to true if path exists and matches `type`;
-     *                       false if not.
-     */
-    value: function pathExists(path$$1) {
-      var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'any';
-
-      return this.lstat(path$$1).then(function handleSuccess(info) {
-        switch (type) {
-          case 'file':
-            {
-              return info.isFile();
-            }
-          case 'folder':
-          case 'directory':
-            {
-              return info.isDirectory();
-            }
-          case 'link':
-          case 'symlink':
-            {
-              return info.isSymbolicLink();
-            }
-          default:
-            {
-              return Boolean(info);
-            }
-        }
-      }).catch(stubFalse);
-    }
-
-    /**
-     * Checks if the specified file exists.
-     *
-     * @since 0.1.0
-     * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
-     *
-     * @param  {String} path The path to the file to check.
-     * @return {Boolean}     Resolves to true if file exists; false if not.
-     */
-
-
-    /**
-     * Checks if the specified directory exists.
-     *
-     * @since 0.1.0
-     * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
-     *
-     * @param  {String} path The path to the directory to check.
-     * @return {Promise}     Resolves to true if directory exists; false if not.
-     */
-
-
-    /**
-     * Alias for `directoryExists`.
-     *
-     * @since 0.7.17
-     *
-     * @param  {String} path The path to the directory to check.
-     * @return {Promise}     Resolves to true if directory exists; false if not.
-     */
-
-
-    /**
-     * Checks if the specified symbolic link exists.
-     *
-     * @since 0.2.0
-     * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
-     *
-     * @param  {String} path The path to the link to check.
-     * @return {Promise}     Resolves to true if link exists; false if not.
-     */
-
-  }, {
-    key: 'readDir',
-
-
-    /**
-     * Takes a directory path and returns Promise that resolves to an array,
-     * which contains the contents of the directory.
-     *
-     * @since 0.4.0
-     * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
-     *
-     * @param  {String}  dir                   The directory path.
-     * @param  {Boolean} [includeHidden=false] If true, include hidden files.
-     * @return {Promise}                       Resolves to an array of the
-     *                                         directory's contents.
-     */
-    value: function readDir(dir) {
-      var includeHidden = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-      return this.readdir(dir).then(function handleSuccess(files) {
-        if (!includeHidden) {
-          return files.filter(this.isHiddenFile);
-        }
-
-        return files;
-      }).catch(stubArray);
-    }
-
-    /**
-     * Tries to load a YAML config file and parse it into JSON.
-     *
-     * @since 0.1.0
-     * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
-     *
-     * @param  {String} filePath The path to the YAML file.
-     * @return {Promise}          Resolves to the parsed results on success;
-     *                            an empty object on failure.
-     */
-
-  }, {
-    key: 'loadYAML',
-    value: function loadYAML(filePath) {
-      var defaultValue = {};
-
-      return this.readFile(filePath, 'utf8').then(function handleSuccess(contents) {
-        var json = YAML.safeLoad(contents);
-
-        return json || defaultValue;
-      }).catch(constant(defaultValue));
-    }
-
-    /**
-     * Takes a JSON string or object, parses it into YAML, and writes to a file.
-     *
-     * @since 0.3.0
-     * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
-     *
-     * @param  {String} filePath The path to the file to write to.
-     * @param  {Object} json     The JSON object to parse into YAML.
-     * @return {Promise}         Resolves to true on success; false on failure.
-     */
-
-  }, {
-    key: 'writeYAML',
-    value: function writeYAML(filePath, json) {
-      var yaml = YAML.safeDump(json, { noCompatMode: true });
-
-      return this.writeFile(filePath, yaml);
-    }
-  }]);
-
-  return FSHelpers;
-}(), _class.isHiddenFile = complement(startsWith('.')), _class.fileExists = partialRight(undefined.pathExists, ['file']), _class.directoryExists = partialRight(undefined.pathExists, ['directory']), _class.dirExists = undefined.directoryExists, _class.symlinkExists = partialRight(undefined.pathExists, ['symlink']), _temp);
-
-
-FSHelpers._inheritMethods(thenifyAll(fs));
-
-var fs$1 = mock(FSHelpers);
+var RATIOS = {
+  BYTES_TO_HEX: 0.5,
+  BYTES_TO_BASE64: 0.75
+};
 
 /**
  * Generates a random string in hexadecimal format.
@@ -264,15 +45,6 @@ var fs$1 = mock(FSHelpers);
 function randomString(strLen) {
   var format = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'hex';
 
-  var numBytes = void 0;
-
-  // Adjust number of bytes based on desired string format.
-  if (format === 'hex') {
-    numBytes = Math.ceil(strLen * RATIOS.BYTES_TO_HEX);
-  } else if (format === 'base64') {
-    numBytes = Math.ceil(strLen * RATIOS.BYTES_TO_BASE64);
-  }
-
   var sliceString = truncate({
     length: strLen,
     ommission: ''
@@ -280,11 +52,266 @@ function randomString(strLen) {
 
   var formatString = compose(sliceString, toString);
 
-  // log.error(reason) -> stubString() -> ''
-  var handleError = compose(stubString, log.error);
+  try {
+    var ratio = void 0;
 
-  return crypto.randomBytes(numBytes).then(formatString).catch(handleError);
+    // Adjust number of bytes based on desired string format.
+    if (format === 'hex') {
+      ratio = RATIOS.BYTES_TO_HEX;
+    } else if (format === 'base64') {
+      ratio = RATIOS.BYTES_TO_BASE64;
+    }
+
+    var numBytes = Math.ceil(strLen * ratio);
+    var randomBytes = crypto.randomBytes(numBytes);
+
+    return formatString(randomBytes);
+  } catch (error) {
+    log.error(error);
+
+    return '';
+  }
 }
+
+/**
+ * Filesystem helper methods, plus everything from the `fs-extra` module (which
+ * itself includes everything from the core `fs` module). All the `fs-extra`
+ * methods have been modified to return a Promise so `async/await` can be used.
+ *
+ * @module
+ */
+
+/**
+ * Checks whether the specified file is a hidden file.
+ *
+ * @param  {String} file The file name to check.
+ * @return {Boolean}     True if the file name begins with a dot;
+ *                       false if not.
+ */
+var isHiddenFile = complement(startsWith('.'));
+
+/**
+ * Checks if the specified file or directory exists.
+ *
+ * @since 0.1.0
+ * @since 0.2.0  Added 'symlink' type.
+ * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
+ * @since 0.8.0  Moved to `utils/fs.js`
+ *
+ * @param  {String} path The path to check.
+ * @param  {String} type Optional. A type to check the path against.
+ * @return {Promise}     Resolves to true if path exists and matches `type`;
+ *                       false if not.
+ */
+var pathExists = function () {
+  var _ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee(path$$1) {
+    var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'any';
+    return _regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            return _context.abrupt('return', fs.lstat(path$$1).then(function handleSuccess(info) {
+              switch (type) {
+                case 'file':
+                  {
+                    return info.isFile();
+                  }
+                case 'folder':
+                case 'directory':
+                  {
+                    return info.isDirectory();
+                  }
+                case 'link':
+                case 'symlink':
+                  {
+                    return info.isSymbolicLink();
+                  }
+                default:
+                  {
+                    return Boolean(info);
+                  }
+              }
+            }).catch(stubFalse));
+
+          case 1:
+          case 'end':
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+
+  return function pathExists(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+/**
+ * Checks if the specified file exists.
+ *
+ * @since 0.1.0
+ * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
+ * @since 0.8.0  Moved to `utils/fs.js`
+ *
+ * @param  {String} path The path to the file to check.
+ * @return {Boolean}     Resolves to true if file exists; false if not.
+ */
+var fileExists = partialRight(pathExists, ['file']);
+
+/**
+ * Checks if the specified directory exists.
+ *
+ * @since 0.1.0
+ * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
+ * @since 0.8.0  Moved to `utils/fs.js`
+ *
+ * @param  {String} path The path to the directory to check.
+ * @return {Promise}     Resolves to true if directory exists; false if not.
+ */
+var directoryExists = partialRight(pathExists, ['directory']);
+
+/**
+ * Alias for `directoryExists`.
+ *
+ * @since 0.7.17
+ * @since 0.8.0  Moved to `utils/fs.js`
+ *
+ * @param  {String} path The path to the directory to check.
+ * @return {Promise}     Resolves to true if directory exists; false if not.
+ */
+
+
+/**
+ * Checks if the specified symbolic link exists.
+ *
+ * @since 0.2.0
+ * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
+ * @since 0.8.0  Moved to `utils/fs.js`
+ *
+ * @param  {String} path The path to the link to check.
+ * @return {Promise}     Resolves to true if link exists; false if not.
+ */
+var symlinkExists = partialRight(pathExists, ['symlink']);
+
+/**
+ * Takes a directory path and returns Promise that resolves to an array,
+ * which contains the contents of the directory.
+ *
+ * @since 0.4.0
+ * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
+ * @since 0.8.0  Moved to `utils/fs.js`
+ *
+ * @param  {String}  dir                   The directory path.
+ * @param  {Boolean} [includeHidden=false] If true, include hidden files.
+ * @return {Promise}                       Resolves to an array of the
+ *                                         directory's contents.
+ */
+var readDir = function () {
+  var _ref2 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee2(dir) {
+    var includeHidden = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    var handleSuccess, handleError;
+    return _regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            handleSuccess = function handleSuccess(files) {
+              if (!includeHidden) {
+                return files.filter(isHiddenFile);
+              }
+
+              return files;
+            };
+
+            handleError = stubArray;
+            return _context2.abrupt('return', fs.readdir(dir).then(handleSuccess).catch(handleError));
+
+          case 3:
+          case 'end':
+            return _context2.stop();
+        }
+      }
+    }, _callee2, this);
+  }));
+
+  return function readDir(_x3) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+/**
+ * Tries to load a YAML config file and parse it into JSON.
+ *
+ * @since 0.1.0
+ * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
+ * @since 0.8.0  Moved to `utils/fs.js`
+ *
+ * @param  {String} filePath The path to the YAML file.
+ * @return {Promise}          Resolves to the parsed results on success;
+ *                            an empty object on failure.
+ */
+var loadYAML = function () {
+  var _ref3 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee3(filePath) {
+    var defaultValue, handleSuccess, handleError;
+    return _regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            handleSuccess = function handleSuccess(contents) {
+              var json = YAML.safeLoad(contents);
+
+              return json || defaultValue;
+            };
+
+            defaultValue = {};
+            handleError = constant(defaultValue);
+            return _context3.abrupt('return', fs.readFile(filePath, 'utf8').then(handleSuccess).catch(handleError));
+
+          case 4:
+          case 'end':
+            return _context3.stop();
+        }
+      }
+    }, _callee3, this);
+  }));
+
+  return function loadYAML(_x5) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+/**
+ * Takes a JSON string or object, parses it into YAML, and writes to a file.
+ *
+ * @since 0.3.0
+ * @since 0.7.17 Moved to `FSHelpers` class; now returns a Promise.
+ * @since 0.8.0  Moved to `utils/fs.js`
+ *
+ * @param  {String} filePath The path to the file to write to.
+ * @param  {Object} json     The JSON object to parse into YAML.
+ * @return {Promise}         Resolves to true on success; false on failure.
+ */
+var writeYAML = function () {
+  var _ref4 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee4(filePath, json) {
+    var yaml;
+    return _regeneratorRuntime.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            yaml = YAML.safeDump(json, { noCompatMode: true });
+            return _context4.abrupt('return', fs.writeFile(filePath, yaml));
+
+          case 2:
+          case 'end':
+            return _context4.stop();
+        }
+      }
+    }, _callee4, this);
+  }));
+
+  return function writeYAML(_x6, _x7) {
+    return _ref4.apply(this, arguments);
+  };
+}();
 
 /**
  * @module
@@ -342,14 +369,14 @@ var Project = function () {
       var config = void 0;
 
       // Try to load the config file if one was passed and it exists.
-      if (file && fs$1.fileExists(file)) {
-        config = fs$1.loadYAML(file);
+      if (file && fileExists(file)) {
+        config = loadYAML(file);
       }
 
       // If we don't have a config object (or the config object is empty)
       // fall back to the default config file.
-      if (isEmpty$1(config) && fs$1.fileExists(this.paths.config)) {
-        config = fs$1.loadYAML(this.paths.config);
+      if (isEmpty(config) && fileExists(this.paths.config)) {
+        config = loadYAML(this.paths.config);
       }
 
       config = merge(config, yargs.argv);
@@ -370,21 +397,15 @@ var Project = function () {
   }, {
     key: 'parseConfig',
     value: function parseConfig(config) {
-      var _this = this;
-
-      var parsed = config;
-
       // Merge config with defaults.
-      parsed = pickBy(function (value, key) {
-        return has(key, _this.defaultConfig);
-      }, defaultsDeep(this.defaultConfig, config));
+      var configKeys = keys(this.defaultConfig);
+      var configWithDefaults = defaultsDeep({}, config, this.defaultConfig);
 
-      // Fill in any config values that aren't set.
-      parsed = this.ensureProjectConfig(parsed);
-      parsed = this.ensurePluginConfig(parsed);
-      parsed = this.ensureThemeConfig(parsed);
-      parsed = this.ensureDatabaseConfig(parsed);
-      parsed = this.ensureSecretConfig(parsed);
+      // Filter out any invalid config values, then
+      // fill in any config values that aren't set.
+      var parseConfig = compose(this.ensureSecretConfig, this.ensureDatabaseConfig, this.ensureThemeConfig, this.ensurePluginConfig, this.ensureProjectConfig, pick(configKeys));
+
+      var parsed = parseConfig(configWithDefaults);
 
       // Set internal config values.
       parsed.project.folder = path.basename(this.paths.project);
@@ -510,7 +531,9 @@ var Project = function () {
       }
 
       if (!parsed.db.prefix) {
-        parsed.db.prefix = randomString(DB_PREFIX_LENGTH) + '_';
+        var prefix = randomString(DB_PREFIX_LENGTH);
+
+        parsed.db.prefix = prefix + '_';
       }
 
       return parsed;
@@ -580,17 +603,64 @@ var Project = function () {
 
   }, {
     key: 'createConfigFile',
-    value: function createConfigFile() {
-      var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+    value: function () {
+      var _ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee() {
+        var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-      if (force && fs$1.fileExists(this.paths.config)) {
-        fs$1.removeSync(this.paths.config);
+        var _configFileExists, configFileExists;
+
+        return _regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (!force) {
+                  _context.next = 7;
+                  break;
+                }
+
+                _context.next = 3;
+                return fileExists(this.paths.config);
+
+              case 3:
+                _configFileExists = _context.sent;
+
+                if (!_configFileExists) {
+                  _context.next = 7;
+                  break;
+                }
+
+                _context.next = 7;
+                return fs.remove(this.paths.config);
+
+              case 7:
+                _context.next = 9;
+                return fileExists(this.paths.config);
+
+              case 9:
+                configFileExists = _context.sent;
+
+                if (configFileExists) {
+                  _context.next = 13;
+                  break;
+                }
+
+                _context.next = 13;
+                return writeYAML(this.paths.config, this.defaultConfig);
+
+              case 13:
+              case 'end':
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function createConfigFile() {
+        return _ref.apply(this, arguments);
       }
 
-      if (!fs$1.fileExists(this.paths.config)) {
-        fs$1.writeYAML(this.paths.config, this.defaultConfig);
-      }
-    }
+      return createConfigFile;
+    }()
   }, {
     key: 'paths',
 
@@ -738,8 +808,6 @@ var Project$1 = mock(Project);
  * @module
  */
 
-// import { mock } from 'mocktail';
-
 /**
  * The number of spaces to use for a tab when formatting JSON strings.
  */
@@ -749,6 +817,9 @@ var JSON_TAB_WIDTH = 2;
  * Logger class. Contains various methods (debug, info, ok, warn, error, etc.)
  * that take a string or object-like value, apply an associated style, and log
  * it. Some styles also prepend an associated icon identifier to the message.
+ *
+ * @since 0.4.0
+ * @since 0.8.0 Switched from `colors` to `chalk`.
  */
 
 var Log = function () {
@@ -765,12 +836,12 @@ var Log = function () {
      */
     get: function get() {
       return {
-        ok: ['green'],
-        info: ['cyan'],
-        warn: ['yellow', 'underline'],
-        error: ['red', 'underline'],
-        debug: ['cyan', 'underline'],
-        message: ['reset']
+        ok: chalk.green,
+        info: chalk.cyan,
+        warn: chalk.yellow.underline,
+        error: chalk.red.underline,
+        debug: chalk.cyan.underline,
+        message: chalk.reset
       };
     }
 
@@ -835,10 +906,7 @@ var Log = function () {
   _createClass(Log, [{
     key: 'init',
     value: function init() {
-      var _this = this;
-
-      // Set the colors theme based on our styles.
-      colors.setTheme(this.styles);
+      var styles = keys(this.styles);
 
       // Automatically create methods for each style.
       var _iteratorNormalCompletion = true;
@@ -846,16 +914,10 @@ var Log = function () {
       var _iteratorError = undefined;
 
       try {
-        var _loop = function _loop() {
+        for (var _iterator = _getIterator(styles), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var style = _step.value;
 
-          _this[style] = function (message) {
-            return _this._log(message, style);
-          };
-        };
-
-        for (var _iterator = _getIterator(keys(this.styles)), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          _loop();
+          this[style] = partialRight(this._log, [style]);
         }
       } catch (err) {
         _didIteratorError = true;
@@ -894,34 +956,35 @@ var Log = function () {
     value: function _log(message, style) {
       var output = message;
 
-      // Convert object-like messages to string.
-      if (isObjectLike(output)) {
-        output = _JSON$stringify(output, null, JSON_TAB_WIDTH);
-      }
-
       // Don't log anything if message is empty.
       if (isEmpty(output)) {
         return;
       }
 
+      // Convert object-like messages to string.
+      if (isObjectLike(output)) {
+        output = _JSON$stringify(output, null, JSON_TAB_WIDTH);
+      }
+
       // Make sure the message is a string.
       output = String(output);
 
-      // Check if a valid style was specified.
-      if (style && output[style]) {
-        // Bail if the style is 'debug' and debugging is disabled.
-        if (style === 'debug' && !Project$1.debug) {
-          return;
-        }
-
-        // If the style has an associated icon, prepend it to the message.
-        if (this.icons[style]) {
-          output = this.icons[style] + ' ' + output;
-        }
-
-        // Apply the style to the message.
-        output = output[style];
+      // Bail if the style is 'debug' and debugging is disabled.
+      if (style === 'debug' && !Project$1.debug) {
+        return;
       }
+
+      // If the style has an associated icon, prepend it to the message.
+      var icon = getOr('', style, this.icons);
+
+      if (icon) {
+        output = icon + ' ' + output;
+      }
+
+      // Apply the style to the message.
+      var applyStyle = getOr(identity, style, this.styles);
+
+      output = applyStyle(output);
 
       // Log the message.
       console.log(output);
@@ -931,14 +994,14 @@ var Log = function () {
   return Log;
 }();
 
-var log$1 = new Log();
+var log = new Log();
 
 var configDisplayCommand = {
   command: 'config display',
   describe: 'parse and display project settings',
   builder: {},
   handler: function handler() {
-    log$1.message(Project$1.config);
+    log.message(Project$1.config);
   }
 };
 
@@ -1085,11 +1148,11 @@ var Scaffold = function (_Project) {
                 }
 
                 _context.next = 4;
-                return fs$1.remove(this.paths.project);
+                return fs.remove(this.paths.project);
 
               case 4:
                 _context.next = 6;
-                return fs$1.mkdirp(this.paths.project);
+                return fs.mkdirp(this.paths.project);
 
               case 6:
               case 'end':
@@ -1125,8 +1188,8 @@ var Scaffold = function (_Project) {
                   break;
                 }
 
-                log$1.error('You must specify a project title.');
-                log$1.info('Check the README for usage information.');
+                log.error('You must specify a project title.');
+                log.info('Check the README for usage information.');
 
                 return _context2.abrupt('return', false);
 
@@ -1223,18 +1286,18 @@ var Scaffold = function (_Project) {
     key: 'maybeCopyPluginZips',
     value: function () {
       var _ref4 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee4() {
-        var dirExists, source, dest;
+        var dirExists$$1, source, dest;
         return _regeneratorRuntime.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
                 _context4.next = 2;
-                return fs$1.directoryExists(this.paths.plugins);
+                return directoryExists(this.paths.plugins);
 
               case 2:
-                dirExists = _context4.sent;
+                dirExists$$1 = _context4.sent;
 
-                if (dirExists) {
+                if (dirExists$$1) {
                   _context4.next = 5;
                   break;
                 }
@@ -1243,16 +1306,16 @@ var Scaffold = function (_Project) {
 
               case 5:
 
-                log$1.message('Copying plugin ZIPs...');
+                log.message('Copying plugin ZIPs...');
 
                 source = this.paths.plugins;
                 dest = path.join(this.paths.project, 'project-files/plugin-zips');
                 _context4.next = 10;
-                return fs$1.copy(source, dest);
+                return fs.copy(source, dest);
 
               case 10:
 
-                log$1.ok('Plugin ZIPs copied.');
+                log.ok('Plugin ZIPs copied.');
 
               case 11:
               case 'end':
@@ -1291,7 +1354,7 @@ var Scaffold = function (_Project) {
                 }
 
                 _context5.next = 4;
-                return fs$1.readDir(pluginZipsDir);
+                return readDir(pluginZipsDir);
 
               case 4:
                 files = _context5.sent;
@@ -1366,7 +1429,7 @@ var Scaffold = function (_Project) {
     key: 'initRepo',
     value: function () {
       var _ref6 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee6() {
-        var dirPath, dirExists, gitInitResult, command, remoteAddResult;
+        var dirPath, dirExists$$1, gitInitResult, command, remoteAddResult;
         return _regeneratorRuntime.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
@@ -1380,21 +1443,21 @@ var Scaffold = function (_Project) {
 
               case 2:
 
-                log$1.message('Checking for Git repo...');
+                log.message('Checking for Git repo...');
 
                 dirPath = path.join(this.paths.project, '.git');
                 _context6.next = 6;
-                return fs$1.directoryExists(dirPath);
+                return fs.directoryExists(dirPath);
 
               case 6:
-                dirExists = _context6.sent;
+                dirExists$$1 = _context6.sent;
 
-                if (!dirExists) {
+                if (!dirExists$$1) {
                   _context6.next = 10;
                   break;
                 }
 
-                log$1.ok('Repo exists.');
+                log.ok('Repo exists.');
 
                 return _context6.abrupt('return', false);
 
@@ -1407,7 +1470,7 @@ var Scaffold = function (_Project) {
 
 
                 if (gitInitResult) {
-                  log$1.ok('Repo initialized.');
+                  log.ok('Repo initialized.');
                 }
 
                 // If the repo URL is set, add it as a remote.
@@ -1426,7 +1489,7 @@ var Scaffold = function (_Project) {
 
 
                 if (remoteAddResult) {
-                  log$1.ok('Remote URL added.');
+                  log.ok('Remote URL added.');
                 }
 
               case 20:
@@ -1457,26 +1520,26 @@ var Scaffold = function (_Project) {
     key: 'initProject',
     value: function () {
       var _ref7 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee7() {
-        var dirPath, dirExists, command, createProjectResult, installResult;
+        var dirPath, dirExists$$1, command, createProjectResult, installResult;
         return _regeneratorRuntime.wrap(function _callee7$(_context7) {
           while (1) {
             switch (_context7.prev = _context7.next) {
               case 0:
-                log$1.message('Checking for Bedrock...');
+                log.message('Checking for Bedrock...');
 
                 dirPath = path.join(this.paths.project, 'htdocs');
                 _context7.next = 4;
-                return fs$1.directoryExists(dirPath);
+                return fs.directoryExists(dirPath);
 
               case 4:
-                dirExists = _context7.sent;
+                dirExists$$1 = _context7.sent;
 
-                if (!dirExists) {
+                if (!dirExists$$1) {
                   _context7.next = 8;
                   break;
                 }
 
-                log$1.ok('Bedrock exists');
+                log.ok('Bedrock exists');
 
                 return _context7.abrupt('return', false);
 
@@ -1492,7 +1555,7 @@ var Scaffold = function (_Project) {
 
 
                 if (createProjectResult) {
-                  log$1.ok('Bedrock installed.');
+                  log.ok('Bedrock installed.');
                 }
 
                 _context7.next = 15;
@@ -1512,7 +1575,7 @@ var Scaffold = function (_Project) {
 
               case 21:
 
-                log$1.message('Installing project dependencies...');
+                log.message('Installing project dependencies...');
 
                 _context7.next = 24;
                 return this.exec('composer install', 'project');
@@ -1522,7 +1585,7 @@ var Scaffold = function (_Project) {
 
 
                 if (installResult) {
-                  log$1.ok('Dependencies installed.');
+                  log.ok('Dependencies installed.');
                 }
 
                 return _context7.abrupt('return', true);
@@ -1552,7 +1615,7 @@ var Scaffold = function (_Project) {
     key: 'initPlugin',
     value: function () {
       var _ref8 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee8() {
-        var basePath, dirExists;
+        var basePath, dirExists$$1;
         return _regeneratorRuntime.wrap(function _callee8$(_context8) {
           while (1) {
             switch (_context8.prev = _context8.next) {
@@ -1570,27 +1633,27 @@ var Scaffold = function (_Project) {
                   break;
                 }
 
-                log$1.error('You must specify a plugin name.' + ' Check the README for usage information.');
+                log.error('You must specify a plugin name.' + ' Check the README for usage information.');
 
                 return _context8.abrupt('return', false);
 
               case 5:
 
-                log$1.message('Checking for plugin...');
+                log.message('Checking for plugin...');
 
                 basePath = this.getBasePath('plugin');
                 _context8.next = 9;
-                return fs$1.directoryExists(basePath);
+                return fs.directoryExists(basePath);
 
               case 9:
-                dirExists = _context8.sent;
+                dirExists$$1 = _context8.sent;
 
-                if (!dirExists) {
+                if (!dirExists$$1) {
                   _context8.next = 13;
                   break;
                 }
 
-                log$1.ok('Plugin exists.');
+                log.ok('Plugin exists.');
 
                 return _context8.abrupt('return', false);
 
@@ -1604,7 +1667,7 @@ var Scaffold = function (_Project) {
 
               case 17:
 
-                log$1.ok('Plugin created.');
+                log.ok('Plugin created.');
 
                 return _context8.abrupt('return', true);
 
@@ -1630,7 +1693,7 @@ var Scaffold = function (_Project) {
   }, {
     key: 'createPluginTests',
     value: function createPluginTests() {
-      log$1.error('This feature is not ready');
+      log.error('This feature is not ready');
     }
 
     /**
@@ -1645,7 +1708,7 @@ var Scaffold = function (_Project) {
     key: 'initTheme',
     value: function () {
       var _ref9 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee9() {
-        var errorMessage, basePath, dirExists;
+        var errorMessage, basePath, dirExists$$1;
         return _regeneratorRuntime.wrap(function _callee9$(_context9) {
           while (1) {
             switch (_context9.prev = _context9.next) {
@@ -1666,27 +1729,27 @@ var Scaffold = function (_Project) {
                 errorMessage = 'You must specify a theme name.' + ' Check the README for usage information.';
 
 
-                log$1.error(errorMessage);
+                log.error(errorMessage);
 
                 return _context9.abrupt('return', false);
 
               case 6:
 
-                log$1.message('Checking for child theme...');
+                log.message('Checking for child theme...');
 
                 basePath = this.getBasePath('theme');
                 _context9.next = 10;
-                return fs$1.directoryExists(basePath);
+                return fs.directoryExists(basePath);
 
               case 10:
-                dirExists = _context9.sent;
+                dirExists$$1 = _context9.sent;
 
-                if (!dirExists) {
+                if (!dirExists$$1) {
                   _context9.next = 14;
                   break;
                 }
 
-                log$1.ok('Child theme exists.');
+                log.ok('Child theme exists.');
 
                 return _context9.abrupt('return', true);
 
@@ -1704,9 +1767,9 @@ var Scaffold = function (_Project) {
 
               case 20:
 
-                log$1.ok('Theme created.');
+                log.ok('Theme created.');
 
-                log$1.message('Installing theme dependencies...');
+                log.message('Installing theme dependencies...');
 
                 _context9.next = 24;
                 return this.exec('npm install', 'theme');
@@ -1717,14 +1780,14 @@ var Scaffold = function (_Project) {
 
               case 26:
 
-                log$1.message('Compiling theme assets...');
+                log.message('Compiling theme assets...');
 
                 _context9.next = 29;
                 return this.exec('npm run build', 'theme');
 
               case 29:
 
-                log$1.ok('Done');
+                log.ok('Done');
 
                 return _context9.abrupt('return', true);
 
@@ -1755,7 +1818,7 @@ var Scaffold = function (_Project) {
           while (1) {
             switch (_context10.prev = _context10.next) {
               case 0:
-                log$1.error('This feature is not ready');
+                log.error('This feature is not ready');
 
                 return _context10.abrupt('return', false);
 
@@ -1795,7 +1858,7 @@ var Scaffold = function (_Project) {
                 options = {
                   cwd: this.getBasePath(type)
                 };
-                return _context11.abrupt('return', cp.exec(command, options).catch(handleError));
+                return _context11.abrupt('return', cp.exec(command, options));
 
               case 2:
               case 'end':
@@ -1848,7 +1911,7 @@ var Scaffold = function (_Project) {
                 dir = _step2.value;
                 _context12.prev = 10;
                 _context12.next = 13;
-                return fs$1.mkdirp(path.join(base, dir));
+                return fs.mkdirp(path.join(base, dir));
 
               case 13:
                 _context12.next = 18;
@@ -1858,7 +1921,7 @@ var Scaffold = function (_Project) {
                 _context12.prev = 15;
                 _context12.t0 = _context12['catch'](10);
 
-                log$1.error(_context12.t0);
+                log.error(_context12.t0);
 
               case 18:
                 _iteratorNormalCompletion2 = true;
@@ -1915,7 +1978,7 @@ var Scaffold = function (_Project) {
                 file = _step3.value;
                 _context12.prev = 42;
                 _context12.next = 45;
-                return fs$1.ensureFile(path.join(base, file));
+                return fs.ensureFile(path.join(base, file));
 
               case 45:
                 _context12.next = 49;
@@ -1993,7 +2056,7 @@ var Scaffold = function (_Project) {
       var _ref13 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee13() {
         var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'theme';
         var dir = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-        var source, dest, dirExists, assetName;
+        var source, dest, dirExists$$1, assetName;
         return _regeneratorRuntime.wrap(function _callee13$(_context13) {
           while (1) {
             switch (_context13.prev = _context13.next) {
@@ -2001,34 +2064,34 @@ var Scaffold = function (_Project) {
                 source = path.join(this.paths.assets, type, dir);
                 dest = path.join(this.getAssetsPath(type), dir);
                 _context13.next = 4;
-                return fs$1.directoryExists(source);
+                return fs.directoryExists(source);
 
               case 4:
-                dirExists = _context13.sent;
+                dirExists$$1 = _context13.sent;
 
-                if (dirExists) {
+                if (dirExists$$1) {
                   _context13.next = 8;
                   break;
                 }
 
-                log$1.error(source + ' is not a valid assets folder.');
+                log.error(source + ' is not a valid assets folder.');
 
                 return _context13.abrupt('return', false);
 
               case 8:
                 _context13.prev = 8;
                 _context13.next = 11;
-                return fs$1.mkdirp(dest);
+                return fs.mkdirp(dest);
 
               case 11:
                 _context13.next = 13;
-                return fs$1.copy(source, dest);
+                return fs.copy(source, dest);
 
               case 13:
                 assetName = startCase(type);
 
 
-                log$1.ok(assetName + ' assets created.');
+                log.ok(assetName + ' assets created.');
                 _context13.next = 20;
                 break;
 
@@ -2036,8 +2099,8 @@ var Scaffold = function (_Project) {
                 _context13.prev = 17;
                 _context13.t0 = _context13['catch'](8);
 
-                if (!isEmpty$1(_context13.t0)) {
-                  log$1.error(_context13.t0);
+                if (!isEmpty(_context13.t0)) {
+                  log.error(_context13.t0);
                 }
 
               case 20:
@@ -2070,7 +2133,7 @@ var Scaffold = function (_Project) {
       var _ref14 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee14() {
         var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'project';
 
-        var base, files, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, _step4$value, source, dest, destBase, symlinkExists;
+        var base, files, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, _step4$value, source, dest, destBase, linkExists;
 
         return _regeneratorRuntime.wrap(function _callee14$(_context14) {
           while (1) {
@@ -2106,30 +2169,30 @@ var Scaffold = function (_Project) {
                 source = path.join(base, source);
                 dest = path.join(base, destBase);
 
-                log$1.message('Checking for ' + destBase + '...');
+                log.message('Checking for ' + destBase + '...');
 
                 _context14.next = 17;
-                return fs$1.symlinkExists(dest);
+                return symlinkExists(dest);
 
               case 17:
-                symlinkExists = _context14.sent;
+                linkExists = _context14.sent;
 
-                if (!symlinkExists) {
+                if (!linkExists) {
                   _context14.next = 22;
                   break;
                 }
 
-                log$1.ok(dest + ' exists.');
+                log.ok(dest + ' exists.');
                 _context14.next = 31;
                 break;
 
               case 22:
                 _context14.prev = 22;
                 _context14.next = 25;
-                return fs$1.ensureSymlink(dest, source);
+                return fs.ensureSymlink(dest, source);
 
               case 25:
-                log$1.ok(dest + ' created.');
+                log.ok(dest + ' created.');
                 _context14.next = 31;
                 break;
 
@@ -2137,8 +2200,8 @@ var Scaffold = function (_Project) {
                 _context14.prev = 28;
                 _context14.t0 = _context14['catch'](22);
 
-                if (!isEmpty$1(_context14.t0)) {
-                  log$1.error(_context14.t0);
+                if (!isEmpty(_context14.t0)) {
+                  log.error(_context14.t0);
                 }
 
               case 31:
@@ -2242,7 +2305,7 @@ var Scaffold = function (_Project) {
 
                 _context15.prev = 12;
                 _context15.next = 15;
-                return fs$1.remove(file);
+                return fs.remove(file);
 
               case 15:
                 _context15.next = 20;
@@ -2252,8 +2315,8 @@ var Scaffold = function (_Project) {
                 _context15.prev = 17;
                 _context15.t0 = _context15['catch'](12);
 
-                if (!isEmpty$1(_context15.t0)) {
-                  log$1.error(_context15.t0);
+                if (!isEmpty(_context15.t0)) {
+                  log.error(_context15.t0);
                 }
 
               case 20:
@@ -2323,7 +2386,7 @@ var Scaffold = function (_Project) {
       var _ref16 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee16() {
         var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'project';
 
-        var source, dirExists, dirs, _iteratorNormalCompletion6, _didIteratorError6, _iteratorError6, _iterator6, _step6, file;
+        var source, dirExists$$1, dirs, _iteratorNormalCompletion6, _didIteratorError6, _iteratorError6, _iterator6, _step6, file;
 
         return _regeneratorRuntime.wrap(function _callee16$(_context16) {
           while (1) {
@@ -2331,28 +2394,28 @@ var Scaffold = function (_Project) {
               case 0:
                 source = path.join(this.paths.templates, type);
                 _context16.next = 3;
-                return fs$1.directoryExists(source);
+                return fs.directoryExists(source);
 
               case 3:
-                dirExists = _context16.sent;
+                dirExists$$1 = _context16.sent;
 
-                if (dirExists) {
+                if (dirExists$$1) {
                   _context16.next = 7;
                   break;
                 }
 
-                log$1.error(source + ' is not a valid template directory');
+                log.error(source + ' is not a valid template directory');
 
                 return _context16.abrupt('return', false);
 
               case 7:
                 _context16.next = 9;
-                return fs$1.readDir(source);
+                return readDir(source);
 
               case 9:
                 dirs = _context16.sent;
 
-                if (isEmpty$1(dirs)) {
+                if (isEmpty(dirs)) {
                   _context16.next = 37;
                   break;
                 }
@@ -2443,7 +2506,7 @@ var Scaffold = function (_Project) {
     value: function () {
       var _ref17 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee17(source) {
         var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'project';
-        var file, base, dest, fileExists, templateContent, renderedContent;
+        var file, base, dest, templateFileExists, fileBuffer, templateContent, renderedContent;
         return _regeneratorRuntime.wrap(function _callee17$(_context17) {
           while (1) {
             switch (_context17.prev = _context17.next) {
@@ -2456,68 +2519,69 @@ var Scaffold = function (_Project) {
                   file = file.replace('_', '.');
                 }
 
-                log$1.message('Checking for ' + file + '...');
+                log.message('Checking for ' + file + '...');
 
                 base = this.getBasePath(type);
                 dest = path.join(base, file);
                 _context17.next = 7;
-                return fs$1.fileExists(dest);
+                return fileExists(dest);
 
               case 7:
-                fileExists = _context17.sent;
+                templateFileExists = _context17.sent;
 
-                if (!fileExists) {
+                if (!templateFileExists) {
                   _context17.next = 11;
                   break;
                 }
 
-                log$1.ok(file + ' exists.');
+                log.ok(file + ' exists.');
 
                 return _context17.abrupt('return', true);
 
               case 11:
                 _context17.next = 13;
-                return fs$1.mkdirp(base);
+                return fs.mkdirp(base);
 
               case 13:
                 _context17.prev = 13;
                 _context17.next = 16;
-                return fs$1.readFile(source).toString();
+                return fs.readFile(source);
 
               case 16:
-                templateContent = _context17.sent;
+                fileBuffer = _context17.sent;
+                templateContent = fileBuffer.toString();
                 renderedContent = mustache.render(templateContent, this.templateData);
-                _context17.next = 20;
-                return fs$1.writeFile(dest, renderedContent);
+                _context17.next = 21;
+                return fs.writeFile(dest, renderedContent);
 
-              case 20:
+              case 21:
 
-                log$1.ok(file + ' created.');
-                _context17.next = 28;
+                log.ok(file + ' created.');
+                _context17.next = 29;
                 break;
 
-              case 23:
-                _context17.prev = 23;
+              case 24:
+                _context17.prev = 24;
                 _context17.t0 = _context17['catch'](13);
 
-                if (isEmpty$1(_context17.t0)) {
-                  _context17.next = 28;
+                if (isEmpty(_context17.t0)) {
+                  _context17.next = 29;
                   break;
                 }
 
-                log$1.error(_context17.t0);
+                log.error(_context17.t0);
 
                 return _context17.abrupt('return', false);
 
-              case 28:
+              case 29:
                 return _context17.abrupt('return', true);
 
-              case 29:
+              case 30:
               case 'end':
                 return _context17.stop();
             }
           }
-        }, _callee17, this, [[13, 23]]);
+        }, _callee17, this, [[13, 24]]);
       }));
 
       function scaffoldFile(_x11) {
@@ -2606,7 +2670,7 @@ var wpInstallCommand = {
   describe: 'install WordPress',
   builder: {},
   handler: function handler() {
-    log$1.error('This feature is not ready');
+    log.error('This feature is not ready');
   }
 };
 

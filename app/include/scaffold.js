@@ -4,25 +4,29 @@
 
 import path from 'path';
 
+import fs from 'fs-extra';
 import cp from 'mz/child_process';
 import mustache from 'mustache';
 
 import {
-  compose,
   camelCase,
   startCase,
   isEmpty,
-  stubFalse,
-  stubTrue,
 } from 'lodash/fp';
 
 import { mock } from 'mocktail';
 
-import fs from './fs-helpers';
 import log from './log';
 import Project from './project';
 
 import { isTest } from './utils/env';
+
+import {
+  readDir,
+  fileExists,
+  symlinkExists,
+  directoryExists,
+} from './utils/fs';
 
 /**
  * Scaffolds out project files, plugins, themes, etc.
@@ -165,7 +169,7 @@ class Scaffold extends Project {
    * Copies plugin ZIP files.
    */
   static async maybeCopyPluginZips() {
-    const dirExists = await fs.directoryExists(this.paths.plugins);
+    const dirExists = await directoryExists(this.paths.plugins);
 
     if (!dirExists) {
       return;
@@ -191,7 +195,7 @@ class Scaffold extends Project {
       this.templateData.pluginZips = [];
     }
 
-    const files = await fs.readDir(pluginZipsDir);
+    const files = await readDir(pluginZipsDir);
 
     for (const file of files) {
       const name = path.basename(file, '.zip');
@@ -402,7 +406,7 @@ class Scaffold extends Project {
       cwd: this.getBasePath(type),
     };
 
-    return cp.exec(command, options).catch(handleError);
+    return cp.exec(command, options);
   }
 
   /**
@@ -505,9 +509,9 @@ class Scaffold extends Project {
 
       log.message(`Checking for ${destBase}...`);
 
-      const symlinkExists = await fs.symlinkExists(dest);
+      const linkExists = await symlinkExists(dest);
 
-      if (symlinkExists) {
+      if (linkExists) {
         log.ok(`${dest} exists.`);
       } else {
         try {
@@ -565,7 +569,7 @@ class Scaffold extends Project {
       return false;
     }
 
-    const dirs = await fs.readDir(source);
+    const dirs = await readDir(source);
 
     if (!isEmpty(dirs)) {
       for (const file of dirs) {
@@ -596,9 +600,9 @@ class Scaffold extends Project {
     const base = this.getBasePath(type);
     const dest = path.join(base, file);
 
-    const fileExists = await fs.fileExists(dest);
+    const templateFileExists = await fileExists(dest);
 
-    if (fileExists) {
+    if (templateFileExists) {
       log.ok(`${file} exists.`);
 
       return true;
@@ -607,7 +611,8 @@ class Scaffold extends Project {
     await fs.mkdirp(base);
 
     try {
-      const templateContent = await fs.readFile(source).toString();
+      const fileBuffer = await fs.readFile(source);
+      const templateContent = fileBuffer.toString();
       const renderedContent = mustache.render(templateContent, this.templateData);
 
       await fs.writeFile(dest, renderedContent);

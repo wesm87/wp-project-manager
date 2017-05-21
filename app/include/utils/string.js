@@ -1,12 +1,13 @@
 
-import crypto from 'mz/crypto';
+import crypto from 'crypto';
 
 import {
   compose,
   truncate,
   toString,
-  stubString,
 } from 'lodash/fp';
+
+import log from '../log';
 
 
 /**
@@ -32,15 +33,6 @@ const RATIOS = {
  * @return {String}                The randomly generated string.
  */
 export function randomString(strLen, format = 'hex') {
-  let numBytes;
-
-  // Adjust number of bytes based on desired string format.
-  if (format === 'hex') {
-    numBytes = Math.ceil(strLen * RATIOS.BYTES_TO_HEX);
-  } else if (format === 'base64') {
-    numBytes = Math.ceil(strLen * RATIOS.BYTES_TO_BASE64);
-  }
-
   const sliceString = truncate({
     length: strLen,
     ommission: '',
@@ -48,11 +40,23 @@ export function randomString(strLen, format = 'hex') {
 
   const formatString = compose(sliceString, toString);
 
-  // log.error(reason) -> stubString() -> ''
-  const handleError = compose(stubString, log.error);
+  try {
+    let ratio;
 
-  return crypto
-    .randomBytes(numBytes)
-    .then(formatString)
-    .catch(handleError);
+    // Adjust number of bytes based on desired string format.
+    if (format === 'hex') {
+      ratio = RATIOS.BYTES_TO_HEX;
+    } else if (format === 'base64') {
+      ratio = RATIOS.BYTES_TO_BASE64;
+    }
+
+    const numBytes = Math.ceil(strLen * ratio);
+    const randomBytes = crypto.randomBytes(numBytes);
+
+    return formatString(randomBytes);
+  } catch (error) {
+    log.error(error);
+
+    return '';
+  }
 }
