@@ -33,6 +33,9 @@ pids
 *.pid
 *.seed
 
+# Config file for `imdone-atom` extension
+.imdone/config.json
+
 
 ### OS X ###
 

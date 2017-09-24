@@ -4,6 +4,6 @@
  */
 module.exports = (gulp, runTests, taskFiles) => {
   gulp.task('watch', function watchTask() {
-    gulp.watch(taskFiles.js.watch, runTests);
-  });
-};
+    gulp.watch(taskFiles.js.watch, runTests)
+  })
+}

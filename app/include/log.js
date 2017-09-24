@@ -2,7 +2,7 @@
  * @module
  */
 
-import chalk from 'chalk';
+import chalk from 'chalk'
 
 import {
   partialRight,
@@ -11,14 +11,14 @@ import {
   keys,
   isEmpty,
   isObjectLike,
-} from 'lodash/fp';
+} from 'lodash/fp'
 
-import project from './project';
+import project from './project'
 
 /**
  * The number of spaces to use for a tab when formatting JSON strings.
  */
-const JSON_TAB_WIDTH = 2;
+const JSON_TAB_WIDTH = 2
 
 
 /**
@@ -46,7 +46,7 @@ class Log {
       error: chalk.red.underline,
       debug: chalk.cyan.underline,
       message: chalk.reset,
-    };
+    }
   }
 
   /**
@@ -67,7 +67,7 @@ class Log {
         warn: '‼',
         error: '×',
         debug: '*',
-      };
+      }
     }
 
     return {
@@ -76,7 +76,7 @@ class Log {
       warn: '⚠',
       error: '✘',
       debug: '✱',
-    };
+    }
   }
 
   /**
@@ -86,10 +86,10 @@ class Log {
    */
   constructor() {
     if (!this.instance) {
-      this.init();
+      this.init()
     }
 
-    return this.instance;
+    return this.instance
   }
 
   /**
@@ -98,14 +98,14 @@ class Log {
    * @since 0.5.0
    */
   init() {
-    const styles = keys(this.styles);
+    const styles = keys(this.styles)
 
     // Automatically create methods for each style.
     for (const style of styles) {
-      this[style] = partialRight(this._log, [style]);
+      this[style] = partialRight(this._log, [style])
     }
 
-    this.instance = this;
+    this.instance = this
   }
 
   /**
@@ -122,41 +122,40 @@ class Log {
    * @param {String} [style] A style to apply to the message.
    */
   _log(message, style) {
-    let output = message;
+    // Bail if the style is 'debug' and debugging is disabled.
+    if (style === 'debug' && !project.debug) {
+      return
+    }
 
     // Don't log anything if message is empty.
-    if (isEmpty(output)) {
-      return;
+    if (isEmpty(message)) {
+      return
     }
+
+    const icon = getOr('', style, this.icons)
+    const applyStyle = getOr(identity, style, this.styles)
+
+    let output = message
 
     // Convert object-like messages to string.
     if (isObjectLike(output)) {
-      output = JSON.stringify(output, null, JSON_TAB_WIDTH);
+      output = JSON.stringify(output, null, JSON_TAB_WIDTH)
     }
 
     // Make sure the message is a string.
-    output = String(output);
-
-    // Bail if the style is 'debug' and debugging is disabled.
-    if (style === 'debug' && !project.debug) {
-      return;
-    }
+    output = String(output)
 
     // If the style has an associated icon, prepend it to the message.
-    const icon = getOr('', style, this.icons);
-
     if (icon) {
-      output = `${icon} ${output}`;
+      output = `${icon} ${output}`
     }
 
     // Apply the style to the message.
-    const applyStyle = getOr(identity, style, this.styles);
-
-    output = applyStyle(output);
+    output = applyStyle(output)
 
     // Log the message.
-    console.log(output);
+    console.log(output)
   }
 }
 
-export default new Log();
+export default new Log()

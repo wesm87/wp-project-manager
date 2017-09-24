@@ -1,12 +1,12 @@
 
-import scaffold from '../include/scaffold';
+import scaffold from '../include/scaffold'
 
 export default {
   command: 'plugin create-tests',
   describe: 'create plugin unit tests',
   builder: {},
   handler() {
-    scaffold.init();
-    scaffold.createPluginTests();
+    scaffold.init()
+    scaffold.createPluginTests()
   },
-};
+}
