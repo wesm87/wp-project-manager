@@ -2,11 +2,11 @@
  * @module
  */
 
-import path from 'path';
+import path from 'path'
 
-import fs from 'fs-extra';
-import yargs from 'yargs';
-import upsearch from 'utils-upsearch';
+import fs from 'fs-extra'
+import yargs from 'yargs'
+import upsearch from 'utils-upsearch'
 import {
   compose,
   keys,
@@ -18,41 +18,41 @@ import {
   snakeCase,
   kebabCase,
   isEmpty,
-} from 'lodash/fp';
+} from 'lodash/fp'
 
-import { mock } from 'mocktail';
+import { mock } from 'mocktail'
 
-import { randomString } from './utils/string';
+import { randomString } from './utils/string'
 
 import {
   fileExists,
   loadYAML,
   writeYAML,
-} from './utils/fs';
+} from './utils/fs'
 
 
-const upperSnakeCase = compose(replace(/ /g, '_'), startCase);
+const upperSnakeCase = compose(replace(/ /g, '_'), startCase)
 
 /**
  * The number of characters to use when generating a database prefix.
  *
  * @type {Number}
  */
-const DB_PREFIX_LENGTH = 8;
+const DB_PREFIX_LENGTH = 8
 
 /**
  * The number of characters to use when generating a secret key.
  *
  * @type {Number}
  */
-const SECRET_KEY_LENGTH = 64;
+const SECRET_KEY_LENGTH = 64
 
 /**
  * The number of characters to use when generating a secret salt.
  *
  * @type {Number}
  */
-const SECRET_SALT_LENGTH = 64;
+const SECRET_SALT_LENGTH = 64
 
 /**
  * Project config settings and helper methods.
@@ -68,7 +68,7 @@ class Project {
    */
   static get paths() {
     if (!this._paths) {
-      const rootPath = path.join(__dirname, '..');
+      const rootPath = path.join(__dirname, '..')
 
       this._paths = {
         root: rootPath,
@@ -79,18 +79,18 @@ class Project {
         plugins: path.join(rootPath, 'project-files', 'plugin-zips'),
         test: path.join(rootPath, 'test'),
         config: upsearch.sync('project.yml'),
-      };
+      }
 
       if (this._paths.root === this._paths.project) {
-        this._paths.project = path.join(this._paths.root, '_test-project');
+        this._paths.project = path.join(this._paths.root, '_test-project')
       }
 
       if (!this._paths.config) {
-        this._paths.config = path.join(this._paths.project, 'project.yml');
+        this._paths.config = path.join(this._paths.project, 'project.yml')
       }
     }
 
-    return this._paths;
+    return this._paths
   }
 
   /**
@@ -102,10 +102,10 @@ class Project {
    */
   static get config() {
     if (!this._config) {
-      this._config = this.loadConfig();
+      this._config = this.loadConfig()
     }
 
-    return this._config;
+    return this._config
   }
 
   /**
@@ -116,7 +116,7 @@ class Project {
    * @param {Object} config The new config settings.
    */
   static set config(config) {
-    this._config = this.parseConfig(config);
+    this._config = this.parseConfig(config)
   }
 
   /**
@@ -182,7 +182,7 @@ class Project {
         nonce_key: '',
         nonce_salt: '',
       },
-    };
+    }
   }
 
   /**
@@ -196,30 +196,30 @@ class Project {
    * @return {Object}      The resulting config object.
    */
   static async loadConfig(file = null) {
-    let config;
+    let config
 
     // Try to load the config file if one was passed and it exists.
     if (file) {
-      const customFileExists = await fileExists(file);
+      const customFileExists = await fileExists(file)
 
       if (customFileExists) {
-        config = await loadYAML(file);
+        config = await loadYAML(file)
       }
     }
 
     // If we don't have a config object (or the config object is empty)
     // fall back to the default config file.
     if (isEmpty(config)) {
-      const configFileExists = await fileExists(this.paths.config);
+      const configFileExists = await fileExists(this.paths.config)
 
       if (configFileExists) {
-        config = await loadYAML(this.paths.config);
+        config = await loadYAML(this.paths.config)
       }
     }
 
-    config = merge(config, yargs.argv);
+    config = merge(config, yargs.argv)
 
-    return this.parseConfig(config);
+    return this.parseConfig(config)
   }
 
   /**
@@ -233,17 +233,17 @@ class Project {
    */
   static async createConfigFile(force = false) {
     if (force) {
-      const configFileExists = await fileExists(this.paths.config);
+      const configFileExists = await fileExists(this.paths.config)
 
       if (configFileExists) {
-        await fs.remove(this.paths.config);
+        await fs.remove(this.paths.config)
       }
     }
 
-    const configFileExists = await fileExists(this.paths.config);
+    const configFileExists = await fileExists(this.paths.config)
 
     if (!configFileExists) {
-      await writeYAML(this.paths.config, this.defaultConfig);
+      await writeYAML(this.paths.config, this.defaultConfig)
     }
   }
 
@@ -258,8 +258,8 @@ class Project {
    */
   static parseConfig(config) {
     // Merge config with defaults.
-    const configKeys = keys(this.defaultConfig);
-    const configWithDefaults = defaultsDeep({}, config, this.defaultConfig);
+    const configKeys = keys(this.defaultConfig)
+    const configWithDefaults = defaultsDeep({}, config, this.defaultConfig)
 
     // Filter out any invalid config values, then
     // fill in any config values that aren't set.
@@ -270,26 +270,26 @@ class Project {
       this.ensurePluginConfig,
       this.ensureProjectConfig,
       pick(configKeys),
-    );
+    )
 
-    const parsed = parseConfig(configWithDefaults);
+    const parsed = parseConfig(configWithDefaults)
 
     // Set internal config values.
-    parsed.project.folder = path.basename(this.paths.project);
-    parsed.project.namespace = upperSnakeCase(parsed.project.title);
+    parsed.project.folder = path.basename(this.paths.project)
+    parsed.project.namespace = upperSnakeCase(parsed.project.title)
 
-    parsed.plugin.id = snakeCase(parsed.plugin.name);
-    parsed.plugin.class = upperSnakeCase(parsed.plugin.name);
-    parsed.plugin.namespace = parsed.project.namespace || parsed.plugin.class;
-    parsed.plugin.namespace = `${parsed.plugin.namespace}\\Plugin`;
+    parsed.plugin.id = snakeCase(parsed.plugin.name)
+    parsed.plugin.class = upperSnakeCase(parsed.plugin.name)
+    parsed.plugin.namespace = parsed.project.namespace || parsed.plugin.class
+    parsed.plugin.namespace = `${parsed.plugin.namespace}\\Plugin`
 
-    parsed.theme.id = snakeCase(parsed.theme.name);
-    parsed.theme.class = upperSnakeCase(parsed.theme.name);
-    parsed.theme.namespace = parsed.project.namespace || parsed.theme.class;
-    parsed.theme.namespace = `${parsed.theme.namespace}\\Theme`;
+    parsed.theme.id = snakeCase(parsed.theme.name)
+    parsed.theme.class = upperSnakeCase(parsed.theme.name)
+    parsed.theme.namespace = parsed.project.namespace || parsed.theme.class
+    parsed.theme.namespace = `${parsed.theme.namespace}\\Theme`
 
     // Return the updated config settings.
-    return parsed;
+    return parsed
   }
 
   /**
@@ -301,21 +301,21 @@ class Project {
    * @return {Object}        The updated config object.
    */
   static ensureProjectConfig(config) {
-    const parsed = config;
+    const parsed = config
 
     if (!parsed.project.title && parsed.project.slug) {
-      parsed.project.title = startCase(parsed.project.slug);
+      parsed.project.title = startCase(parsed.project.slug)
     }
 
     if (!parsed.project.slug && parsed.project.title) {
-      parsed.project.slug = kebabCase(parsed.project.title);
+      parsed.project.slug = kebabCase(parsed.project.title)
     }
 
     if (!parsed.project.url) {
-      parsed.project.url = `${parsed.project.slug}.dev`;
+      parsed.project.url = `${parsed.project.slug}.dev`
     }
 
-    return parsed;
+    return parsed
   }
 
   /**
@@ -327,21 +327,21 @@ class Project {
    * @return {Object}        The updated config object.
    */
   static ensurePluginConfig(config) {
-    const parsed = config;
+    const parsed = config
 
     if (!parsed.plugin.name) {
       if (parsed.plugin.slug) {
-        parsed.plugin.name = startCase(parsed.plugin.slug);
+        parsed.plugin.name = startCase(parsed.plugin.slug)
       } else {
-        parsed.plugin.name = parsed.project.title;
+        parsed.plugin.name = parsed.project.title
       }
     }
 
     if (!parsed.plugin.slug) {
-      parsed.plugin.slug = kebabCase(parsed.plugin.name);
+      parsed.plugin.slug = kebabCase(parsed.plugin.name)
     }
 
-    return parsed;
+    return parsed
   }
 
   /**
@@ -353,21 +353,21 @@ class Project {
    * @return {Object}        The updated config object.
    */
   static ensureThemeConfig(config) {
-    const parsed = config;
+    const parsed = config
 
     if (!parsed.theme.name) {
       if (parsed.theme.slug) {
-        parsed.theme.name = startCase(parsed.theme.slug);
+        parsed.theme.name = startCase(parsed.theme.slug)
       } else {
-        parsed.theme.name = parsed.project.title;
+        parsed.theme.name = parsed.project.title
       }
     }
 
     if (!parsed.theme.slug) {
-      parsed.theme.slug = kebabCase(parsed.theme.name);
+      parsed.theme.slug = kebabCase(parsed.theme.name)
     }
 
-    return parsed;
+    return parsed
   }
 
   /**
@@ -379,19 +379,19 @@ class Project {
    * @return {Object}        The updated config object.
    */
   static ensureDatabaseConfig(config) {
-    const parsed = config;
+    const parsed = config
 
     if (!parsed.db.name) {
-      parsed.db.name = parsed.project.slug;
+      parsed.db.name = parsed.project.slug
     }
 
     if (!parsed.db.prefix) {
-      const prefix = randomString(DB_PREFIX_LENGTH);
+      const prefix = randomString(DB_PREFIX_LENGTH)
 
-      parsed.db.prefix = `${prefix}_`;
+      parsed.db.prefix = `${prefix}_`
     }
 
-    return parsed;
+    return parsed
   }
 
   /**
@@ -403,24 +403,24 @@ class Project {
    * @return {Object}        The updated config object.
    */
   static ensureSecretConfig(config) {
-    const parsed = config;
-    const types = ['auth', 'secure_auth', 'logged_in', 'nonce'];
+    const parsed = config
+    const types = ['auth', 'secure_auth', 'logged_in', 'nonce']
 
     for (const type of types) {
       if (!parsed.secret[`${type}_key`]) {
-        const secretKey = randomString(SECRET_KEY_LENGTH, 'base64');
+        const secretKey = randomString(SECRET_KEY_LENGTH, 'base64')
 
-        parsed.secret[`${type}_key`] = secretKey;
+        parsed.secret[`${type}_key`] = secretKey
       }
       if (!parsed.secret[`${type}_salt`]) {
-        const secretSalt = randomString(SECRET_SALT_LENGTH, 'base64');
+        const secretSalt = randomString(SECRET_SALT_LENGTH, 'base64')
 
-        parsed.secret[`${type}_salt`] = secretSalt;
+        parsed.secret[`${type}_salt`] = secretSalt
       }
     }
 
-    return parsed;
+    return parsed
   }
 }
 
-export default mock(Project);
+export default mock(Project)

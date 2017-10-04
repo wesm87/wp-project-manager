@@ -1,7 +1,7 @@
 
-import crypto from 'crypto';
+import crypto from 'crypto'
 
-import log from '../log';
+import log from '../log'
 
 
 /**
@@ -14,7 +14,7 @@ import log from '../log';
 const RATIOS = {
   BYTES_TO_HEX: 0.5,
   BYTES_TO_BASE64: 0.75,
-};
+}
 
 
 /**
@@ -28,24 +28,24 @@ const RATIOS = {
  */
 export function randomString(strLen, format = 'hex') {
   try {
-    let ratio;
+    let ratio
 
     // Adjust number of bytes based on desired string format.
     if (format === 'hex') {
-      ratio = RATIOS.BYTES_TO_HEX;
+      ratio = RATIOS.BYTES_TO_HEX
     } else if (format === 'base64') {
-      ratio = RATIOS.BYTES_TO_BASE64;
+      ratio = RATIOS.BYTES_TO_BASE64
     }
 
-    const numBytes = Math.ceil(strLen * ratio);
+    const numBytes = Math.ceil(strLen * ratio)
 
     return crypto
       .randomBytes(numBytes)
       .toString(format)
-      .slice(0, strLen);
+      .slice(0, strLen)
   } catch (error) {
-    log.error(error);
+    log.error(error)
 
-    return '';
+    return ''
   }
 }

@@ -6,8 +6,8 @@
  * @module
  */
 
-import fs from 'fs-extra';
-import YAML from 'js-yaml';
+import fs from 'fs-extra'
+import YAML from 'js-yaml'
 
 import {
   partialRight,
@@ -16,7 +16,7 @@ import {
   startsWith,
   stubFalse,
   stubArray,
-} from 'lodash/fp';
+} from 'lodash/fp'
 
 
 /**
@@ -26,7 +26,7 @@ import {
  * @return {Boolean}     True if the file name begins with a dot;
  *                       false if not.
  */
-export const isHiddenFile = complement(startsWith('.'));
+export const isHiddenFile = complement(startsWith('.'))
 
 /**
  * Checks if the specified file or directory exists.
@@ -47,22 +47,22 @@ export async function pathExists(path, type = 'any') {
     .then(function handleSuccess(info) {
       switch (type) {
         case 'file' : {
-          return info.isFile();
+          return info.isFile()
         }
         case 'folder' :
         case 'directory' : {
-          return info.isDirectory();
+          return info.isDirectory()
         }
         case 'link':
         case 'symlink': {
-          return info.isSymbolicLink();
+          return info.isSymbolicLink()
         }
         default: {
-          return Boolean(info);
+          return Boolean(info)
         }
       }
     })
-    .catch(stubFalse);
+    .catch(stubFalse)
 }
 
 /**
@@ -75,7 +75,7 @@ export async function pathExists(path, type = 'any') {
  * @param  {String} path The path to the file to check.
  * @return {Boolean}     Resolves to true if file exists; false if not.
  */
-export const fileExists = partialRight(pathExists, ['file']);
+export const fileExists = partialRight(pathExists, ['file'])
 
 /**
  * Checks if the specified directory exists.
@@ -87,7 +87,7 @@ export const fileExists = partialRight(pathExists, ['file']);
  * @param  {String} path The path to the directory to check.
  * @return {Promise}     Resolves to true if directory exists; false if not.
  */
-export const directoryExists = partialRight(pathExists, ['directory']);
+export const directoryExists = partialRight(pathExists, ['directory'])
 
 /**
  * Alias for `directoryExists`.
@@ -98,7 +98,7 @@ export const directoryExists = partialRight(pathExists, ['directory']);
  * @param  {String} path The path to the directory to check.
  * @return {Promise}     Resolves to true if directory exists; false if not.
  */
-export const dirExists = directoryExists;
+export const dirExists = directoryExists
 
 /**
  * Checks if the specified symbolic link exists.
@@ -110,7 +110,7 @@ export const dirExists = directoryExists;
  * @param  {String} path The path to the link to check.
  * @return {Promise}     Resolves to true if link exists; false if not.
  */
-export const symlinkExists = partialRight(pathExists, ['symlink']);
+export const symlinkExists = partialRight(pathExists, ['symlink'])
 
 /**
  * Takes a directory path and returns Promise that resolves to an array,
@@ -128,18 +128,18 @@ export const symlinkExists = partialRight(pathExists, ['symlink']);
 export async function readDir(dir, includeHidden = false) {
   function handleSuccess(files) {
     if (!includeHidden) {
-      return files.filter(isHiddenFile);
+      return files.filter(isHiddenFile)
     }
 
-    return files;
+    return files
   }
 
-  const handleError = stubArray;
+  const handleError = stubArray
 
   return fs
     .readdir(dir)
     .then(handleSuccess)
-    .catch(handleError);
+    .catch(handleError)
 }
 
 /**
@@ -154,20 +154,20 @@ export async function readDir(dir, includeHidden = false) {
  *                            an empty object on failure.
  */
 export async function loadYAML(filePath) {
-  const defaultValue = {};
+  const defaultValue = {}
 
   function handleSuccess(contents) {
-    const json = YAML.safeLoad(contents);
+    const json = YAML.safeLoad(contents)
 
-    return json || defaultValue;
+    return json || defaultValue
   }
 
-  const handleError = constant(defaultValue);
+  const handleError = constant(defaultValue)
 
   return fs
     .readFile(filePath, 'utf8')
     .then(handleSuccess)
-    .catch(handleError);
+    .catch(handleError)
 }
 
 /**
@@ -182,7 +182,7 @@ export async function loadYAML(filePath) {
  * @return {Promise}         Resolves to true on success; false on failure.
  */
 export async function writeYAML(filePath, json) {
-  const yaml = YAML.safeDump(json, { noCompatMode: true });
+  const yaml = YAML.safeDump(json, { noCompatMode: true })
 
-  return fs.writeFile(filePath, yaml);
+  return fs.writeFile(filePath, yaml)
 }

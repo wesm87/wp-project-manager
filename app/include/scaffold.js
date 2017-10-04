@@ -2,32 +2,32 @@
  * @module
  */
 
-import path from 'path';
+import path from 'path'
 
-import fs from 'fs-extra';
-import cp from 'mz/child_process';
-import mustache from 'mustache';
+import fs from 'fs-extra'
+import cp from 'child_process'
+import mustache from 'mustache'
 
 import {
   getOr,
   camelCase,
   startCase,
   isEmpty,
-} from 'lodash/fp';
+} from 'lodash/fp'
 
-import { mock } from 'mocktail';
+import { mock } from 'mocktail'
 
-import log from './log';
-import Project from './project';
+import log from './log'
+import Project from './project'
 
-import { isTest } from './utils/env';
+import { isTest } from './utils/env'
 
 import {
   readDir,
   fileExists,
   symlinkExists,
   directoryExists,
-} from './utils/fs';
+} from './utils/fs'
 
 /**
  * Scaffolds out project files, plugins, themes, etc.
@@ -62,7 +62,7 @@ class Scaffold extends Project {
           '.editorconfig',
         ]),
       },
-    };
+    }
   }
 
   /**
@@ -72,7 +72,7 @@ class Scaffold extends Project {
    * @return {String}
    */
   static getBasePath(type = 'project') {
-    const { plugin, theme } = this.config;
+    const { plugin, theme } = this.config
 
     const basePaths = {
       project: '.',
@@ -82,18 +82,18 @@ class Scaffold extends Project {
       wordpress: 'htdocs/web/wp',
       plugin: path.join('htdocs/web/app/plugins/', plugin.slug),
       theme: path.join('htdocs/web/app/themes/', theme.slug),
-    };
+    }
 
     // We convert the type to camel case so we don't run into issues if we
     // want to use a type like `type-name` or `type_name`.
-    const pathKey = camelCase(type);
-    const base = basePaths[pathKey];
+    const pathKey = camelCase(type)
+    const base = basePaths[pathKey]
 
     if (!base) {
-      return '';
+      return ''
     }
 
-    return path.join(this.paths.project, base);
+    return path.join(this.paths.project, base)
   }
 
   /**
@@ -106,16 +106,16 @@ class Scaffold extends Project {
     const assetsPaths = {
       plugin: 'assets/source',
       theme: 'assets/source',
-    };
-
-    const pathKey = camelCase(type);
-    const assetsPath = assetsPaths[pathKey];
-
-    if (!assetsPath) {
-      return '';
     }
 
-    return path.join(this.getBasePath(type), assetsPath);
+    const pathKey = camelCase(type)
+    const assetsPath = assetsPaths[pathKey]
+
+    if (!assetsPath) {
+      return ''
+    }
+
+    return path.join(this.getBasePath(type), assetsPath)
   }
 
   /**
@@ -123,16 +123,16 @@ class Scaffold extends Project {
    * Also creates the project folder if it doesn't exist.
    */
   static async init() {
-    this.config = await this.config;
-    this.templateData = this.config;
+    this.config = await this.config
+    this.templateData = this.config
 
     if (isTest(this.config.env)) {
-      await fs.remove(this.paths.project);
+      await fs.remove(this.paths.project)
     }
 
-    await fs.mkdirp(this.paths.project);
+    await fs.mkdirp(this.paths.project)
 
-    return true;
+    return true
   }
 
   /**
@@ -141,35 +141,35 @@ class Scaffold extends Project {
    * @return {Boolean}
    */
   static async createProject() {
-    const { project } = this.config;
+    const { project } = this.config
 
     if (!project || !project.title) {
-      log.error('You must specify a project title.');
-      log.info('Check the README for usage information.');
+      log.error('You must specify a project title.')
+      log.info('Check the README for usage information.')
 
-      return false;
+      return false
     }
 
-    await this.initProjectFiles();
-    await this.initRepo();
-    await this.initProject();
-    await this.initPlugin();
-    await this.initTheme();
+    await this.initProjectFiles()
+    await this.initRepo()
+    await this.initProject()
+    await this.initPlugin()
+    await this.initTheme()
 
-    return true;
+    return true
   }
 
   /**
    * Creates project files.
    */
   static async initProjectFiles() {
-    await this.maybeCopyPluginZips();
-    await this.parseTemplateData();
+    await this.maybeCopyPluginZips()
+    await this.parseTemplateData()
 
-    await this.scaffoldFiles('scripts');
+    await this.scaffoldFiles('scripts')
 
     if (this.config.vvv) {
-      await this.scaffoldFiles('vvv');
+      await this.scaffoldFiles('vvv')
     }
   }
 
@@ -177,38 +177,38 @@ class Scaffold extends Project {
    * Copies plugin ZIP files.
    */
   static async maybeCopyPluginZips() {
-    const dirExists = await directoryExists(this.paths.plugins);
+    const dirExists = await directoryExists(this.paths.plugins)
 
     if (!dirExists) {
-      return;
+      return
     }
 
-    log.message('Copying plugin ZIPs...');
+    log.message('Copying plugin ZIPs...')
 
-    const source = this.paths.plugins;
-    const dest = path.join(this.paths.project, 'project-files/plugin-zips');
+    const source = this.paths.plugins
+    const dest = path.join(this.paths.project, 'project-files/plugin-zips')
 
-    await fs.copy(source, dest);
+    await fs.copy(source, dest)
 
-    log.ok('Plugin ZIPs copied.');
+    log.ok('Plugin ZIPs copied.')
   }
 
   /**
    * Parses template data from project config.
    */
   static async parseTemplateData() {
-    const pluginZipsDir = path.join(this.paths.project, 'project-files/plugin-zips');
+    const pluginZipsDir = path.join(this.paths.project, 'project-files/plugin-zips')
 
     if (!this.templateData.pluginZips) {
-      this.templateData.pluginZips = [];
+      this.templateData.pluginZips = []
     }
 
-    const files = await readDir(pluginZipsDir);
+    const files = await readDir(pluginZipsDir)
 
     for (const file of files) {
-      const name = path.basename(file, '.zip');
+      const name = path.basename(file, '.zip')
 
-      this.templateData.pluginZips.push({ name, file });
+      this.templateData.pluginZips.push({ name, file })
     }
   }
 
@@ -219,38 +219,38 @@ class Scaffold extends Project {
    */
   static async initRepo() {
     if (!this.config.repo.create) {
-      return false;
+      return false
     }
 
-    log.message('Checking for Git repo...');
+    log.message('Checking for Git repo...')
 
-    const dirPath = path.join(this.paths.project, '.git');
-    const dirExists = await directoryExists(dirPath);
+    const dirPath = path.join(this.paths.project, '.git')
+    const dirExists = await directoryExists(dirPath)
 
     if (dirExists) {
-      log.ok('Repo exists.');
+      log.ok('Repo exists.')
 
-      return false;
+      return false
     }
 
     // Initialize repo.
-    const gitInitResult = await this.exec('git init', 'project');
+    const gitInitResult = await this.exec('git init', 'project')
 
     if (gitInitResult) {
-      log.ok('Repo initialized.');
+      log.ok('Repo initialized.')
     }
 
     // If the repo URL is set, add it as a remote.
     if (this.config.repo.url) {
-      const command = `git remote add origin ${this.config.repo.url}`;
-      const remoteAddResult = await this.exec(command, 'project');
+      const command = `git remote add origin ${this.config.repo.url}`
+      const remoteAddResult = await this.exec(command, 'project')
 
       if (remoteAddResult) {
-        log.ok('Remote URL added.');
+        log.ok('Remote URL added.')
       }
     }
 
-    return true;
+    return true
   }
 
   /**
@@ -259,39 +259,39 @@ class Scaffold extends Project {
    * @return {Boolean}
    */
   static async initProject() {
-    log.message('Checking for Bedrock...');
+    log.message('Checking for Bedrock...')
 
-    const dirPath = path.join(this.paths.project, 'htdocs');
-    const dirExists = await directoryExists(dirPath);
+    const dirPath = path.join(this.paths.project, 'htdocs')
+    const dirExists = await directoryExists(dirPath)
 
     if (dirExists) {
-      log.ok('Bedrock exists');
+      log.ok('Bedrock exists')
 
-      return false;
+      return false
     }
 
     // Install Bedrock.
-    const command = 'composer create-project roots/bedrock htdocs --no-install';
-    const createProjectResult = await this.exec(command, 'project');
+    const command = 'composer create-project roots/bedrock htdocs --no-install'
+    const createProjectResult = await this.exec(command, 'project')
 
     if (createProjectResult) {
-      log.ok('Bedrock installed.');
+      log.ok('Bedrock installed.')
     }
 
-    await this.linkFiles('project');
-    await this.scaffoldFiles('project');
-    await this.scaffoldFiles('bedrock');
-    await this.removeFiles('bedrock');
+    await this.linkFiles('project')
+    await this.scaffoldFiles('project')
+    await this.scaffoldFiles('bedrock')
+    await this.removeFiles('bedrock')
 
-    log.message('Installing project dependencies...');
+    log.message('Installing project dependencies...')
 
-    const installResult = await this.exec('composer install', 'project');
+    const installResult = await this.exec('composer install', 'project')
 
     if (installResult) {
-      log.ok('Dependencies installed.');
+      log.ok('Dependencies installed.')
     }
 
-    return true;
+    return true
   }
 
   /**
@@ -301,43 +301,43 @@ class Scaffold extends Project {
    */
   static async initPlugin() {
     if (!this.config.plugin.scaffold) {
-      return false;
+      return false
     }
 
     if (!this.config.plugin.name) {
       log.error(
         'You must specify a plugin name.'
         + ' Check the README for usage information.',
-      );
+      )
 
-      return false;
+      return false
     }
 
-    log.message('Checking for plugin...');
+    log.message('Checking for plugin...')
 
-    const basePath = this.getBasePath('plugin');
+    const basePath = this.getBasePath('plugin')
 
-    const dirExists = await directoryExists(basePath);
+    const dirExists = await directoryExists(basePath)
 
     if (dirExists) {
-      log.ok('Plugin exists.');
+      log.ok('Plugin exists.')
 
-      return false;
+      return false
     }
 
-    await this.scaffoldFiles('plugin');
-    await this.createPlaceholders('plugin');
+    await this.scaffoldFiles('plugin')
+    await this.createPlaceholders('plugin')
 
-    log.ok('Plugin created.');
+    log.ok('Plugin created.')
 
-    return true;
+    return true
   }
 
   /**
    * Creates plugin unit tests.
    */
   static createPluginTests() {
-    log.error('This feature is not ready');
+    log.error('This feature is not ready')
   }
 
   /**
@@ -349,57 +349,57 @@ class Scaffold extends Project {
    */
   static async initTheme() {
     if (!this.config.theme.scaffold) {
-      return false;
+      return false
     }
 
     if (!this.config.theme.name) {
       const errorMessage = 'You must specify a theme name.'
-        + ' Check the README for usage information.';
+        + ' Check the README for usage information.'
 
-      log.error(errorMessage);
+      log.error(errorMessage)
 
-      return false;
+      return false
     }
 
-    log.message('Checking for child theme...');
+    log.message('Checking for child theme...')
 
-    const basePath = this.getBasePath('theme');
+    const basePath = this.getBasePath('theme')
 
-    const dirExists = await directoryExists(basePath);
+    const dirExists = await directoryExists(basePath)
 
     if (dirExists) {
-      log.ok('Child theme exists.');
+      log.ok('Child theme exists.')
 
-      return true;
+      return true
     }
 
-    await this.scaffoldFiles('theme');
-    await this.createPlaceholders('theme');
-    await this.copyAssets('theme');
+    await this.scaffoldFiles('theme')
+    await this.createPlaceholders('theme')
+    await this.copyAssets('theme')
 
-    log.ok('Theme created.');
+    log.ok('Theme created.')
 
-    log.message('Installing theme dependencies...');
+    log.message('Installing theme dependencies...')
 
-    await this.exec('npm install', 'theme');
-    await this.exec('bower install', 'theme');
+    await this.exec('npm install', 'theme')
+    await this.exec('bower install', 'theme')
 
-    log.message('Compiling theme assets...');
+    log.message('Compiling theme assets...')
 
-    await this.exec('npm run build', 'theme');
+    await this.exec('npm run build', 'theme')
 
-    log.ok('Done');
+    log.ok('Done')
 
-    return true;
+    return true
   }
 
   /**
    * Creates theme unit tests.
    */
   static async createThemeTests() {
-    log.error('This feature is not ready');
+    log.error('This feature is not ready')
 
-    return false;
+    return false
   }
 
   /**
@@ -412,9 +412,9 @@ class Scaffold extends Project {
   static async exec(command, type = 'project') {
     const options = {
       cwd: this.getBasePath(type),
-    };
+    }
 
-    return cp.exec(command, options);
+    return cp.exec(command, options)
   }
 
   /**
@@ -423,7 +423,7 @@ class Scaffold extends Project {
    * @param  {String} [type = 'theme'] [description]
    */
   static async createPlaceholders(type = 'theme') {
-    const base = this.getBasePath(type);
+    const base = this.getBasePath(type)
 
     const dirs = [
       'includes',
@@ -435,26 +435,26 @@ class Scaffold extends Project {
       'assets/dist/js',
       'assets/dist/images',
       'assets/dist/fonts',
-    ];
+    ]
 
     const files = [
       'assets/dist/css/.gitkeep',
       'assets/dist/js/.gitkeep',
       'assets/dist/images/.gitkeep',
       'assets/dist/fonts/.gitkeep',
-    ];
+    ]
 
     for (const dir of dirs) {
       try {
-        await fs.mkdirp(path.join(base, dir));
+        await fs.mkdirp(path.join(base, dir))
       } catch (error) {
-        log.error(error);
+        log.error(error)
       }
     }
 
     for (const file of files) {
       try {
-        await fs.ensureFile(path.join(base, file));
+        await fs.ensureFile(path.join(base, file))
       } catch (error) {
         // Do nothing.
       }
@@ -469,31 +469,31 @@ class Scaffold extends Project {
    * @return {Boolean}
    */
   static async copyAssets(type = 'theme', dir = '') {
-    const source = path.join(this.paths.assets, type, dir);
-    const dest = path.join(this.getAssetsPath(type), dir);
+    const source = path.join(this.paths.assets, type, dir)
+    const dest = path.join(this.getAssetsPath(type), dir)
 
-    const dirExists = await directoryExists(source);
+    const dirExists = await directoryExists(source)
 
     if (!dirExists) {
-      log.error(`${source} is not a valid assets folder.`);
+      log.error(`${source} is not a valid assets folder.`)
 
-      return false;
+      return false
     }
 
     try {
-      await fs.mkdirp(dest);
-      await fs.copy(source, dest);
+      await fs.mkdirp(dest)
+      await fs.copy(source, dest)
 
-      const assetName = startCase(type);
+      const assetName = startCase(type)
 
-      log.ok(`${assetName} assets created.`);
+      log.ok(`${assetName} assets created.`)
     } catch (error) {
       if (!isEmpty(error)) {
-        log.error(error);
+        log.error(error)
       }
     }
 
-    return true;
+    return true
   }
 
   /**
@@ -502,32 +502,32 @@ class Scaffold extends Project {
    * @param  {String} type = 'project' [description]
    */
   static async linkFiles(type = 'project') {
-    const base = this.getBasePath(type);
-    const files = getOr('', [type, 'link'], this.files);
+    const base = this.getBasePath(type)
+    const files = getOr('', [type, 'link'], this.files)
 
     if (!files) {
-      return;
+      return
     }
 
     for (let [source, dest] of files) {
-      const destBase = path.join(dest, path.basename(source));
+      const destBase = path.join(dest, path.basename(source))
 
-      source = path.join(base, source);
-      dest = path.join(base, destBase);
+      source = path.join(base, source)
+      dest = path.join(base, destBase)
 
-      log.message(`Checking for ${destBase}...`);
+      log.message(`Checking for ${destBase}...`)
 
-      const linkExists = await symlinkExists(dest);
+      const linkExists = await symlinkExists(dest)
 
       if (linkExists) {
-        log.ok(`${dest} exists.`);
+        log.ok(`${dest} exists.`)
       } else {
         try {
-          await fs.ensureSymlink(dest, source);
-          log.ok(`${dest} created.`);
+          await fs.ensureSymlink(dest, source)
+          log.ok(`${dest} created.`)
         } catch (error) {
           if (!isEmpty(error)) {
-            log.error(error);
+            log.error(error)
           }
         }
       }
@@ -540,21 +540,21 @@ class Scaffold extends Project {
    * @param  {String} type = 'project' [description]
    */
   static async removeFiles(type = 'project') {
-    const base = this.getBasePath(type);
-    const files = this.files[type].remove;
+    const base = this.getBasePath(type)
+    const files = this.files[type].remove
 
     if (!files) {
-      return;
+      return
     }
 
     for (let file of files) {
-      file = path.join(base, file);
+      file = path.join(base, file)
 
       try {
-        await fs.remove(file);
+        await fs.remove(file)
       } catch (error) {
         if (!isEmpty(error)) {
-          log.error(error);
+          log.error(error)
         }
       }
     }
@@ -567,25 +567,25 @@ class Scaffold extends Project {
    * @return {Boolean}      [description]
    */
   static async scaffoldFiles(type = 'project') {
-    const source = path.join(this.paths.templates, type);
+    const source = path.join(this.paths.templates, type)
 
-    const dirExists = await directoryExists(source);
+    const dirExists = await directoryExists(source)
 
     if (!dirExists) {
-      log.error(`${source} is not a valid template directory`);
+      log.error(`${source} is not a valid template directory`)
 
-      return false;
+      return false
     }
 
-    const dirs = await readDir(source);
+    const dirs = await readDir(source)
 
     if (!isEmpty(dirs)) {
       for (const file of dirs) {
-        await this.scaffoldFile(path.join(source, file), type);
+        await this.scaffoldFile(path.join(source, file), type)
       }
     }
 
-    return true;
+    return true
   }
 
   /**
@@ -596,46 +596,46 @@ class Scaffold extends Project {
    * @return {Boolean}        [description]
    */
   static async scaffoldFile(source, type = 'project') {
-    let file = path.basename(source, '.mustache');
+    let file = path.basename(source, '.mustache')
 
     // Templates for hidden files start with `_` instead of `.`
     if (file.startsWith('_')) {
-      file = file.replace('_', '.');
+      file = file.replace('_', '.')
     }
 
-    log.message(`Checking for ${file}...`);
+    log.message(`Checking for ${file}...`)
 
-    const base = this.getBasePath(type);
-    const dest = path.join(base, file);
+    const base = this.getBasePath(type)
+    const dest = path.join(base, file)
 
-    const templateFileExists = await fileExists(dest);
+    const templateFileExists = await fileExists(dest)
 
     if (templateFileExists) {
-      log.ok(`${file} exists.`);
+      log.ok(`${file} exists.`)
 
-      return true;
+      return true
     }
 
-    await fs.mkdirp(base);
+    await fs.mkdirp(base)
 
     try {
-      const fileBuffer = await fs.readFile(source);
-      const templateContent = fileBuffer.toString();
-      const renderedContent = mustache.render(templateContent, this.templateData);
+      const fileBuffer = await fs.readFile(source)
+      const templateContent = fileBuffer.toString()
+      const renderedContent = mustache.render(templateContent, this.templateData)
 
-      await fs.writeFile(dest, renderedContent);
+      await fs.writeFile(dest, renderedContent)
 
-      log.ok(`${file} created.`);
+      log.ok(`${file} created.`)
     } catch (error) {
       if (!isEmpty(error)) {
-        log.error(error);
+        log.error(error)
 
-        return false;
+        return false
       }
     }
 
-    return true;
+    return true
   }
 }
 
-export default mock(Scaffold);
+export default mock(Scaffold)

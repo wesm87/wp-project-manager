@@ -10,6 +10,9 @@
     - wesm87
 
   rules:
+    semi:
+      - error
+      - never
     class-methods-use-this:
       - off
     no-console:

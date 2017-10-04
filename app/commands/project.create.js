@@ -1,12 +1,12 @@
 
-import scaffold from '../include/scaffold';
+import scaffold from '../include/scaffold'
 
 export default {
   command: 'project create',
   describe: 'scaffold new project',
   builder: {},
   async handler() {
-    await scaffold.init();
-    scaffold.createProject();
+    await scaffold.init()
+    scaffold.createProject()
   },
-};
+}

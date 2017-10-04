@@ -3,5 +3,5 @@
  * Default task.
  */
 module.exports = (gulp) => {
-  gulp.task('default', ['test', 'build']);
-};
+  gulp.task('default', ['test', 'build'])
+}

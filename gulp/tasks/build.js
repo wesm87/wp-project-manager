@@ -4,17 +4,17 @@
  */
 module.exports = (gulp, doRollup, runNsp) => {
   function handleError(err) {
-    console.error(err.stack);
+    console.error(err.stack)
   }
 
   gulp.task('build', function buildTask() {
-    process.env.BABEL_ENV = 'production';
+    process.env.BABEL_ENV = 'production'
 
-    const moduleTypes = ['es', 'cjs'];
-    const promises = moduleTypes.map(doRollup);
+    const moduleTypes = ['es', 'cjs']
+    const promises = moduleTypes.map(doRollup)
 
     return Promise.all(promises)
       .then(runNsp)
-      .catch(handleError);
-  });
-};
+      .catch(handleError)
+  })
+}
