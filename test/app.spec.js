@@ -1,17 +1,17 @@
 
-import chai from 'chai';
+import chai from 'chai'
 
-import './setup';
+import './setup'
 
-import app from '../app/';
+import app from '../src/'
 
-const should = chai.should();
+const should = chai.should()
 
 describe('app', () => {
   describe('index.js', () => {
     it('should export a non-empty object', () => {
-      should.exist(app);
-      app.should.be.an('object');
-    });
-  });
-});
+      should.exist(app)
+      app.should.be.an('object')
+    })
+  })
+})

@@ -4,7 +4,7 @@
  */
 module.exports = (rollupPluginBabel, rollup) => function doRollup(format) {
   const rollupConfig = {
-    entry: 'app/index.js',
+    input: 'src/index.js',
     plugins: [
       rollupPluginBabel({ runtimeHelpers: true }),
     ],
@@ -12,7 +12,7 @@ module.exports = (rollupPluginBabel, rollup) => function doRollup(format) {
 
   const bundleConfig = {
     format,
-    dest: `dist/bundle.${format}.js`,
+    file: `dist/bundle.${format}.js`,
   }
 
   return rollup

@@ -1,15 +1,33 @@
 
-import yargs from 'yargs'
+import commander from 'commander'
 
-import configDisplayCommand from './commands/config.display'
-import configCreateCommand from './commands/config.create'
-import depsInstallCommand from './commands/deps.install'
-import pluginCreateTestsCommand from './commands/plugin.create-tests'
-import pluginCreateCommand from './commands/plugin.create'
-import themeCreateTestsCommand from './commands/theme.create-tests'
-import themeCreateCommand from './commands/theme.create'
-import projectCreateCommand from './commands/project.create'
-import wpInstallCommand from './commands/wp.install'
+const VERSION = '0.8.0'
+
+// import configDisplay from './commands/config.display'
+// import configCreate from './commands/config.create'
+import depsInstall from './commands/deps.install'
+// import pluginCreate from './commands/plugin.create'
+// import pluginCreateTests from './commands/plugin.create-tests'
+// import themeCreate from './commands/theme.create'
+// import themeCreateTests from './commands/theme.create-tests'
+// import projectCreate from './commands/project.create'
+import wpInstall from './commands/wp.install'
+
+const commandFactories = [
+  // configDisplay,
+  // configCreate,
+  depsInstall,
+  // pluginCreate,
+  // pluginCreateTests,
+  // themeCreate,
+  // themeCreateTests,
+  // projectCreate,
+  wpInstall,
+]
+
+const invokeCommandFactory = (commandFactory) => {
+  commandFactory(commander)
+}
 
 /**
  * Performs all of the following:
@@ -42,15 +60,9 @@ import wpInstallCommand from './commands/wp.install'
  * @TODO Add `install-deps` command to install project, plugin, and theme deps.
  * @TODO Replace `yargs` with a CLI framework that supports sub-commands.
  */
-export default yargs.help()
-  .completion()
-  .command(configDisplayCommand)
-  .command(configCreateCommand)
-  .command(depsInstallCommand)
-  .command(pluginCreateTestsCommand)
-  .command(pluginCreateCommand)
-  .command(themeCreateTestsCommand)
-  .command(themeCreateCommand)
-  .command(projectCreateCommand)
-  .command(wpInstallCommand)
-  .argv
+
+commander.version(VERSION)
+
+commandFactories.forEach(invokeCommandFactory)
+
+commander.parse(process.argv)

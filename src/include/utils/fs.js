@@ -42,26 +42,28 @@ export const isHiddenFile = complement(startsWith('.'))
  *                       false if not.
  */
 export async function pathExists(path, type = 'any') {
+  const handleSuccess = (info) => {
+    switch (type) {
+      case 'file': {
+        return info.isFile()
+      }
+      case 'folder':
+      case 'directory': {
+        return info.isDirectory()
+      }
+      case 'link':
+      case 'symlink': {
+        return info.isSymbolicLink()
+      }
+      default: {
+        return Boolean(info)
+      }
+    }
+  }
+
   return fs
     .lstat(path)
-    .then(function handleSuccess(info) {
-      switch (type) {
-        case 'file' : {
-          return info.isFile()
-        }
-        case 'folder' :
-        case 'directory' : {
-          return info.isDirectory()
-        }
-        case 'link':
-        case 'symlink': {
-          return info.isSymbolicLink()
-        }
-        default: {
-          return Boolean(info)
-        }
-      }
-    })
+    .then(handleSuccess)
     .catch(stubFalse)
 }
 
@@ -126,7 +128,7 @@ export const symlinkExists = partialRight(pathExists, ['symlink'])
  *                                         directory's contents.
  */
 export async function readDir(dir, includeHidden = false) {
-  function handleSuccess(files) {
+  const handleSuccess = (files) => {
     if (!includeHidden) {
       return files.filter(isHiddenFile)
     }
@@ -156,7 +158,7 @@ export async function readDir(dir, includeHidden = false) {
 export async function loadYAML(filePath) {
   const defaultValue = {}
 
-  function handleSuccess(contents) {
+  const handleSuccess = (contents) => {
     const json = YAML.safeLoad(contents)
 
     return json || defaultValue

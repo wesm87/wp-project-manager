@@ -1,17 +1,14 @@
-// @flow
 /* eslint-disable import/no-extraneous-dependencies */
 
 /**
  * Gulpfile.
  */
 
-import 'babel-polyfill';
+const path = require('path')
 
-import path from 'path';
-
-import gulp from 'gulp';
-import gulpDI from 'gulp-di';
-import { Instrumenter } from 'isparta';
+const gulp = require('gulp')
+const gulpDI = require('gulp-di')
+const { Instrumenter } = require('isparta')
 
 /**
  * Task config.
@@ -37,7 +34,7 @@ const taskConfig = {
     compilers: 'js:babel-core/register',
     recursive: true,
   },
-};
+}
 
 /**
  * Task files.
@@ -46,15 +43,15 @@ const taskConfig = {
  */
 const taskFiles = {
   js: {
-    source: 'app/index.js',
+    source: 'src/index.js',
     dest: 'dist',
     tests: 'test/**/*.js',
-    watch: ['app/**/*.js', 'test/**/*.js'],
+    watch: ['src/**/*.js', 'test/**/*.js'],
   },
   coverage: {
     source: path.join(__dirname, 'coverage/lcov.info'),
   },
-};
+}
 
 const diConfig = {
   pattern: [
@@ -64,11 +61,11 @@ const diConfig = {
     'rollup',
     'rollup-plugin-*',
   ],
-};
+}
 
 gulpDI(gulp, diConfig)
   .provide('taskConfig', taskConfig)
   .provide('taskFiles', taskFiles)
   .modules('./gulp/lib')
   .tasks('./gulp/tasks')
-  .resolve();
+  .resolve()

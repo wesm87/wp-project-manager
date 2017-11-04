@@ -3,10 +3,11 @@
  */
 
 import path from 'path'
+import cp from 'child_process'
 
 import fs from 'fs-extra'
-import cp from 'child_process'
 import mustache from 'mustache'
+import stripNL from 'strip-newlines'
 
 import {
   getOr,
@@ -66,13 +67,14 @@ class Scaffold extends Project {
   }
 
   /**
-   * Gets base path to a specific type of file.
+   * Gets base path to a specific file.
    *
-   * @param  {String} [type = 'project'] [description]
+   * @param  {String} [context = 'project'] [description]
    * @return {String}
    */
-  static getBasePath(type = 'project') {
-    const { plugin, theme } = this.config
+  static getBasePath(context = 'project') {
+    const { paths, config } = this
+    const { plugin, theme } = config
 
     const basePaths = {
       project: '.',
@@ -84,38 +86,38 @@ class Scaffold extends Project {
       theme: path.join('htdocs/web/app/themes/', theme.slug),
     }
 
-    // We convert the type to camel case so we don't run into issues if we
-    // want to use a type like `type-name` or `type_name`.
-    const pathKey = camelCase(type)
+    // We convert the context to camel case so we don't run into issues if we
+    // want to use a value like `context-name` or `context_name`.
+    const pathKey = camelCase(context)
     const base = basePaths[pathKey]
 
     if (!base) {
       return ''
     }
 
-    return path.join(this.paths.project, base)
+    return path.join(paths.project, base)
   }
 
   /**
    * Gets path to plugin or theme assets.
    *
-   * @param  {String} [type = 'theme'] [description]
+   * @param  {String} [context = 'theme']
    * @return {String}
    */
-  static getAssetsPath(type = 'theme') {
+  static getAssetsPath(context = 'theme') {
     const assetsPaths = {
       plugin: 'assets/source',
       theme: 'assets/source',
     }
 
-    const pathKey = camelCase(type)
+    const pathKey = camelCase(context)
     const assetsPath = assetsPaths[pathKey]
 
     if (!assetsPath) {
       return ''
     }
 
-    return path.join(this.getBasePath(type), assetsPath)
+    return path.join(this.getBasePath(context), assetsPath)
   }
 
   /**
@@ -126,11 +128,13 @@ class Scaffold extends Project {
     this.config = await this.config
     this.templateData = this.config
 
-    if (isTest(this.config.env)) {
-      await fs.remove(this.paths.project)
+    const { paths, config } = this
+
+    if (isTest(config.env)) {
+      await fs.remove(paths.project)
     }
 
-    await fs.mkdirp(this.paths.project)
+    await fs.mkdirp(paths.project)
 
     return true
   }
@@ -163,12 +167,14 @@ class Scaffold extends Project {
    * Creates project files.
    */
   static async initProjectFiles() {
+    const { config } = this
+
     await this.maybeCopyPluginZips()
     await this.parseTemplateData()
 
     await this.scaffoldFiles('scripts')
 
-    if (this.config.vvv) {
+    if (config.vvv) {
       await this.scaffoldFiles('vvv')
     }
   }
@@ -177,7 +183,9 @@ class Scaffold extends Project {
    * Copies plugin ZIP files.
    */
   static async maybeCopyPluginZips() {
-    const dirExists = await directoryExists(this.paths.plugins)
+    const { paths } = this
+
+    const dirExists = await directoryExists(paths.plugins)
 
     if (!dirExists) {
       return
@@ -185,8 +193,8 @@ class Scaffold extends Project {
 
     log.message('Copying plugin ZIPs...')
 
-    const source = this.paths.plugins
-    const dest = path.join(this.paths.project, 'project-files/plugin-zips')
+    const source = paths.plugins
+    const dest = path.join(paths.project, 'project-files/plugin-zips')
 
     await fs.copy(source, dest)
 
@@ -197,10 +205,12 @@ class Scaffold extends Project {
    * Parses template data from project config.
    */
   static async parseTemplateData() {
-    const pluginZipsDir = path.join(this.paths.project, 'project-files/plugin-zips')
+    const { paths, templateData } = this
 
-    if (!this.templateData.pluginZips) {
-      this.templateData.pluginZips = []
+    const pluginZipsDir = path.join(paths.project, 'project-files/plugin-zips')
+
+    if (!templateData.pluginZips) {
+      templateData.pluginZips = []
     }
 
     const files = await readDir(pluginZipsDir)
@@ -208,7 +218,7 @@ class Scaffold extends Project {
     for (const file of files) {
       const name = path.basename(file, '.zip')
 
-      this.templateData.pluginZips.push({ name, file })
+      templateData.pluginZips.push({ name, file })
     }
   }
 
@@ -218,13 +228,15 @@ class Scaffold extends Project {
    * @return {Boolean}
    */
   static async initRepo() {
-    if (!this.config.repo.create) {
+    const { config, paths } = this
+
+    if (!config.repo.create) {
       return false
     }
 
     log.message('Checking for Git repo...')
 
-    const dirPath = path.join(this.paths.project, '.git')
+    const dirPath = path.join(paths.project, '.git')
     const dirExists = await directoryExists(dirPath)
 
     if (dirExists) {
@@ -241,8 +253,8 @@ class Scaffold extends Project {
     }
 
     // If the repo URL is set, add it as a remote.
-    if (this.config.repo.url) {
-      const command = `git remote add origin ${this.config.repo.url}`
+    if (config.repo.url) {
+      const command = `git remote add origin ${config.repo.url}`
       const remoteAddResult = await this.exec(command, 'project')
 
       if (remoteAddResult) {
@@ -259,9 +271,11 @@ class Scaffold extends Project {
    * @return {Boolean}
    */
   static async initProject() {
+    const { paths } = this
+
     log.message('Checking for Bedrock...')
 
-    const dirPath = path.join(this.paths.project, 'htdocs')
+    const dirPath = path.join(paths.project, 'htdocs')
     const dirExists = await directoryExists(dirPath)
 
     if (dirExists) {
@@ -300,15 +314,17 @@ class Scaffold extends Project {
    * @return {Boolean}
    */
   static async initPlugin() {
-    if (!this.config.plugin.scaffold) {
+    const { config } = this
+
+    if (!config.plugin.scaffold) {
       return false
     }
 
-    if (!this.config.plugin.name) {
-      log.error(
-        'You must specify a plugin name.'
-        + ' Check the README for usage information.',
-      )
+    if (!config.plugin.name) {
+      log.error(stripNL`
+        You must specify a plugin name.
+        Check the README for usage information.
+      `)
 
       return false
     }
@@ -348,13 +364,17 @@ class Scaffold extends Project {
    * @return {Boolean} False if theme exists,
    */
   static async initTheme() {
-    if (!this.config.theme.scaffold) {
+    const { config } = this
+
+    if (!config.theme.scaffold) {
       return false
     }
 
-    if (!this.config.theme.name) {
-      const errorMessage = 'You must specify a theme name.'
-        + ' Check the README for usage information.'
+    if (!config.theme.name) {
+      const errorMessage = stripNL`
+        You must specify a theme name.
+        Check the README for usage information.
+      `
 
       log.error(errorMessage)
 
@@ -406,12 +426,12 @@ class Scaffold extends Project {
    * Executes a command.
    *
    * @param  {String}   command The command.
-   * @param  {String}   [type = 'project'] Type to use for the base path.
+   * @param  {String}   [context = 'project'] Context to use when determining the base path.
    * @return {Boolean}
    */
-  static async exec(command, type = 'project') {
+  static async exec(command, context = 'project') {
     const options = {
-      cwd: this.getBasePath(type),
+      cwd: this.getBasePath(context),
     }
 
     return cp.exec(command, options)
@@ -420,10 +440,10 @@ class Scaffold extends Project {
   /**
    * Creates placeholder files and folders.
    *
-   * @param  {String} [type = 'theme'] [description]
+   * @param  {String} [context = 'theme'] [description]
    */
-  static async createPlaceholders(type = 'theme') {
-    const base = this.getBasePath(type)
+  static async createPlaceholders(context = 'theme') {
+    const base = this.getBasePath(context)
 
     const dirs = [
       'includes',
@@ -444,33 +464,37 @@ class Scaffold extends Project {
       'assets/dist/fonts/.gitkeep',
     ]
 
-    for (const dir of dirs) {
-      try {
-        await fs.mkdirp(path.join(base, dir))
-      } catch (error) {
+    const createDirectory = async (dir) => fs.mkdirp(path.join(base, dir))
+
+    try {
+      await Promise.all(dirs.map(createDirectory))
+    } catch (error) {
+      if (!isEmpty(error)) {
         log.error(error)
       }
     }
 
-    for (const file of files) {
-      try {
-        await fs.ensureFile(path.join(base, file))
-      } catch (error) {
-        // Do nothing.
-      }
+    const createFile = async (file) => fs.ensureFile(path.join(base, file))
+
+    try {
+      await Promise.all(files.map(createFile))
+    } catch (error) {
+      // Do nothing.
     }
   }
 
   /**
    * Copy an included set of plugin or theme assets.
    *
-   * @param  {String} [type = 'theme'] [description]
+   * @param  {String} [context = 'theme'] [description]
    * @param  {String} [dir  = '']      [description]
    * @return {Boolean}
    */
-  static async copyAssets(type = 'theme', dir = '') {
-    const source = path.join(this.paths.assets, type, dir)
-    const dest = path.join(this.getAssetsPath(type), dir)
+  static async copyAssets(context = 'theme', dir = '') {
+    const { paths } = this
+
+    const source = path.join(paths.assets, context, dir)
+    const dest = path.join(this.getAssetsPath(context), dir)
 
     const dirExists = await directoryExists(source)
 
@@ -484,12 +508,14 @@ class Scaffold extends Project {
       await fs.mkdirp(dest)
       await fs.copy(source, dest)
 
-      const assetName = startCase(type)
+      const assetName = startCase(context)
 
       log.ok(`${assetName} assets created.`)
     } catch (error) {
       if (!isEmpty(error)) {
         log.error(error)
+
+        return false
       }
     }
 
@@ -499,11 +525,11 @@ class Scaffold extends Project {
   /**
    * Creates symlinks to a set of files.
    *
-   * @param  {String} type = 'project' [description]
+   * @param {String} context = 'project' [description]
    */
-  static async linkFiles(type = 'project') {
-    const base = this.getBasePath(type)
-    const files = getOr('', [type, 'link'], this.files)
+  static async linkFiles(context = 'project') {
+    const base = this.getBasePath(context)
+    const files = getOr('', [context, 'link'], this.files)
 
     if (!files) {
       return
@@ -517,12 +543,14 @@ class Scaffold extends Project {
 
       log.message(`Checking for ${destBase}...`)
 
+      // eslint-disable-next-line no-await-in-loop
       const linkExists = await symlinkExists(dest)
 
       if (linkExists) {
         log.ok(`${dest} exists.`)
       } else {
         try {
+          // eslint-disable-next-line no-await-in-loop
           await fs.ensureSymlink(dest, source)
           log.ok(`${dest} created.`)
         } catch (error) {
@@ -537,25 +565,23 @@ class Scaffold extends Project {
   /**
    * Removes a set of files.
    *
-   * @param  {String} type = 'project' [description]
+   * @param {String} context = 'project' [description]
    */
-  static async removeFiles(type = 'project') {
-    const base = this.getBasePath(type)
-    const files = this.files[type].remove
+  static async removeFiles(context = 'project') {
+    const base = this.getBasePath(context)
+    const files = this.files[context].remove
 
     if (!files) {
       return
     }
 
-    for (let file of files) {
-      file = path.join(base, file)
+    const removeFile = (file) => fs.remove(path.join(base, file))
 
-      try {
-        await fs.remove(file)
-      } catch (error) {
-        if (!isEmpty(error)) {
-          log.error(error)
-        }
+    try {
+      await Promise.all(files.map(removeFile))
+    } catch (error) {
+      if (!isEmpty(error)) {
+        log.error(error)
       }
     }
   }
@@ -563,11 +589,13 @@ class Scaffold extends Project {
   /**
    * Renders a set of template files using the template data.
    *
-   * @param  {String} type =             'project' [description]
-   * @return {Boolean}      [description]
+   * @param  {String} context = 'project'
+   * @return {Boolean}
    */
-  static async scaffoldFiles(type = 'project') {
-    const source = path.join(this.paths.templates, type)
+  static async scaffoldFiles(context = 'project') {
+    const { paths } = this
+
+    const source = path.join(paths.templates, context)
 
     const dirExists = await directoryExists(source)
 
@@ -577,11 +605,18 @@ class Scaffold extends Project {
       return false
     }
 
-    const dirs = await readDir(source)
+    const files = await readDir(source)
+    const createFile = (file) => this.scaffoldFile(path.join(source, file), context)
 
-    if (!isEmpty(dirs)) {
-      for (const file of dirs) {
-        await this.scaffoldFile(path.join(source, file), type)
+    if (!isEmpty(files)) {
+      try {
+        await files.map(createFile)
+      } catch (error) {
+        if (!isEmpty(error)) {
+          log.error(error)
+
+          return false
+        }
       }
     }
 
@@ -592,10 +627,10 @@ class Scaffold extends Project {
    * Renders a specific template file.
    *
    * @param  {String} source [description]
-   * @param  {String} type   = 'project' [description]
+   * @param  {String} context = 'project' [description]
    * @return {Boolean}        [description]
    */
-  static async scaffoldFile(source, type = 'project') {
+  static async scaffoldFile(source, context = 'project') {
     let file = path.basename(source, '.mustache')
 
     // Templates for hidden files start with `_` instead of `.`
@@ -605,7 +640,7 @@ class Scaffold extends Project {
 
     log.message(`Checking for ${file}...`)
 
-    const base = this.getBasePath(type)
+    const base = this.getBasePath(context)
     const dest = path.join(base, file)
 
     const templateFileExists = await fileExists(dest)
@@ -618,10 +653,12 @@ class Scaffold extends Project {
 
     await fs.mkdirp(base)
 
+    const { templateData } = this
+
     try {
       const fileBuffer = await fs.readFile(source)
       const templateContent = fileBuffer.toString()
-      const renderedContent = mustache.render(templateContent, this.templateData)
+      const renderedContent = mustache.render(templateContent, templateData)
 
       await fs.writeFile(dest, renderedContent)
 

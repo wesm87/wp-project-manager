@@ -11,7 +11,7 @@ import log from '../log'
  *
  * @type {Object}
  */
-const RATIOS = {
+export const RATIOS = {
   BYTES_TO_HEX: 0.5,
   BYTES_TO_BASE64: 0.75,
 }

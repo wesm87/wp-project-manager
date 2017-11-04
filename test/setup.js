@@ -1,24 +1,24 @@
 
-import sinon from 'sinon';
+import sinon from 'sinon'
 
-import { env, ENV, inject } from 'mocktail';
+import { env, ENV, inject } from 'mocktail'
 
-env(ENV.TESTING);
+env(ENV.TESTING)
 
 class ProjectMock {
 
   static get config() {
     return {
 
-    };
+    }
   }
 
   static createConfigFile(force = false) {
-    return force;
+    return force
   }
 
 }
 
-sinon.stub(ProjectMock, 'createConfigFile');
+sinon.stub(ProjectMock, 'createConfigFile')
 
-inject('Project', ProjectMock);
+inject('Project', ProjectMock)

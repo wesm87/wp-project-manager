@@ -1,17 +1,17 @@
 {
-	"source": {
-		"include": [ "app" ]
-	},
-	"plugins": [ "plugins/markdown" ],
-	"templates": {
-		"cleverLinks": true,
-		"monospaceLinks": true,
-		"default": {
-			"includeDate": false
-		}
-	},
-	"opts": {
-		"destination": "./docs/",
-		"recurse": true
-	}
+  "source": {
+    "include": ["src"]
+  },
+  "plugins": ["plugins/markdown"],
+  "templates": {
+    "cleverLinks": true,
+    "monospaceLinks": true,
+    "default": {
+      "includeDate": false
+    }
+  },
+  "opts": {
+    "destination": "./docs/",
+    "recurse": true
+  }
 }

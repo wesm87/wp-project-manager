@@ -68,25 +68,25 @@ class Project {
    */
   static get paths() {
     if (!this._paths) {
-      const rootPath = path.join(__dirname, '..')
+      const rootPath = path.resolve(__dirname, '..')
 
       this._paths = {
         root: rootPath,
         cwd: process.cwd(),
         project: process.cwd(),
-        assets: path.join(rootPath, 'project-files', 'assets'),
-        templates: path.join(rootPath, 'project-files', 'templates'),
-        plugins: path.join(rootPath, 'project-files', 'plugin-zips'),
-        test: path.join(rootPath, 'test'),
+        assets: path.resolve(rootPath, 'project-files/assets'),
+        templates: path.resolve(rootPath, 'project-files/templates'),
+        plugins: path.resolve(rootPath, 'project-files/plugin-zips'),
+        test: path.resolve(rootPath, 'test'),
         config: upsearch.sync('project.yml'),
       }
 
       if (this._paths.root === this._paths.project) {
-        this._paths.project = path.join(this._paths.root, '_test-project')
+        this._paths.project = path.resolve(this._paths.root, '_test-project')
       }
 
       if (!this._paths.config) {
-        this._paths.config = path.join(this._paths.project, 'project.yml')
+        this._paths.config = path.resolve(this._paths.project, 'project.yml')
       }
     }
 
@@ -190,12 +190,18 @@ class Project {
    * specified file doesn't exist or is empty, the default config file path
    * is used.
    *
+   * @TODO Remove dependency on yargs completely. I think the only way to do
+   * this with commander is to define each option individually on the top-level
+   * command.
+   *
    * @since 0.1.0
    *
    * @param  {String} file The path to the config file.
    * @return {Object}      The resulting config object.
    */
   static async loadConfig(file = null) {
+    const { paths } = this
+
     let config
 
     // Try to load the config file if one was passed and it exists.
@@ -210,10 +216,10 @@ class Project {
     // If we don't have a config object (or the config object is empty)
     // fall back to the default config file.
     if (isEmpty(config)) {
-      const configFileExists = await fileExists(this.paths.config)
+      const configFileExists = await fileExists(paths.config)
 
       if (configFileExists) {
-        config = await loadYAML(this.paths.config)
+        config = await loadYAML(paths.config)
       }
     }
 
@@ -232,18 +238,20 @@ class Project {
    *                                created.
    */
   static async createConfigFile(force = false) {
+    const { paths, defaultConfig } = this
+
     if (force) {
-      const configFileExists = await fileExists(this.paths.config)
+      const configFileExists = await fileExists(paths.config)
 
       if (configFileExists) {
-        await fs.remove(this.paths.config)
+        await fs.remove(paths.config)
       }
     }
 
-    const configFileExists = await fileExists(this.paths.config)
+    const configFileExists = await fileExists(paths.config)
 
     if (!configFileExists) {
-      await writeYAML(this.paths.config, this.defaultConfig)
+      await writeYAML(paths.config, defaultConfig)
     }
   }
 
@@ -257,9 +265,11 @@ class Project {
    * @return {Object}        The parsed config object.
    */
   static parseConfig(config) {
+    const { paths, defaultConfig } = this
+
     // Merge config with defaults.
-    const configKeys = keys(this.defaultConfig)
-    const configWithDefaults = defaultsDeep({}, config, this.defaultConfig)
+    const configKeys = keys(defaultConfig)
+    const configWithDefaults = defaultsDeep({}, config, defaultConfig)
 
     // Filter out any invalid config values, then
     // fill in any config values that aren't set.
@@ -275,7 +285,7 @@ class Project {
     const parsed = parseConfig(configWithDefaults)
 
     // Set internal config values.
-    parsed.project.folder = path.basename(this.paths.project)
+    parsed.project.folder = path.basename(paths.project)
     parsed.project.namespace = upperSnakeCase(parsed.project.title)
 
     parsed.plugin.id = snakeCase(parsed.plugin.name)
