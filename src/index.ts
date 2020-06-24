@@ -1,15 +1,14 @@
+import yargs from 'yargs';
 
-import yargs from 'yargs'
-
-import configDisplayCommand from './commands/config.display'
-import configCreateCommand from './commands/config.create'
-import depsInstallCommand from './commands/deps.install'
-import pluginCreateTestsCommand from './commands/plugin.create-tests'
-import pluginCreateCommand from './commands/plugin.create'
-import themeCreateTestsCommand from './commands/theme.create-tests'
-import themeCreateCommand from './commands/theme.create'
-import projectCreateCommand from './commands/project.create'
-import wpInstallCommand from './commands/wp.install'
+import configDisplayCommand from './commands/config/display';
+import configCreateCommand from './commands/config/create';
+import depsInstallCommand from './commands/deps/install';
+import pluginCreateTestsCommand from './commands/plugin/createTests';
+import pluginCreateCommand from './commands/plugin/create';
+import themeCreateTestsCommand from './commands/theme/createTests';
+import themeCreateCommand from './commands/theme/create';
+import projectCreateCommand from './commands/project/create';
+import wpInstallCommand from './commands/wp/install';
 
 /**
  * Performs all of the following:
@@ -42,7 +41,8 @@ import wpInstallCommand from './commands/wp.install'
  * @TODO Add `install-deps` command to install project, plugin, and theme deps.
  * @TODO Replace `yargs` with a CLI framework that supports sub-commands.
  */
-export default yargs.help()
+export default yargs
+  .help()
   .completion()
   .command(configDisplayCommand)
   .command(configCreateCommand)
@@ -52,5 +52,4 @@ export default yargs.help()
   .command(themeCreateTestsCommand)
   .command(themeCreateCommand)
   .command(projectCreateCommand)
-  .command(wpInstallCommand)
-  .argv
+  .command(wpInstallCommand).argv;

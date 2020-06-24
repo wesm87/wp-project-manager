@@ -1,4 +1,4 @@
-import scaffold from '../include/scaffold';
+import scaffold from '../../include/scaffold';
 
 export default {
   command: 'theme create-tests',

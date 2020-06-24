@@ -1,4 +1,4 @@
-import log from '../include/log';
+import log from '../../include/log';
 
 export default {
   command: 'wp install',

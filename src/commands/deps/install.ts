@@ -1,4 +1,4 @@
-import { install } from '../include/deps';
+import { install } from '../../include/deps';
 
 type Args = {
   type: string;

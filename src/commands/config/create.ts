@@ -1,4 +1,4 @@
-import { createConfigFile } from '../include/project';
+import { createConfigFile } from '../../include/project';
 
 type Args = {
   force: boolean;

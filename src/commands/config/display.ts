@@ -1,5 +1,5 @@
-import log from '../include/log';
-import { getConfig } from '../include/project';
+import log from '../../include/log';
+import { getConfig } from '../../include/project';
 
 export default {
   command: 'config display',

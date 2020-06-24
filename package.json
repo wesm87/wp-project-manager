@@ -26,8 +26,7 @@
     "vagrant",
     "vvv"
   ],
-  "main": "dist/bundle.cjs.js",
-  "jsnext:main": "dist/bundle.es.js",
+  "main": "dist/index.js",
   "bin": {
     "wppm": "bin/wp-project-manager",
     "wp-project-manager": "bin/wp-project-manager"
@@ -36,11 +35,10 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "gulp": "gulp",
-    "build": "gulp build",
+    "check-types": "tsc",
+    "build": "rm -rf dist/* && babel src --out-dir 'dist' --extensions '.ts' --no-comments",
     "docs": "yarn docs:jsdoc",
     "docs:jsdoc": "jsdoc -c jsdoc.conf.json",
-    "test": "gulp test",
     "prepublishOnly": "yarn build",
     "preversion": "yarn test",
     "postversion": "git push && git push --tags && npm publish"
@@ -74,7 +72,6 @@
     "chai": "^4.2.0",
     "jsdoc": "^3.6.4",
     "mocha": "^8.0.1",
-    "rollup": "^2.18.0",
     "semver": "^7.3.2",
     "shelljs": "^0.8.4",
     "sinon": "^9.0.2",
