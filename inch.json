@@ -1,7 +1,7 @@
 {
   "files": {
     "included": [
-      "app/**/*.js"
+      "app/**/*.ts"
     ]
   }
 }
