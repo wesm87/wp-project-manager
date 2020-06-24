@@ -6,6 +6,9 @@ _test-project
 # Code coverage
 coverage
 
+# Build files
+/dist
+
 ### Package Managers ###
 
 # Composer
