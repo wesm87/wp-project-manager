@@ -1,11 +1,3 @@
-/**
- * Filesystem helper methods, plus everything from the `fs-extra` module (which
- * itself includes everything from the core `fs` module). All the `fs-extra`
- * methods have been modified to return a Promise so `async/await` can be used.
- *
- * @module
- */
-
 import fs from 'fs-extra';
 import YAML from 'js-yaml';
 import { startsWith, reject } from 'lodash/fp';
@@ -13,9 +5,7 @@ import { startsWith, reject } from 'lodash/fp';
 /**
  * Checks whether the specified file is a hidden file.
  *
- * @param  {String} file The file name to check.
- * @return {Boolean}     True if the file name begins with a dot;
- *                       false if not.
+ * @since 0.4.0
  */
 export const isHiddenFile = startsWith('.');
 

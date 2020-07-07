@@ -8,6 +8,7 @@ import cp from 'child_process';
 import mustache from 'mustache';
 import { pathOr, isEmpty } from 'ramda';
 import { camelCase, startCase } from 'lodash/fp';
+// @ts-ignore
 import { mock } from 'mocktail';
 
 import log from './log';

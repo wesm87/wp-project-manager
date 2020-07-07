@@ -3,9 +3,9 @@
  */
 
 import path from 'path';
-
 import fs from 'fs-extra';
 import yargs from 'yargs';
+// @ts-ignore
 import upsearch from 'utils-upsearch';
 import { compose, keys, replace, mergeDeepRight } from 'ramda';
 import {
@@ -121,9 +121,6 @@ type ProjectPaths = {
   config: string;
 };
 
-let _config: ProjectConfig;
-let _paths: ProjectPaths;
-
 const DEFAULT_CONFIG: ProjectConfig = {
   env: 'development',
   vvv: true,
@@ -190,6 +187,9 @@ const DEFAULT_CONFIG: ProjectConfig = {
     nonce_salt: '',
   },
 };
+
+let _config: ProjectConfig;
+let _paths: ProjectPaths;
 
 export const getPaths = (): ProjectPaths => {
   if (_paths) {
@@ -420,7 +420,7 @@ const loadConfig = async (file: string = ''): Promise<ProjectConfig> => {
  *
  * @since 0.3.0
  */
-export const createConfigFile = async (force: boolean = false) => {
+export const createConfigFile = async (force: boolean = false): Promise<void> => {
   const paths = getPaths();
 
   if (force) {

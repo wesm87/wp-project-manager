@@ -1,7 +1,5 @@
 /**
- * @module
- *
- * Logger utils. Contains various methods (debug, info, ok, warn, error, etc.)
+ * Custom logger. Contains various methods (debug, info, ok, warn, error, etc.)
  * that take a string or object-like value, apply an associated style, and log
  * it. Some styles also prepend an associated icon identifier to the message.
  *
@@ -41,6 +39,14 @@ type Logger = {
   message: chalk.Chalk;
 };
 
+type LoggerIcons = {
+  ok: string;
+  info: string;
+  warn: string;
+  error: string;
+  debug: string;
+};
+
 /**
  * Message icons. Includes plain-text fallbacks for Windows, since the CMD
  * prompt supports a very limited character set.
@@ -49,7 +55,7 @@ type Logger = {
  *
  * @see https://github.com/sindresorhus/log-symbols
  */
-const getIcons = () => {
+const getIcons = (): LoggerIcons => {
   if (process.platform === 'win32') {
     return {
       ok: '√',
@@ -90,7 +96,7 @@ const createLogWithStyle = (style: string) => async (message: any) => {
     return;
   }
 
-  const icon = propOr('', style, getIcons());
+  const icon = propOr('', style, getIcons()) as string;
   const applyStyle = propOr(identity, style, STYLES) as chalk.Chalk;
 
   let output = message;
