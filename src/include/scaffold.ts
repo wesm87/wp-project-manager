@@ -48,10 +48,10 @@ const FILES = {
  *
  * @todo Figure out better names for functions.
  * @todo Document all the things! Maybe switch to rspec?
- * @todo Break this up into multiple classes.
- *       - Scaffold class should only handle project files and folders.
- *       - Move WordPress / database setup into separate class.
- *       - Move git commands into separate class?
+ * @todo Break this up into multiple files with individual functions instead of a class.
+ *       - Scaffold functions should only handle project files and folders.
+ *       - Move WordPress / database setup into separate file.
+ *       - Move git commands into separate file?
  */
 class Scaffold {
   /**
